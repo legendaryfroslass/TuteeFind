@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return passwordValid;
         }
 
-        // Function to validate password criteria
+// Function to validate password criteria
 function validatePassword() {
     const password = passwordInput.value;
     const signUpButton = document.getElementById('signUp');
@@ -114,10 +114,10 @@ confirmPasswordInput.addEventListener('input', validateConfirmPassword);
             $('.form3').removeClass('d-none');
         });
 
-        $('#nextButton-4').click(function(){
-            $('.form4').addClass('d-none');
-            $('.form5').removeClass('d-none');
-        });
+        // $('#nextButton-4').click(function(){
+        //     $('.form4').addClass('d-none');
+        //     $('.form5').removeClass('d-none');
+        // });
 
         $('#backButton-5').click(function(){
             $('.form5').addClass('d-none');

@@ -59,10 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verifyOTP'])) {
     $userOtp = $_POST['otp'];
     
     if ($userOtp == $_SESSION['otp']) {
-        echo "success";  // Respond with success
+        error_log("OTP validation succeeded.");
+        echo "success";  // Respond with success only for valid OTP
         exit;
     } else {
-        echo "Invalid OTP. Please try again.";
+        error_log("OTP validation failed.");
+        echo "Invalid OTP. Please try again.";  // Respond with error for invalid OTP
         exit;
     }
 }
@@ -125,6 +127,9 @@ if (isset($_SESSION['message'])) {
 // Get birthday and age from session (if previously set)
 $tutee_bday = isset($_SESSION['birthday']) ? $_SESSION['birthday'] : '';
 $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
+
+include('../tutee/spinner.php');
+
 ?>
 
 <!DOCTYPE html>
@@ -135,6 +140,7 @@ $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="../tutee/spinner.css">
     <title>Register</title>
     <style>
         body {
@@ -269,7 +275,7 @@ $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
                         </div>
                     </div>
                     <h5>Welcome</h5>
-                    <p id="modalMessage" class="m-3"></p>
+                    <p id="modalMessageSucc" class="m-3"></p>
                 </div>
             </div>
         </div>
@@ -282,7 +288,7 @@ $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
                     <img src="../assets/tuteefind.jpg" class="img-fluid custom-height" style="border-radius: 20px 0 0 20px;">
                 </div>
                 <!-- Forms -->
-                 
+                
                 <div class="col-md-6 right-box">
                     <div class="row justify-content-center">
                     <form id="registrationForm" class="form-floating" action="register.php" method="post">
@@ -389,33 +395,40 @@ $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
                         </div>
                         <div class="input-group mb-3">
                             <select name="barangay" id="barangay" class="barangay form-select form-control-lg bg-light fs-6" aria-label="Default select example" required>
-                                <option value="" disabled selected>Barangay</option>
-                                <option value="Arkong Bato">Arkong Bato</option>
-                                <option value="Bagbaguin">Bagbaguin</option>
-                                <option value="Bignay">Bignay</option>
-                                <option value="Bisig">Bisig</option>
-                                <option value="Canumay">Canumayn</option>
-                                <option value="Coloong">Coloong</option>
-                                <option value="Dalandanan">Dalandanan</option>
-                                <option value="Isla">Isla</option>
-                                <option value="Karuhatan">Karuhatan</option>
-                                <option value="Lawang Bato">Lawang Bato</option>
-                                <option value="Lingunan">Lingunan</option>
-                                <option value="Mabolo">Mabolo</option>
-                                <option value="Malanday">Malanday</option>
-                                <option value="Malinta">Malinta</option>
-                                <option value="Mapulang Lupa">Mapulang Lupa</option>
-                                <option value="Maysan">Maysan</option>
-                                <option value="Palasan">Palasan</option>
-                                <option value="Pariancillo Villa">Pariancillo Villa</option>
-                                <option value="Pasolo">Pasolo</option>
-                                <option value="Paso de Blas">Paso de Blas</option>
-                                <option value="Poblacion">Poblacion</option>
-                                <option value="Polo">Polo</option>
-                                <option value="Punturin">Punturin</option>
-                                <option value="Rincon">Rincon</option>
-                                <option value="Tagalag">Tagalag</option>
-                                <option value="Viente Reales">Viente Reales</option>
+                            <option value="" disabled selected>Barangay</option>
+                            <option value="Arkong Bato">Arkong Bato</option>
+                            <option value="Bagbaguin">Bagbaguin</option>
+                            <option value="Balangkas">Balangkas</option>
+                            <option value="Bignay">Bignay</option>
+                            <option value="Bisig">Bisig</option>
+                            <option value="Canumay East">Canumay East</option>
+                            <option value="Canumay West">Canumay West</option>
+                            <option value="Coloong">Coloong</option>
+                            <option value="Dalandanan">Dalandanan</option>
+                            <option value="Gen. T. de Leon">Gen. T. de Leon</option>
+                            <option value="Isla">Isla</option>
+                            <option value="Karuhatan">Karuhatan</option>
+                            <option value="Lawang Bato">Lawang Bato</option>
+                            <option value="Lingunan">Lingunan</option>
+                            <option value="Mabolo">Mabolo</option>
+                            <option value="Malanday">Malanday</option>
+                            <option value="Malinta">Malinta</option>
+                            <option value="Mapulang Lupa">Mapulang Lupa</option>
+                            <option value="Marulas">Marulas</option>
+                            <option value="Maysan">Maysan</option>
+                            <option value="Palasan">Palasan</option>
+                            <option value="Parada">Parada</option>
+                            <option value="Pariancillo Villa">Pariancillo Villa</option>
+                            <option value="Paso de Blas">Paso de Blas</option>
+                            <option value="Pasolo">Pasolo</option>
+                            <option value="Poblacion">Poblacion</option>
+                            <option value="Polo">Polo</option>
+                            <option value="Punturin">Punturin</option>
+                            <option value="Rincon">Rincon</option>
+                            <option value="Tagalag">Tagalag</option>
+                            <option value="Ugong">Ugong</option>
+                            <option value="Veinte Reales">Veinte Reales</option>
+                            <option value="Wawang Pulo">Wawang Pulo</option>
                             </select>
                         </div>
                         <!-- Address -->
@@ -459,17 +472,19 @@ $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
                         </div>
                         <div>
                             <div class="form-floating mb-3">
-                                <input type="email" name="emailaddress" class="email form-control form-control-lg bg-light fs-6" id="email" placeholder="Email" required>
+                                <input type="email" name="emailaddress" class="email form-control form-control-lg bg-light fs-6" style="margin: 10vh 0 5vh 0" id="email" placeholder="Email" required>
                                 <label for="email">Email</label>
                             </div>
                         </div>
                         <div class="input-group btnClass">
                             <div class="row justify-content-center">
-                                <div class="col-md-6">
+                                <div class="col-md-4 text-center">
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-3">Back</a>
                                 </div>
-                                <div class="col-md-6">
-                                    <button type="submit" class="btn btn-lg btn-primary fs-6" id="nextButton-3" name="sendEmail">Send OTP</button>
+                                <div class="col-md-8 text-center">
+                                    <button type="submit" class="btn btn-lg btn-primary fs-6 d-flex justify-content-center align-items-center" onclick="showSpinner(); setTimeout(hideSpinner, 5000);" id="nextButton-3" name="sendEmail">
+                                        Send OTP <i class="bi bi-send ms-2"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -492,16 +507,16 @@ $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
                             <p>Enter the OTP sent to your email</p>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="text" name="otp" class="otp form-control form-control-lg bg-light fs-6" id="otp" placeholder="Enter OTP" required>
-                            <label for="otp">OTP</label>
+                            <input type="text" name="otp" class="otp form-control form-control-lg bg-light fs-6" style="margin: 10vh 0 5vh 0" id="otp" placeholder="Enter OTP" required>
+                            <label for="otp" style="padding: 13vh 0 0 4vh">OTP</label>
                         </div>
                         <div class="input-group btnClass">
                             <div class="row justify-content-center">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-4">Back</a>
                                 </div>
-                                <div class="col-md-6">
-                                    <button type="submit" class="btn btn-lg btn-primary fs-6" id="nextButton-4" name="verifyOTP">Verify OTP</button>
+                                <div class="col-md-8">
+                                    <button type="submit" class="btn btn-lg btn-primary fs-6" id="nextButton-4" name="verifyOTP" onclick="showSpinner(); setTimeout(hideSpinner, 1000);">Verify OTP</button>
                                 </div>
                             </div>
                         </div>
@@ -567,7 +582,7 @@ $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.js"></script>
-        <!-- <script src="spinner.js"></script> -->
+        <script src="../tutee/spinner.js"></script>
         <script src="register.js"></script>
         <script>
             
@@ -632,66 +647,87 @@ $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
         </script>
         <script>
             $(document).ready(function(){
-                // Prevent form submission reload and use AJAX
+                // Handle the form submission for sending OTP
                 $('#nextButton-3').click(function(e) {
-                    e.preventDefault();
+                    e.preventDefault();  // Prevent form submission by default
+
                     const emailAddress = $('input[name="emailaddress"]').val();
 
-                    // Send AJAX request to PHP to send OTP
+                    // Validate email input
+                    if (emailAddress === '') {
+                        $('input[name="emailaddress"]').addClass('is-invalid');
+                        $('#modalMessage').text("Please enter your email address.");
+                        $('#resultModal').modal('show');
+                        return;
+                    } else {
+                        $('input[name="emailaddress"]').removeClass('is-invalid');
+                    }
+
+                    // Show the spinner while sending the request
+                    showSpinner();
+
+                    // Send the request using AJAX
                     $.ajax({
-                        type: "POST",
-                        url: "",  // Replace with your actual PHP file name
+                        type: 'POST',
+                        url: '', // Correctly set to your PHP script
                         data: { sendEmail: true, emailaddress: emailAddress },
                         success: function(response) {
-                            if (response === "duplicate") {  // Check for duplicate response
-                                $('#modalMessage').text("An account with this email already exists!");
+                            if (response.trim() === "success") {
+                                // Transition to Form 4 if OTP was successfully sent
+                                $('.form3').addClass('d-none');
+                                $('.form4').removeClass('d-none');
+                            } else if (response.trim() === "duplicate") {
+                                $('#modalMessage').text("An account with this email already exists.");
                                 $('#resultModal').modal('show');
-                            } else if (response.includes("Error")) {  // Check if there's an error message
+                            } else if (response.startsWith("Error sending OTP")) {
                                 $('#modalMessage').text(response);
                                 $('#resultModal').modal('show');
                             } else {
-                                // Transition to Form 4 if no duplicate
-                                $('.form3').addClass('d-none');
-                                $('.form4').removeClass('d-none');
+                                $('#modalMessage').text("Unexpected response from server.");
+                                $('#resultModal').modal('show');
                             }
+                            hideSpinner(); // Hide spinner after handling response
                         },
                         error: function(xhr, status, error) {
                             $('#modalMessage').text('Failed to send OTP. Please try again.');
                             $('#resultModal').modal('show');
+                            hideSpinner(); // Hide spinner on error
                         }
                     });
                 });
             });
 
             $(document).ready(function() {
-                // Move from Form 4 (OTP) to Form 5 after OTP verification
-                $('#nextButton-4').click(function(e) {
-                    e.preventDefault(); // Prevent default form submission
-                    const otp = $('input[name="otp"]').val(); // Get entered OTP
+    $('#nextButton-4').click(function(e) {
+        e.preventDefault(); // Prevent form submission
+        const otp = $('input[name="otp"]').val(); // Get entered OTP
 
-                    // AJAX request to verify OTP
-                    $.ajax({
-                        type: "POST",
-                        url: "",  // Replace with the actual PHP file name for OTP verification
-                        data: { verifyOTP: true, otp: otp },
-                        success: function(response) {
-                            if (response.trim() === "success") {
-                                // OTP is correct, proceed to next form (Form 5)
-                                $('.form4').addClass('d-none');
-                                $('.form5').removeClass('d-none');
-                            } else {
-                                // Display error message
-                                $('#modalMessage').text(response);
-                                $('#resultModal').modal('show');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            $('#modalMessage').text('Failed to verify OTP. Please try again.');
-                            $('#resultModal').modal('show');
-                        }
-                    });
-                });
-            });
+        // AJAX request to verify OTP
+        $.ajax({
+            type: "POST",
+            url: "",  // Replace with actual PHP file name for OTP verification
+            data: { verifyOTP: true, otp: otp },
+            success: function(response) {
+                const trimmedResponse = response.trim();
+
+                if (trimmedResponse === "success") {
+                    // OTP is correct, proceed to next form (Form 5)
+                    $('.form4').addClass('d-none');
+                    $('.form5').removeClass('d-none');
+                } else {
+                    // Display error message for invalid OTP
+                    $('#modalMessage').text("Invalid OTP. Please try again.");
+                    $('#resultModal').modal('show');
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#modalMessage').text('Failed to verify OTP. Please try again.');
+                $('#resultModal').modal('show');
+            }
+        });
+    });
+});
+
         </script>
     </body>
 </html>

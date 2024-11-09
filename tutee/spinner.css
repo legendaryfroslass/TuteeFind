@@ -1,6 +1,6 @@
     /* From Uiverse.io by mrhyddenn */ 
     .spinner-container {
-        display: flex;
+        display: none;
         justify-content: center;
         align-items: center;
         position: fixed;
@@ -10,7 +10,6 @@
         height: 100%;
         background: rgba(255, 255, 255, 0.8);
         z-index: 9999;
-        display: none;
     }
     
     .spinner {

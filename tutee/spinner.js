@@ -15,8 +15,3 @@ document.getElementById('forgotPasswordForm').addEventListener('submit', functio
     showSpinner();
     document.getElementById('submitButton').disabled = false;
 });
-
-// register.php
-// document.getElementById('registrationForm').addEventListener('submit', function(e) {
-//     showSpinner();
-// });

@@ -34,24 +34,22 @@ if (isset($_GET['birthday']) && isset($_GET['age'])) {
     $_SESSION['age'] = $_GET['age'];
 }
 
-//login.php?registered=success
+// Check if registration was successful
 if (isset($_GET['registered']) && $_GET['registered'] == 'success') {
-    echo '  <script>
-            window.onload = function() {
+    echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
                 var successModal = new bootstrap.Modal(document.getElementById("successModal"));
                 successModal.show();
-            }
+            });
             </script>';
 }
 
 // Check if login failed via URL parameter
-if (isset($_GET['error']) || (isset($_GET['notAvail']))){
+if (isset($_GET['error']) || isset($_GET['notAvail'])) {
     echo '<script>
             document.addEventListener("DOMContentLoaded", function() {
                 var invalidLoginModal = new bootstrap.Modal(document.getElementById("invalidLogin"));
-                if (invalidLoginModal) {
-                    invalidLoginModal.show();
-                }
+                invalidLoginModal.show();
             });
             </script>';
 }
