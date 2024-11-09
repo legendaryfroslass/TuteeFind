@@ -1,0 +1,35 @@
+.invalid-feedback {
+    display: none;
+    color: red;
+    font-size: 0.875em;
+}
+.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+.blue {
+    background-color: var(--side-bar);
+    border-color: var(--side-bar);
+    color: var(--text-color);
+    text-align: center;
+    font-size: larger;
+  }
+  
+  .blue:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-color);
+    cursor: pointer;
+  }
+  
+  .blue:disabled {
+    color: var(--primary-color-light);
+    pointer-events: none;
+    cursor: none;
+    background-color: #ffffff;
+    border-color: var(--bs-btn-disabled-border-color);
+    opacity: var(--bs-btn-disabled-opacity);
+  }
+
+  .info-header {
+    font-weight: 400;
+  }

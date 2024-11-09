@@ -1,0 +1,611 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap");
+
+* {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --body-color: #e4e9f7;
+  --side-bar: #fff;
+  --primary-color: #695cfe;
+  --primary-color-light: #f6f5ff;
+  --toggle-color: #ddd;
+  --text-color: #707070;
+
+  --tran-03: all 0.2s ease;
+  --tran-04: all 0.3s ease;
+  --tran-05: all 0.4s ease;
+  --tran-06: all 0.5s ease;
+}
+
+html, body {
+  overflow-x: hidden; /* Avoid horizontal overflow */
+}
+
+body {
+  height: 100vh;
+  background-image: url(../assets/loading.png);
+  background-size: cover, contain; /* Different sizes for each image */
+  background-position: center, top right;
+  transition: var(--tran-04);
+}
+
+body.dark {
+  --body-color: #18191a;
+  --side-bar: #242526;
+  --primary-color: #3a3b3c;
+  --primary-color-light: #3a3b3c;
+  --toggle-color: #fff;
+  --text-color: #ccc;
+}
+
+/* sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  padding-top: 20px;
+  width: 250px;
+  padding: 10px 14px;
+  background: var(--side-bar);
+  transition: var(--tran-05);
+  z-index: 1;
+}
+
+.sidebar.close {
+  width: 88px;
+  padding-top: 20px;
+}
+
+/* reusable code */
+.sidebar .text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+  transition: var(--tran-04);
+  white-space: nowrap;
+  opacity: 1;
+}
+
+.sidebar.close .text {
+  opacity: 0;
+}
+
+.sidebar .image {
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar li {
+  height: 50px;
+  margin-top: 10px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+.sidebar li .icon,
+.sidebar li .text {
+  color: var(--text-color);
+  transition: var(--tran-02);
+}
+
+.sidebar li .icon {
+  min-width: 60px;
+  font-size: 20px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar header {
+  position: relative;
+}
+
+.sidebar .image-text img {
+  width: 40px;
+  border-radius: 6px;
+}
+
+.sidebar header .image-text {
+  display: flex;
+  align-items: center;
+}
+
+header .image-text .header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-text .name {
+  font-weight: 600;
+}
+
+.header-text .possition {
+  margin-top: -2px;
+}
+
+.sidebar header .toggle {
+  position: absolute;
+  top: 50%;
+  right: -25px;
+  transform: translateY(-50%) rotate(180deg);
+  height: 25px;
+  width: 25px;
+  background: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--side-bar);
+  font-size: 22px;
+  transition: var(--tran-03);
+}
+
+.sidebar.close header .toggle {
+  transform: translateY(0%);
+}
+
+body.dark .sidebar header .toggle {
+  color: var(--text-color);
+}
+
+.sidebar .menu {
+  margin-top: 35px;
+}
+
+.sidebar .search-box {
+  background: var(--primary-color-light);
+  border-radius: 6px;
+  transition: var(--tran-03);
+}
+
+.search-box input {
+  height: 100%;
+  width: 100%;
+  outline: none;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary-color-light);
+  font-size: 16px;
+  font-weight: 500;
+}
+.sidebar li a {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: var(--tran-04);
+}
+.menu-links {
+  padding: 0;
+}
+
+.sidebar li a:hover {
+  background: var(--primary-color);
+}
+
+.sidebar li a:hover .icon,
+.sidebar li a:hover .text {
+  color: var(--side-bar);
+}
+
+body.dark .sidebar li a:hover .icon,
+body.dark .sidebar li a:hover .text {
+  color: var(--text-color);
+}
+
+.sidebar .menu-bar {
+  height: calc(100% - 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.menu-bar .mode {
+  position: relative;
+  background: var(--primary-color-light);
+  border-radius: 6px;
+}
+
+.menu-bar .mode .moon-sun {
+  height: 50px;
+  width: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-bar .mode i {
+  position: absolute;
+  transition: var(--tran-03);
+}
+
+.menu-bar .mode i.sun {
+  opacity: 0;
+}
+
+body.dark .menu-bar .mode i.sun {
+  opacity: 1;
+}
+
+body.dark .menu-bar .mode i.moon {
+  opacity: 0;
+}
+.menu-bar .mode .toggle-switch {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 0px;
+  display: flex;
+  height: 100%;
+  min-width: 60px;
+  cursor: pointer;
+  border-radius: 6px;
+  background: var(--primary-color-light);
+  transition: var(--tran-05);
+}
+
+.toggle-switch .switch {
+  position: relative;
+  height: 22px;
+  width: 44px;
+  border-radius: 25px;
+  background: var(--toggle-color);
+}
+
+.switch::before {
+  content: "";
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  top: 50%;
+  left: 5px;
+  transform: translateY(-50%);
+  background: var(--side-bar);
+  transition: var(--side-bar);
+  transition: var(--tran-03);
+}
+
+body.dark .switch::before {
+  left: 24px;
+}
+
+.home {
+  position: relative;
+  height: 100vh;
+  left: 250px;
+  width: calc(100% - 100px);
+  background: var(--body-color);
+  transition: var(--tran-05);
+}
+.home .text {
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--text-color);
+  padding: 8px 40px;
+}
+
+.sidebar.close ~ .home {
+  left: 80px;
+  width: calc(100% - 80px);
+}
+
+/* bago */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-image: url(/tuteefindmerge/final/assets/loading.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Define keyframes for fade in and fade out animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* Add animation properties to the forms */
+.transition {
+  animation-duration: 0.4s;
+  animation-fill-mode: both;
+}
+
+/* Apply fade in animation to forms that are not hidden */
+.form1:not(.d-none) {
+  animation-name: fadeIn;
+}
+
+.form2:not(.d-none) {
+  animation-name: fadeIn;
+}
+
+.form3:not(.d-none) {
+  animation-name: fadeIn;
+}
+
+/* Apply fade out animation to forms that are hidden */
+.form1.d-none {
+  animation-name: fadeOut;
+}
+
+.form2.d-none {
+  animation-name: fadeOut;
+}
+
+.form3.d-none {
+  animation-name: fadeOut;
+}
+
+.bg-container {
+  background-image: url("../assets/tutee_bg2.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  
+}
+
+@media (max-width: 768px) {
+  .bg-container {
+    background-image: none; /* Hide the background image on narrow screens */
+  }
+}
+
+@media (max-height: 500px) {
+  .bg-container {
+    background-image: none; /* Hide the background image on short screens */
+  }
+}
+
+
+
+.modal-content {
+  z-index: 1050;
+}
+
+/*------------ Login container ------------*/
+
+.box-area {
+  width: 900px;
+}
+
+/*------------ Right box ------------*/
+
+.right-box {
+  padding: 40px 30px 40px 40px;
+}
+
+/*------------ Custom Placeholder ------------*/
+
+::placeholder {
+  font-size: 16px;
+}
+
+.rounded-4 {
+  border-radius: 20px;
+}
+.rounded-5 {
+  border-radius: 30px;
+}
+
+.custom-height {
+  height: 470px; /* Or any other height value you prefer */
+  width: 400px;
+}
+.custom-height-1 {
+  height: auto; /* Or any other height value you prefer */
+  width: 275px;
+}
+
+/*------------ For small screens------------*/
+
+/* @media only screen and (max-width: 768px) {
+  .box-area {
+    margin: 0 10px;
+  }
+  .left-box {
+    height: 100px;
+    overflow: hidden;
+  }
+  .right-box {
+    padding: 20px;
+  }
+} */
+
+/* Responsive behavior for smaller screen sizes */
+@media screen and (max-width: 760px) {
+  .col-5.d-flex.align-items-center.min-vh-100.left {
+      width: 100%;
+  }
+
+  .left-box {
+      margin: 0; /* Adjusting the margin for smaller screens */
+  }
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-group .input-group-text {
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.input-group .form-control {
+  padding-right: 2.5rem; /* Make space for the icon */
+}
+
+/* For when on focus state and browser autofill */
+.contact-number .form-control:focus {
+  background-color: white !important; /* Ensure the background stays white */
+  border-color: #80bdff; /* Bootstrap's focus border color */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Bootstrap's focus shadow */
+}
+
+/* Target the input when it has browser autofill applied */
+.contact-number .form-control:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px white inset; /* Change background color when autofill is active */
+  box-shadow: 0 0 0 30px white inset; /* Use white or desired color */
+}
+
+.input-group-text {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: none;
+  border: none;
+}
+
+.modal-dialog-left {
+  position: absolute;
+  left: 0; /* Align to the left of the page */
+  top: 0;
+  max-width: 100%;
+  margin: 0;
+}
+
+.right-box {
+  position: absolute;
+  left: 0; /* Align to the leftmost side of the page */
+  top: 0;
+  width: 100%; /* Adjust width as necessary */
+  max-width: 600px; /* Optional: Set a max width to limit the box size */
+}
+
+.left {
+  background: #ffffff;
+  opacity: 0.99;
+}
+
+.word-logo {
+  width: 100px;
+  top: 0%;
+  margin: 0 0 -5px 3px;
+}
+
+.logo {
+  width: 20px;
+  top: 0%;
+}
+
+.toggle-password {
+  right: 35px;
+  top: 30px;
+  transform: translateY(-50%);
+}
+
+.linkless {
+  text-decoration: none !important;
+}
+
+.ageTextbox {
+  width: 30vh !important;
+  margin-left: auto;
+  margin-right: auto;
+  display: block; 
+}
+
+.invalid-feedback {
+  display: none;
+  color: red;
+  font-size: 0.875em;
+}
+.is-invalid ~ .invalid-feedback {
+  display: block;
+}
+
+input:focus {
+  border-color: #007bff; /* Change to your desired border color */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle glow or shadow */
+  background-color: #f8f9fa; /* Optional: Modify background color */
+}
+
+.icon-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 4rem; /* Adjust as needed */
+  height: 4rem; /* Adjust as needed */
+  background-color: #fcc4c4; /* Red background circle */
+  border-radius: 50%;
+}
+
+#warningAlertIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-46%, -52%);
+  color: red; /* Icon color */
+  font-size: 2rem; /* Adjust icon size */
+}
+
+/* Animation success check */
+.checkmark-container {
+  width: 80px;
+  height: 80px;
+}
+
+.checkmark {
+  width: 100%;
+  height: 100%;
+  stroke-width: 2.8;
+  stroke: #4CAF50; /* Green color */
+  stroke-miterlimit: 10;
+  fill: none;
+  stroke-linecap: round;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+}
+
+@keyframes stroke {
+  100% {
+      stroke-dashoffset: 0;
+  }
+}
