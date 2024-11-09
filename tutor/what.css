@@ -363,11 +363,11 @@ body.dark .switch::before {
   background-color: var(--primary-color);
   border: 0;
   color: var(--text-color);
-  width: auto;
   border-radius: 5px;
   text-align: center;
   height: auto;
   background-image: none;
+  width: 100%; /* Make it take full width of the responsive column */
 }
 
 .career-form .custom-select:focus {
@@ -746,6 +746,10 @@ body {
 /* Optional: Change background color of the accordion body */
 .accordion-body {
   background-color: var(--card-color); /* White background for the body */
+}
+
+.accordion-button::after {
+  display: none;
 }
 
 /* this is for the table of tutees */

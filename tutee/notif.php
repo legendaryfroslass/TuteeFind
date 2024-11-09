@@ -146,7 +146,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
             </div>
 
             <div class="container-lg p-3">
-                <ul class="notification-list">
+                <ul class="notification-list ps-0 shadow-sm rounded">
                     <?php if (count($notifications) > 0): ?>
                         <?php foreach ($notifications as $notif): ?>
                             <?php
@@ -173,7 +173,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                             </li>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <li class="notification-item">
+                        <li class="notification-item shadow-sm rounded-3">
                             <p>No notifications available.</p>
                         </li>
                     <?php endif; ?>

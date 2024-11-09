@@ -435,7 +435,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             <div class="menu">
                 <ul class="menu-links">
                     <li class="nav-link" data-bs-placement="right" title="Home">
-                        <a href="../tutor/tutee">
+                        <a href="../tutor/suggestedtutee">
                             <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Home</span>
                         </a>
@@ -452,7 +452,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         </a>
                     </li>
                     <li class="nav-link" data-bs-placement="right" title="Notification">
-                        <a href="../tutor/notif" class="d-flex align-items-center">
+                        <a href="../tutor/notification" class="d-flex align-items-center">
                             <div style="position: relative;">
                                 <i class='bx bx-bell icon'></i>
                                 <span id="notif-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
@@ -469,7 +469,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         </a>
                     </li>
                     <li class="nav-link" data-bs-placement="right" title="Current Tutee">
-                        <a href="../tutor/tutor">
+                        <a href="../tutor/currenttutor">
                             <i class='bx bx-user icon'></i>
                             <span class="text nav-text">Tutors</span>
                         </a>
@@ -1510,7 +1510,6 @@ document.getElementById("saveEventBtn").addEventListener("click", function (e) {
         if (xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             if (response.success) {
-                alert("Event added successfully!");
                 window.location.reload();  // Refresh the page to show the new event
             } else {
                 alert("Failed to add event. Please try again.");

@@ -248,9 +248,9 @@ if (isset($_POST['send_message'])) {
         
 
             <div class="container-lg p-10 table table-container">
-                <div class="row custom-row">
+                <div class="row custom-row p-3">
                     <!-- First column for conversation list -->
-                    <div class="col-md-4 message-table message-list p-2">
+                    <div class="col-md-4 message-table">
                         <table class="table">
                             <tbody>
                                 <?php foreach ($messages as $message): ?>
@@ -282,7 +282,7 @@ if (isset($_POST['send_message'])) {
                     </div>
 
                     <!-- Second column for message content -->
-                    <div class="chat-card col-md-2 message-content" id="messageContent">
+                    <div class="chat-card col-md-8 message-content" id="messageContent">
                         <div class="chat-header">
                         </div>
                         <div class="chat-body" id="chatBody">
@@ -322,5 +322,6 @@ if (isset($_POST['send_message'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="notif.js"></script>
     <script src="message.js"></script>
+    <script src="tutee_sidebar.js"></script>
     </body>
 </html>
