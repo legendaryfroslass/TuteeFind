@@ -36,7 +36,7 @@ if ($userData) {
     $progressData = [];
     foreach ($tutees as $tutee) {
         $progressStmt = $user_login->runQuery("
-            SELECT week_number, uploaded_files, description, date
+            SELECT *
             FROM tutee_progress 
             WHERE tutee_id = :tutee_id AND tutor_id = :tutor_id
             ORDER BY week_number ASC
@@ -50,29 +50,128 @@ if ($userData) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if (isset($_POST['action'])) {
-            if ($_POST['action'] === 'save_description') {
-                if (!empty($_POST['description'])) { // Only update if description is provided
+            if ($_POST['action'] === 'add_week') {
+                            // Add a new week if description is saved successfully
+                            $stmt = $user_login->runQuery("
+                                INSERT INTO tutee_progress (tutee_id, week_number, uploaded_files, tutor_id, description, rendered_hours, location, subject) 
+                                VALUES (:tutee_id, :week_number, '', :tutor_id, :description, :rendered_hours, :location, :subject)
+                            ");
+                            $stmt->bindParam(':tutee_id', $_POST['tutee_id']);
+                            $stmt->bindParam(':week_number', $_POST['week_number']);
+                            $stmt->bindParam(':tutor_id', $tutor_id);
+                            $stmt->bindParam(':description', $_POST['description']);
+                            $stmt->bindParam(':rendered_hours', $_POST['rendered_hours']);
+                            $stmt->bindParam(':location', $_POST['location']);
+                            $stmt->bindParam(':subject', $_POST['subject']);
+                            $stmt->execute();
+
+                            $summaryStmt = $user_login->runQuery("
+                                INSERT INTO tutee_summary (tutee_id, tutor_id, registered_weeks) 
+                                VALUES (:tutee_id, :tutor_id, 1)
+                                ON DUPLICATE KEY UPDATE registered_weeks = registered_weeks + 1
+                            ");
+                            $summaryStmt->bindParam(':tutee_id', $_POST['tutee_id']);
+                            $summaryStmt->bindParam(':tutor_id', $tutor_id);
+                            $summaryStmt->execute();
+
+                            // Handle file upload if a file is uploaded
+                            if (isset($_FILES['file-upload'])) {
+                                $file = $_FILES['file-upload'];
+                                if ($file['error'] === UPLOAD_ERR_OK) {
+                                    $uploadDir = '../uploads/';
+                                    $filename = basename($file['name']);
+                                    $targetPath = $uploadDir . $filename;
+
+                                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                                        $existingFilePathStmt = $user_login->runQuery("
+                                            SELECT uploaded_files 
+                                            FROM tutee_progress 
+                                            WHERE tutee_id = :tutee_id AND week_number = :week_number
+                                        ");
+                                        $existingFilePathStmt->bindParam(':tutee_id', $_POST['tutee_id']);
+                                        $existingFilePathStmt->bindParam(':week_number', $_POST['week_number']);
+                                        $existingFilePathStmt->execute();
+                                        $existingFilePath = $existingFilePathStmt->fetchColumn();
+
+                                        if ($existingFilePath !== $targetPath) {
+                                            $updateStmt = $user_login->runQuery("
+                                                UPDATE tutee_progress 
+                                                SET uploaded_files = :uploaded_files, date = NOW()
+                                                WHERE tutee_id = :tutee_id AND week_number = :week_number
+                                            ");
+                                            $updateStmt->bindParam(':uploaded_files', $targetPath);
+                                            $updateStmt->bindParam(':tutee_id', $_POST['tutee_id']);
+                                            $updateStmt->bindParam(':week_number', $_POST['week_number']);
+                                            $updateStmt->execute();
+
+                                            // Update completed_weeks
+                                            $summaryStmt = $user_login->runQuery("
+                                                SELECT completed_weeks, registered_weeks 
+                                                FROM tutee_summary 
+                                                WHERE tutee_id = :tutee_id
+                                            ");
+                                            $summaryStmt->bindParam(':tutee_id', $_POST['tutee_id']);
+                                            $summaryStmt->execute();
+                                            $summaryData = $summaryStmt->fetch(PDO::FETCH_ASSOC);
+
+                                            if ($summaryData['completed_weeks'] !== $summaryData['registered_weeks']) {
+                                                $completedWeeksStmt = $user_login->runQuery("
+                                                    UPDATE tutee_summary 
+                                                    SET completed_weeks = completed_weeks + 1 
+                                                    WHERE tutee_id = :tutee_id
+                                                ");
+                                                $completedWeeksStmt->bindParam(':tutee_id', $_POST['tutee_id']);
+                                                $completedWeeksStmt->execute();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            echo json_encode(['success' => true, 'message' => 'Description, week, and file uploaded successfully.']);
+                        
+                } elseif ($_POST['action'] === 'edit_week') {
+                    $tutee_id = $_POST['tutee_id'];
+                    $week_number = $_POST['week_number'];
+                    $description = $_POST['description'];
+                    $rendered_hours = $_POST['rendered_hours'];
+                    $location = $_POST['location'];
+                    $subject = $_POST['subject'];
+                    $file_path = null;
+
+                    // Handle file upload if provided
+                    if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] === UPLOAD_ERR_OK) {
+                        $uploadDir = '../uploads/';
+                        $filename = basename($_FILES['file-upload']['name']);
+                        $file_path = $uploadDir . $filename;
+                        move_uploaded_file($_FILES['file-upload']['tmp_name'], $file_path);
+                    }
+
                     $stmt = $user_login->runQuery("
                         UPDATE tutee_progress 
-                        SET description = :description, date = :date
-                        WHERE tutee_id = :tutee_id AND week_number = :week_number AND tutor_id = :tutor_id
+                        SET week_number = :week_number, 
+                            description = :description, 
+                            rendered_hours = :rendered_hours, 
+                            location = :location, 
+                            subject = :subject, 
+                            uploaded_files = COALESCE(:uploaded_files, uploaded_files)
+                        WHERE tutee_id = :tutee_id AND week_number = :week_number
                     ");
-                    $stmt->bindParam(':description', $_POST['description']);
-                    $stmt->bindParam(':date', $_POST['date']);
-                    $stmt->bindParam(':tutee_id', $_POST['tutee_id']);
-                    $stmt->bindParam(':week_number', $_POST['week_number']);
-                    $stmt->bindParam(':tutor_id', $tutor_id);
+                    $stmt->bindParam(':week_number', $week_number);
+                    $stmt->bindParam(':description', $description);
+                    $stmt->bindParam(':rendered_hours', $rendered_hours);
+                    $stmt->bindParam(':location', $location);
+                    $stmt->bindParam(':subject', $subject);
+                    $stmt->bindParam(':uploaded_files', $file_path);
+                    $stmt->bindParam(':tutee_id', $tutee_id);
 
                     if ($stmt->execute()) {
-                        echo json_encode(['success' => true, 'message' => 'Description and date saved successfully.']);
+                        echo json_encode(['success' => true]);
                     } else {
-                        $error = $stmt->errorInfo();
-                        echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $error[2]]);
+                        echo json_encode(['success' => false, 'error' => 'Failed to update record.']);
                     }
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Description cannot be empty.']);
                 }
-            } elseif ($_POST['action'] === 'finish_session') {
+elseif ($_POST['action'] === 'finish_session') {
                 $checkStmt = $user_login->runQuery("
                     SELECT status FROM tutor_sessions 
                     WHERE tutor_id = :tutor_id AND tutee_id = :tutee_id
@@ -95,26 +194,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->execute();
                     echo json_encode(['success' => true]);
                 }
-            } elseif ($_POST['action'] === 'add_week') {
-                $stmt = $user_login->runQuery("
-                    INSERT INTO tutee_progress (tutee_id, week_number, uploaded_files, tutor_id) 
-                    VALUES (:tutee_id, :week_number, '', :tutor_id)
-                ");
-                $stmt->bindParam(':tutee_id', $_POST['tutee_id']);
-                $stmt->bindParam(':week_number', $_POST['week_number']);
-                $stmt->bindParam(':tutor_id', $tutor_id);
-                $stmt->execute();
-            
-                $summaryStmt = $user_login->runQuery("
-                    INSERT INTO tutee_summary (tutee_id, tutor_id, registered_weeks) 
-                    VALUES (:tutee_id, :tutor_id, 1)
-                    ON DUPLICATE KEY UPDATE registered_weeks = registered_weeks + 1
-                ");
-                $summaryStmt->bindParam(':tutee_id', $_POST['tutee_id']);
-                $summaryStmt->bindParam(':tutor_id', $tutor_id);  // Corrected the missing tutor_id parameter
-                $summaryStmt->execute();
-            
-                echo json_encode(['success' => true]);
             } elseif ($_POST['action'] === 'add_event') {
 
                 $event_name = $_POST['event_name'];
@@ -272,62 +351,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     echo json_encode(['success' => false, 'message' => 'Event not found or you do not have permission to delete it.']);
                 }
-            }
-        } elseif (isset($_FILES['file-upload'])) {
-            $file = $_FILES['file-upload'];
-            if ($file['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = '../uploads/';
-                $filename = basename($file['name']);
-                $targetPath = $uploadDir . $filename;
-
-                if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                    $existingFilePathStmt = $user_login->runQuery("
-                        SELECT uploaded_files 
-                        FROM tutee_progress 
-                        WHERE tutee_id = :tutee_id AND week_number = :week_number
-                    ");
-                    $existingFilePathStmt->bindParam(':tutee_id', $_POST['tutee_id']);
-                    $existingFilePathStmt->bindParam(':week_number', $_POST['week_number']);
-                    $existingFilePathStmt->execute();
-                    $existingFilePath = $existingFilePathStmt->fetchColumn();
-
-                    if ($existingFilePath !== $targetPath) {
-                        $updateStmt = $user_login->runQuery("
-                            UPDATE tutee_progress 
-                            SET uploaded_files = :uploaded_files, date = NOW()
-                            WHERE tutee_id = :tutee_id AND week_number = :week_number
-                        ");
-                        $updateStmt->bindParam(':uploaded_files', $targetPath);
-                        $updateStmt->bindParam(':tutee_id', $_POST['tutee_id']);
-                        $updateStmt->bindParam(':week_number', $_POST['week_number']);
-                        $updateStmt->execute();
-
-                        $summaryStmt = $user_login->runQuery("
-                            SELECT completed_weeks, registered_weeks 
-                            FROM tutee_summary 
-                            WHERE tutee_id = :tutee_id
-                        ");
-                        $summaryStmt->bindParam(':tutee_id', $_POST['tutee_id']);
-                        $summaryStmt->execute();
-                        $summaryData = $summaryStmt->fetch(PDO::FETCH_ASSOC);
-
-                        if ($summaryData['completed_weeks'] !== $summaryData['registered_weeks']) {
-                            $completedWeeksStmt = $user_login->runQuery("
-                                UPDATE tutee_summary 
-                                SET completed_weeks = completed_weeks + 1 
-                                WHERE tutee_id = :tutee_id
-                            ");
-                            $completedWeeksStmt->bindParam(':tutee_id', $_POST['tutee_id']);
-                            $completedWeeksStmt->execute();
-                        }
-                    }
-
-                    echo json_encode(['success' => true, 'filename' => $filename]);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Failed to move uploaded file.']);
-                }
-            } else {
-                echo json_encode(['success' => false, 'message' => 'File upload error.']);
             }
         }
     } catch (Exception $e) {
@@ -651,69 +674,86 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
         <?php if (!empty($tutees)): ?>
         <?php foreach ($tutees as $tutee): ?>
             <div class="shadow-lg mb-3">
-        <div class="container-lg p-3 table-container">
-            <div class="d-flex justify-content-center align-items-center mb-4">
-                <h3><?php echo htmlspecialchars($tutee['firstname'] . ' ' . $tutee['lastname']); ?></h3>
-            </div>
-            <div class="table-wrapper">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Week</th>
-                            <th>Uploaded File</th>
-                            <th>Description</th>
-                            <th>Date Submitted</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="file-upload-list-<?php echo $tutee['id']; ?>">
-                        <!-- Dynamic week list from database -->
-                        <?php if (isset($progressData[$tutee['id']])): ?>
-                            <?php foreach ($progressData[$tutee['id']] as $progress): ?>
-                                <?php 
-                                    // Check if both uploaded files and description are not empty
-                                    $checkboxChecked = !empty($progress['uploaded_files']) && !empty($progress['description']);
-                                ?>
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input checkbox" id="checkbox<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>" <?php echo $checkboxChecked ? 'checked' : ''; ?> disabled>
-                                        Week <?php echo htmlspecialchars($progress['week_number']); ?>
-                                    </td>
-                                    <td>
-                                        <button id="custom-file-upload<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>" class="btn btn-secondary" title="Upload Assessment and Session photo">
-                                            <i class='bx bx-upload'></i>
-                                        </button>
-                                        <span id="file-name<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>" class="file-name">
-                                            <?php echo htmlspecialchars(basename($progress['uploaded_files'])); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <textarea class="form-control description-input" id="scrollableInput<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>"
-                                                placeholder="Describe today's Lesson..." 
-                                                data-week-number="<?php echo $progress['week_number']; ?>" 
-                                                data-tutee-id="<?php echo $tutee['id']; ?>">
-                                            <?php echo htmlspecialchars($progress['description'] ?? ''); ?>
-                                        </textarea>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($progress['date'] ?? ''); ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <input type="file" id="file-upload<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>" class="file-upload" style="display: none;" accept="*/*" data-tutee-id="<?php echo $tutee['id']; ?>" data-week-number="<?php echo htmlspecialchars($progress['week_number']); ?>">
-                                        <button class="btn btn-danger delete-btn"><i class='bx bx-trash'></i></button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-            <div class="d-flex justify-content-center flex-column flex-md-row">
-                <button id="add-week-btn-<?php echo $tutee['id']; ?>" class="btn btn-primary m-2 " data-tutee-id="<?php echo $tutee['id']; ?>">Add Week</button>
-                <button id="finish-btn-<?php echo $tutee['id']; ?>" class="btn btn-danger m-2 finish-btn" data-tutor-id="<?php echo $tutor_id; ?>" data-tutee-id="<?php echo $tutee['id']; ?>">Request Finish</button>
-            </div>
-        </div>
+<div class="container-lg p-3 table-container">
+    <div class="d-flex justify-content-center align-items-center mb-4">
+        <h3><?php echo htmlspecialchars($tutee['firstname'] . ' ' . $tutee['lastname']); ?></h3>
     </div>
+    <div class="table-wrapper">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Week</th>
+                    <th>Uploaded File</th>
+                    <th>Description</th>
+                    <th>Rendered Hours</th>
+                    <th>Date Submitted</th>
+                    <th>Location</th>
+                    <th>Subject</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="file-upload-list-<?php echo $tutee['id']; ?>">
+                <!-- Dynamic week list from database -->
+                <?php if (isset($progressData[$tutee['id']])): ?>
+                    <?php foreach ($progressData[$tutee['id']] as $progress): ?>
+                        <?php 
+                            // Check if both uploaded files and description are not empty
+                            $checkboxChecked = !empty($progress['uploaded_files']) && !empty($progress['description']);
+                        ?>
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input checkbox" id="checkbox<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>" <?php echo $checkboxChecked ? 'checked' : ''; ?> disabled>
+                                Week <?php echo htmlspecialchars($progress['week_number']); ?>
+                            </td>
+                            <td>
+                                <span id="file-name<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>" class="file-name">
+                                    <?php echo htmlspecialchars(basename($progress['uploaded_files'])); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <?php echo htmlspecialchars($progress['description'] ?? ''); ?>
+                            </td>
+                            <td>
+                                <?php echo htmlspecialchars($progress['rendered_hours'] ?? ''); ?>
+                            </td>
+                            <td>
+                                <?php echo htmlspecialchars($progress['location'] ?? ''); ?>
+                            </td>
+                            <td>
+                                <?php echo htmlspecialchars($progress['subject'] ?? ''); ?>
+                            </td>
+                            <td>
+                                <?php echo htmlspecialchars($progress['date'] ?? ''); ?>
+                            </td>
+                            <td class="text-center">
+                                <input type="hidden" id="file-upload<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>" class="file-upload" style="display: none;" data-tutee-id="<?php echo $tutee['id']; ?>" data-week-number="<?php echo htmlspecialchars($progress['week_number']); ?>">
+                                <button class="btn btn-primary edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
+                                        data-tutee-id="<?php echo $tutee['id']; ?>" 
+                                        data-week-number="<?php echo $progress['week_number']; ?>"
+                                        data-description="<?php echo htmlspecialchars($progress['description']); ?>"
+                                        data-rendered-hours="<?php echo $progress['rendered_hours']; ?>"
+                                        data-location="<?php echo htmlspecialchars($progress['location']); ?>"
+                                        data-subject="<?php echo htmlspecialchars($progress['subject']); ?>"
+                                        data-file="<?php echo htmlspecialchars($progress['uploaded_files']); ?>">
+                                    <i class='bx bx-edit'></i>
+                                </button>
+                                <button class="btn btn-danger delete-btn"><i class='bx bx-trash'></i></button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-center flex-column flex-md-row">
+        <button id="add-week-btn-<?php echo $tutee['id']; ?>" class="btn btn-primary m-2" 
+                data-bs-toggle="modal" data-bs-target="#addWeekModal-<?php echo $tutee['id']; ?>">
+        Add Week
+        </button>
+        <button id="finish-btn-<?php echo $tutee['id']; ?>" class="btn btn-danger m-2 finish-btn" data-tutor-id="<?php echo $tutor_id; ?>" data-tutee-id="<?php echo $tutee['id']; ?>">Request Finish</button>
+    </div>
+</div>
+
 
         <?php endforeach; ?>
                 <?php else: ?>
@@ -725,10 +765,95 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             <p class="container medium-font pt-3">No tutees found</p>
         </div>
     </div>
+<?php endif; ?>
 
-        <?php endif; ?>
+<!-- MODALS -->
 
-        <!-- MODALS -->
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Week Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" name="tutee_id" id="edit-tutee-id">
+                    <div class="mb-3">
+                        <label for="edit-week-number" class="form-label">Week Number</label>
+                        <input type="number" class="form-control" id="edit-week-number" name="week_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="edit-description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-rendered-hours" class="form-label">Rendered Hours</label>
+                        <input type="number" class="form-control" id="edit-rendered-hours" name="rendered_hours" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="edit-location" name="location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="edit-subject" name="subject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-file-upload" class="form-label">Upload File</label>
+                        <input type="file" class="form-control" id="edit-file-upload" name="file-upload">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Week Modal -->
+<div class="modal fade" id="addWeekModal-<?php echo $tutee['id']; ?>" tabindex="-1" aria-labelledby="addWeekModalLabel-<?php echo $tutee['id']; ?>" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addWeekModalLabel-<?php echo $tutee['id']; ?>">Add Week for <?php echo htmlspecialchars($tutee['firstname'] . ' ' . $tutee['lastname']); ?></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="add-week-form-<?php echo $tutee['id']; ?>">
+          <div class="mb-3">
+            <label for="week-number-<?php echo $tutee['id']; ?>" class="form-label">Week Number</label>
+            <input type="number" class="form-control" id="week-number-<?php echo $tutee['id']; ?>" placeholder="Enter week number" required>
+          </div>
+          <div class="mb-3">
+            <label for="description-<?php echo $tutee['id']; ?>" class="form-label">Description</label>
+            <textarea class="form-control" id="description-<?php echo $tutee['id']; ?>" placeholder="Describe the week..." required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="rendered-hours-<?php echo $tutee['id']; ?>" class="form-label">Rendered Hours</label>
+            <input type="number" class="form-control" id="rendered-hours-<?php echo $tutee['id']; ?>" placeholder="Enter rendered hours" required>
+          </div>
+          <div class="mb-3">
+            <label for="location-<?php echo $tutee['id']; ?>" class="form-label">Location(School, Home, or etc.)</label>
+            <input type="text" class="form-control" id="location-<?php echo $tutee['id']; ?>" placeholder="Enter Tutoring Location" required>
+          </div>
+          <div class="mb-3">
+            <label for="subject-<?php echo $tutee['id']; ?>" class="form-label">Subject(Numeracy, Literacy)</label>
+            <input type="text" class="form-control" id="subject-<?php echo $tutee['id']; ?>" placeholder="Enter Topic Subject" required>
+          </div>
+          <div class="mb-3">
+            <label for="file-upload-<?php echo $tutee['id']; ?>" class="form-label">Upload Files</label>
+            <input type="file" class="form-control" id="file-upload-<?php echo $tutee['id']; ?>" accept="*/*">
+          </div>
+          <button type="submit" class="btn btn-primary">Save Week</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Confirmation Delete Event Modal -->
 <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
@@ -862,23 +987,28 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 
 
         <!-- Delete Confirmation Modal -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
-                        <!-- Centered header content -->
-                        <img src="../assets/cross.png" alt="Delete" class="delete-icon" style="width: 65px; height: 65px;">
-                    </div>
-                    <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
-                        <p>Are you sure you want to delete this week?</p>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center border-0">
+        <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteEventModalLabel">Delete Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="deleteEventForm">
+                    <input type="hidden" id="event_id" name="event_id">
+                    <p>Are you sure you want to delete this event?</p>
+                    <div id="deleteEventMessage" class="text-center my-2"></div> <!-- Message container -->
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
+    </div>
+</div>
+
 
 
         <!-- Success Upload Modal UNUSED-->
@@ -927,27 +1057,6 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                 </div>
             </div>
         </div>
-
-
-        <!-- Confirmation Add Week Modal -->
-        <div class="modal fade" id="confirmAddWeekModal" tabindex="-1" aria-labelledby="confirmAddWeekModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
-                        <!-- Centered header content -->
-                        <img src="../assets/plus.png" alt="Delete" class="delete-icon" style="width: 65px; height: 65px;">
-                    </div>
-                    <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
-                        <p>Are you sure you want to add a new week?</p>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center border-0">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="confirmAddWeek">Add Week</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
 
         <!-- Error Add Week Modal -->
         <div class="modal fade" id="errorModal2" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
@@ -1090,7 +1199,8 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
     <script src="script1.js"></script>
     <script>
 
-            // function for updating description date
+
+        // function for updating description date
             $(document).ready(function() {
                 // Handle saving description and date
                 $(document).on('blur', '.description-input', function() {
@@ -1262,37 +1372,6 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                 $(`#file-upload${id}`).click();
             });
 
-            // Function iteration for add week
-            function addWeek(tuteeId, weekNumber) {
-                const weekHtml = `
-                    <tr>
-                        <td>
-                            <input type="checkbox" class="form-check-input checkbox" id="checkbox${tuteeId}-${weekNumber}" disabled>
-                            Week ${weekNumber}
-                        </td>
-                        <td>
-                            <button id="custom-file-upload${tuteeId}-${weekNumber}" class="btn btn-secondary" title="Upload Assessment and Session photo">
-                                <i class='bx bx-upload'></i>
-                            </button>
-                            <span id="file-name${tuteeId}-${weekNumber}" class="file-name"></span>
-                        </td>
-                        <td>
-                            <textarea class="form-control description-input" id="scrollableInput${tuteeId}-${weekNumber}" placeholder="Describe today's Lesson..." data-week-number="${weekNumber}" data-tutee-id="${tuteeId}"></textarea>
-                        </td>
-                        <td></td>
-                        <td class="text-center">
-                            <input type="file" id="file-upload${tuteeId}-${weekNumber}" class="file-upload" style="display: none;" accept="*/*" data-tutee-id="${tuteeId}" data-week-number="${weekNumber}">
-                            <button class="btn btn-danger delete-btn ml-2"><i class='bx bx-trash'></i></button>
-                        </td>
-                    </tr>
-                `;
-                document.getElementById(`file-upload-list-${tuteeId}`).insertAdjacentHTML('beforeend', weekHtml);
-
-                // Ensure the textarea is empty and clean
-                const textarea = document.getElementById(`scrollableInput${tuteeId}-${weekNumber}`);
-                textarea.value = '';  // Ensure it's completely empty
-            }
-
 $(document).ready(function() {
     let weekCounter = {};
 
@@ -1306,33 +1385,6 @@ $(document).ready(function() {
                 .modal('show');
         });
     <?php endforeach; ?>
-
-    // Move this click handler outside the loop
-    $('#confirmAddWeek').on('click', function() {
-        const tuteeId = $('#confirmAddWeekModal').data('tutee-id');
-        const currentWeekCounter = $('#confirmAddWeekModal').data('week-counter') + 1;
-
-        $.ajax({
-            url: '', // Current PHP file
-            type: 'POST',
-            data: {
-                action: 'add_week',
-                tutee_id: tuteeId,
-                week_number: currentWeekCounter
-            },
-            success: function(response) {
-                const res = JSON.parse(response);
-                if (res.success) {
-                    addWeek(tuteeId, currentWeekCounter);
-                    $('#confirmAddWeekModal').modal('hide');
-                    weekCounter[tuteeId] = currentWeekCounter;
-                } else {
-                    $('#errorMessage2').text(res.message);
-                    $('#errorModal').modal('show');
-                }
-            }
-        });
-    });
 });
 
     $(document).ready(function() {
@@ -1578,39 +1630,43 @@ document.getElementById("saveEventBtn").addEventListener("click", function (e) {
 
 
     // When the delete button is clicked
-    $('.deleteEventBtn').on('click', function() {
-        var eventId = $(this).find('i').data('id');  // Get the event ID from the icon's data-id
-        $('#event_id').val(eventId);  // Set the event ID in the hidden input field inside the modal
-    });
+$('.deleteEventBtn').on('click', function() {
+    var eventId = $(this).find('i').data('id');  // Get the event ID from the icon's data-id
+    $('#event_id').val(eventId);  // Set the event ID in the hidden input field inside the modal
+    $('#deleteEventMessage').text('');  // Clear any previous messages
+});
 
-    // Handle form submission
-    $('#deleteEventForm').on('submit', function(e) {
-        e.preventDefault();  // Prevent the default form submission
+// Handle form submission
+$('#deleteEventForm').on('submit', function(e) {
+    e.preventDefault();  // Prevent the default form submission
 
-        var eventId = $('#event_id').val();  // Get the event ID from the hidden input field
+    var eventId = $('#event_id').val();  // Get the event ID from the hidden input field
 
-        $.ajax({
-            url: '',  
-            method: 'POST',
-            data: {
-                action: 'delete_event',
-                event_id: eventId
-            },
-            success: function(response) {
-                var data = JSON.parse(response);
-                if (data.success) {
-                    $('#deleteEventModal').modal('hide');  // Hide the modal
-                    alert(data.message);  // Show success message
+    $.ajax({
+        url: '',  
+        method: 'POST',
+        data: {
+            action: 'delete_event',
+            event_id: eventId
+        },
+        success: function(response) {
+            var data = JSON.parse(response);
+            if (data.success) {
+                $('#deleteEventMessage').text(data.message).removeClass('text-danger').addClass('text-success');  // Display success message in modal
+                setTimeout(function() {
+                    $('#deleteEventModal').modal('hide');  // Hide the modal after a short delay
                     location.reload();  // Optionally reload the page to remove the event from the list
-                } else {
-                    alert(data.message);  // Show error message
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('An error occurred: ' + error);
+                }, 1500);  // Delay to show the success message
+            } else {
+                $('#deleteEventMessage').text(data.message).removeClass('text-success').addClass('text-danger');  // Display error message in modal
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            $('#deleteEventMessage').text('An error occurred: ' + error).removeClass('text-success').addClass('text-danger');
+        }
     });
+});
+
 
 // progress bar script
 document.addEventListener("DOMContentLoaded", function () {
@@ -1627,7 +1683,175 @@ document.addEventListener("DOMContentLoaded", function () {
   const offset = strokeDashArray - (progressPercentage / 100) * strokeDashArray;
   progressRingFill.style.strokeDashoffset = offset;
 });
+</script>
 
-    </script>
+<!-- PINAKA BAGOO -->
+<script>
+    $(document).ready(function() {
+    // Handle the submit of the 'Add Week' modal form
+    $('#add-week-form-<?php echo $tutee['id']; ?>').on('submit', function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        const weekNumber = $('#week-number-<?php echo $tutee['id']; ?>').val();
+        const description = $('#description-<?php echo $tutee['id']; ?>').val().trim();
+        const location = $('#location-<?php echo $tutee['id']; ?>').val().trim();
+        const subject = $('#subject-<?php echo $tutee['id']; ?>').val().trim();
+        const renderedHours = $('#rendered-hours-<?php echo $tutee['id']; ?>').val();
+        const fileInput = $('#file-upload-<?php echo $tutee['id']; ?>')[0].files[0];
+        const tuteeId = '<?php echo $tutee['id']; ?>';
+        const tutorId = '<?php echo $tutor_id; ?>';
+
+        if (description && weekNumber && renderedHours) {
+            const formData = new FormData();
+            formData.append('action', 'add_week');
+            formData.append('description', description);
+            formData.append('rendered_hours', renderedHours);
+            formData.append('location', location);
+            formData.append('subject', subject);
+            formData.append('week_number', weekNumber);
+            formData.append('tutee_id', tuteeId);
+            formData.append('tutor_id', tutorId);
+            formData.append('date', new Date().toISOString()); // Add current date
+
+            if (fileInput) {
+                formData.append('file-upload', fileInput);
+            }
+
+            $.ajax({
+                url: '', // Current PHP file
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    const res = JSON.parse(response);
+                    if (res.success) {
+                        $('#datesuccess').modal('show'); // Show success modal
+                        $('#datesuccess').on('hidden.bs.modal', function () {
+                            location.reload(); // Refresh the page after closing the modal
+                        });
+                    } else {
+                        $('#errorMessage').text(res.message);
+                        $('#dateerror').modal('show'); // Show error modal
+                    }
+                }
+            });
+        } else {
+            $('#errorMessage').text('Please fill all required fields.');
+            $('#dateerror').modal('show'); // Show error modal
+        }
+    });
+});
+
+// Open the modal when the "Add Week" button is clicked
+$('#add-week-btn-<?php echo $tutee['id']; ?>').on('click', function() {
+    const tuteeId = $(this).data('tutee-id');
+    
+    // Clear any previous data in the modal
+    $('#week-number').val('');
+    $('#uploaded-file').val('');
+    $('#week-description').val('');
+    $('#rendered-hours').val('');
+    $('#location').val('');
+    $('#subject').val('');
+    
+    // Show the modal
+    $('#addWeekModal').modal('show');
+});
+
+// Handle saving the new week entry when the "Save" button is clicked
+$('#save-week-btn').on('click', function() {
+    const tuteeId = $('#add-week-btn-<?php echo $tutee['id']; ?>').data('tutee-id');
+    const weekNumber = $('#week-number').val();
+    const uploadedFile = $('#uploaded-file').val();  // File handling logic will go here
+    const weekDescription = $('#week-description').val();
+    const renderedHours = $('#rendered-hours').val();
+    const location = $('#location').val();
+    const subject = $('#subject').val();
+    const dateSubmitted = new Date().toLocaleDateString();  // Set current date as the submission date
+    
+    // If any required field is empty, show an error message
+    if (!weekNumber || !weekDescription || !renderedHours || !location || !subject) {
+        alert('Please fill in all fields.');
+        return;
+    }
+
+    // Append the new row to the table
+    const newRow = `
+        <tr>
+            <td>
+                Week ${weekNumber}
+            </td>
+            <td>
+                <span class="file-name">${uploadedFile}</span>
+            </td>
+            <td>
+                ${weekDescription}
+            </td>
+            <td>
+                ${renderedHours}
+            </td>
+            <td>
+                ${dateSubmitted}
+            </td>
+            <td>
+                ${location}
+            </td>
+            <td>
+                ${subject}
+            </td>
+            <td class="text-center">
+            <button class="btn btn-primary edit-btn">
+                    <i class="bx bx-edit"></i>
+                </button>
+                <button class="btn btn-danger delete-btn">
+                    <i class="bx bx-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+
+    // Append the new row to the table body
+    $('#file-upload-list-<?php echo $tutee['id']; ?>').append(newRow);
+    
+    // Close the modal
+    $('#addWeekModal').modal('hide');
+});
+
+
+document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        // Get data from the button's data attributes
+        document.getElementById('edit-tutee-id').value = this.dataset.tuteeId;
+        document.getElementById('edit-week-number').value = this.dataset.weekNumber;
+        document.getElementById('edit-description').value = this.dataset.description;
+        document.getElementById('edit-rendered-hours').value = this.dataset.renderedHours;
+        document.getElementById('edit-location').value = this.dataset.location;
+        document.getElementById('edit-subject').value = this.dataset.subject;
+    });
+});
+
+document.getElementById('saveChangesBtn').addEventListener('click', function() {
+    const form = document.getElementById('editForm');
+    const formData = new FormData(form);
+    formData.append('action', 'edit_week');  // Add the action
+
+    fetch('', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload(); // Reload to reflect changes
+        } else {
+            alert('Error updating the record: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+
+</script>
 </body>
 </html>
