@@ -1510,7 +1510,6 @@ document.getElementById("saveEventBtn").addEventListener("click", function (e) {
         if (xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             if (response.success) {
-                alert("Event added successfully!");
                 window.location.reload();  // Refresh the page to show the new event
             } else {
                 alert("Failed to add event. Please try again.");
