@@ -99,7 +99,7 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
         <div class="menu">
                 <ul class="menu-links" data-bs-placement="right" title="Home">
                     <li class="nav-link">
-                        <a href="../tutor/tutee">
+                        <a href="../tutor/suggestedtutee">
                             <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Home</span>
                         </a>
@@ -116,7 +116,7 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                         </a>
                     </li>
                     <li class="nav-link" data-bs-placement="right" title="Notification">
-                        <a href="../tutor/notif" class="d-flex align-items-center">
+                        <a href="../tutor/notification" class="d-flex align-items-center">
                             <div style="position: relative;">
                                 <i class='bx bx-bell icon'></i>
                                 <span id="notif-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
@@ -133,7 +133,7 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="../tutor/tutor" data-bs-placement="right" title="Current Tutee">
+                        <a href="../tutor/currenttutor" data-bs-placement="right" title="Current Tutee">
                             <i class='bx bx-user icon'></i>
                             <span class="text nav-text">Tutors</span>
                         </a>

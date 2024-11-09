@@ -324,7 +324,7 @@ if (isset($_POST['send_message'])) {
                         </a>
                     </li>
                     <li class="nav-link"  data-bs-placement="right" title="Notification">
-                        <a href="../tutor/notif" class="d-flex align-items-center">
+                        <a href="../tutor/notification" class="d-flex align-items-center">
                             <div style="position: relative;">
                                 <i class='bx bx-bell icon'></i>
                                 <span id="notif-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
@@ -341,7 +341,7 @@ if (isset($_POST['send_message'])) {
                         </a>
                     </li>
                     <li class="nav-link" data-bs-placement="right" title="Current Tutee">
-                        <a href="../tutor/tutor">
+                        <a href="../tutor/currenttutor">
                             <i class='bx bx-user icon'></i>
                             <span class="text nav-text">Tutors</span>
                         </a>
@@ -390,7 +390,7 @@ if (isset($_POST['send_message'])) {
         <div class="container-lg px-3">
             <form id="filter-form" action="" class="career-form headings d-flex justify-content-start mb-2" method="post">
                             <div class="row">
-                                <div class="col-md-4 my-1">
+                                <div class="col-12 my-1">
                                     <div class="select-container">
                                     <select class="custom-select" id="barangay" name="barangay" onchange="submitForm()">
                                         <option value="" disabled selected hidden>Barangay</option>
