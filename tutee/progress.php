@@ -1027,6 +1027,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
         </div>
+        <!-- Message Sent Success Toast -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="toastMsgSent" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+                <div class="toast-header">
+                    <!-- <img src="..." class="rounded me-2" alt="..."> -->
+                    <strong class="me-auto">TuteeFind</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Message sent successfully!
+                </div>
+            </div>
+        </div>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
@@ -1034,6 +1048,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <script src="progress.js"></script>
         <script src="tutee_sidebar.js"></script>
         <script src="notif.js"></script>
+        <script src="tutee.js"></script>
         <script>
            document.addEventListener('DOMContentLoaded', function () {
     // Handle confirmation of finishing the session

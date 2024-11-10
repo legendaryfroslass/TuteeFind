@@ -71,7 +71,7 @@ tr.cursor-pointer {
 }
 
 .custom-row {
-  padding: 1rem;
+  min-height: 100%;
 }
 
 .messages-container {
@@ -140,7 +140,6 @@ body {
   padding: 10px;
   border-radius: 5px;
   max-width: 80%;
-  animation: chatAnimation 0.3s ease-in-out;
   animation-fill-mode: both;
 }
 
@@ -192,18 +191,6 @@ body {
 
 .chat-footer button:hover {
   background-color: #0f9d58;
-}
-
-/* Animation for messages */
-@keyframes chatAnimation {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .chat-card .message:nth-child(even) {
