@@ -626,7 +626,7 @@ if (isset($_POST['send_message'])) {
                 $('#notificationModal').modal('show');
 
                 $('#notificationModal').on('hidden.bs.modal', function () {
-                    window.location.href = 'tutee'; // Change this to your desired URL
+                    window.location.href = 'suggestedtutee'; // Change this to your desired URL
                 });
                 <?php unset($_SESSION['request_result']); ?>
             });
