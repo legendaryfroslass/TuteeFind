@@ -194,7 +194,7 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                         <img id="profile-image" class="rounded-circle my-3 img-fluid" width="153" src="<?php echo $imagePath; ?>">
                         <label for="file-upload" class="blue p-2 mb-2 rounded-3 w-100">
                             Upload File
-                            <input id="file-upload" type="file" name="photo" style="display:none;" onchange="previewImage(event)">
+                            <input id="file-upload" type="file" name="photo" style="display:none;" onchange="previewImage(event)" accept="image/*">
                         </label>
                         <div class="mb-3">
                             <div class="labels">- at least 256 x 256 px recommended JPG or PNG.</div>
@@ -202,7 +202,7 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                         <!-- Bio section under the image upload -->
                         <div class="form-group text-start mb-4">
                             <label class="nav-text info-header">Bio</label>
-                            <textarea class="form-control " name="bio" id="bio" rows="1" placeholder="<?php echo htmlspecialchars(string: $bio); ?>"></textarea>
+                            <textarea class="form-control " name="bio" id="bio" rows="1" placeholder="<?php echo htmlspecialchars(string: $bio); ?>"><?php echo htmlspecialchars(string: $bio); ?></textarea>
                         </div>
                     </div>
 

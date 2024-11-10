@@ -211,91 +211,116 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
         <div class="container-lg">
-            <div class="row">
-                <div class="filter-result">
-                    <?php if (!empty($tutors)): ?>
-                        <?php foreach ($tutors as $tutor): ?>
-                            <div class="mb-2">
-                                <div id="accordion">
-                                    <div class="card shadow-lg rounded-3">
-                                        <div class="card-header" id="heading<?php echo htmlspecialchars($tutor['id']); ?>">
-                                            <h5 class="mb-0">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo htmlspecialchars($tutor['id']); ?>" aria-expanded="true" aria-controls="collapse<?php echo htmlspecialchars($tutor['id']); ?>">
-                                                        <img style="height: 65px; width: 65px; border-radius: 65px;" src="<?php echo !empty($tutor['photo']) ? $tutor['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>" alt="Tutor Photo" class="img-fluid">
+    <div class="row">
+        <div class="filter-result">
+            <?php if (!empty($tutors)): ?>
+                <?php foreach ($tutors as $tutor): ?>
+                    <div class="mb-2">
+                        <div id="accordion">
+                            <div class="card shadow-lg rounded-3">
+                                <div class="card-header" id="heading<?php echo htmlspecialchars($tutor['id']); ?>">
+                                    <h5 class="mb-0">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo htmlspecialchars($tutor['id']); ?>" aria-expanded="true" aria-controls="collapse<?php echo htmlspecialchars($tutor['id']); ?>">
+                                                <img style="height: 65px; width: 65px; border-radius: 65px;" src="<?php echo !empty($tutor['photo']) ? $tutor['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>" alt="Tutor Photo" class="img-fluid">
+                                            </button>
+                                            <div class="col" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo htmlspecialchars($tutor['id']); ?>" aria-expanded="true" aria-controls="collapse<?php echo htmlspecialchars($tutor['id']); ?>">
+                                                <?php echo htmlspecialchars($tutor['firstname'] . ' ' . $tutor['lastname']); ?>
+                                            </div>
+                                            <div class="job-right my-4 flex-shrink-0">
+                                                <form method="post" class="text-center">
+                                                    <button type="button" 
+                                                            id="SendMessage" 
+                                                            class="btn btn-outline-primary bx" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#messageModal" 
+                                                            data-tutor-id="<?php echo $tutor['id']; ?>"
+                                                            data-tutor-name="<?php echo $tutor['firstname'] . ' ' . $tutor['lastname']; ?>">
+                                                        <i class='bx bx-message-square-dots'></i>
                                                     </button>
-                                                    <div class="col" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo htmlspecialchars($tutor['id']); ?>" aria-expanded="true" aria-controls="collapse<?php echo htmlspecialchars($tutor['id']); ?>">
-                                                        <?php echo htmlspecialchars($tutor['firstname'] . ' ' . $tutor['lastname']); ?>
-                                                    </div>
-                                                    <div class="job-right my-4 flex-shrink-0">
-                                                    <form method="post" class="text-center">
-                
-                                                            <button type="button" 
-                                                                    id="SendMessage" 
-                                                                    class="btn btn-outline-primary bx" 
-                                                                    data-bs-toggle="modal" 
-                                                                    data-bs-target="#messageModal" 
-                                                                    data-tutor-id="<?php echo $tutor['id']; ?>"
-                                                                    data-tutor-name="<?php echo $tutor['firstname'] . ' ' . $tutor['lastname']; ?>">
-                                                                <i class='bx bx-message-square-dots'></i>
-                                                            </button>
-                                                <input type="hidden" name="tutor_id" value="<?php echo htmlspecialchars($tutor['id']); ?>">
-                                                        <button type="button" name="remove_tutor" id="removeTutorBtn" class="btn btn-outline-danger bx bx-user-x" data-bs-toggle="modal" data-bs-target="#removeTuteeModal"
+                                                    <input type="hidden" name="tutor_id" value="<?php echo htmlspecialchars($tutor['id']); ?>">
+                                                    <button type="button" name="remove_tutor" id="removeTutorBtn" class="btn btn-outline-danger bx bx-user-x" data-bs-toggle="modal" data-bs-target="#removeTuteeModal" 
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#removeTuteeModal"
-                                                            data-tutor-id="<?php echo htmlspecialchars($tutor['id']); ?>" 
-                                                            data-tutee-id="<?php echo htmlspecialchars($tutee_id); ?>"> <!-- Ensure data attributes are set --> 
-                                                        </button>
+                                                            data-tutor-id="<?php echo htmlspecialchars($tutor['id']); ?>"> <!-- Ensure data attributes are set --> 
+                                                    </button>
                                                 </form>
+                                            </div>
+                                        </div>
+                                    </h5>
+                                </div>
+                                <div id="collapse<?php echo htmlspecialchars($tutor['id']); ?>" class="collapse show" aria-labelledby="heading<?php echo htmlspecialchars($tutor['id']); ?>" data-parent="#accordion">
+                                    <div class="card-body">
+                                        <h5>Other Information</h5>
+                                        <div class="row">
+                                            <!-- Course Section -->
+                                            <div class="col-12 col-md-4">
+                                                <div class="form-group mb-4">
+                                                    <label class="nav-text info-header">Course</label>
+                                                    <div class="border p-2 rounded bg-light">
+                                                        <?php echo htmlspecialchars($tutor['course']); ?>
                                                     </div>
                                                 </div>
-                                            </h5>
-                                        </div>
-                                        <div id="collapse<?php echo htmlspecialchars(string: $tutor['id']); ?>" class="collapse show" aria-labelledby="heading<?php echo htmlspecialchars($tutor['id']); ?>" data-parent="#accordion">
-                                            <div class="card-body">
-                                                <h5>Other Information</h5>
-                                                <div class="table-responsive">
-                                                    <table class="table table-bordered">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Student ID</th>
-                                                                <th>Course</th>
-                                                                <th>Professor</th>
-                                                                <th>Barangay</th>
-                                                                <th>Contact No</th>
-                                                                <th>Facebook Link</th>
-                                                                <th>Email</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr class="text-center align-middle">
-                                                                <td><?php echo htmlspecialchars($tutor['student_id']); ?></td>
-                                                                <td><?php echo htmlspecialchars($tutor['course']); ?></td>
-                                                                <td><?php echo htmlspecialchars($tutor['professor']); ?></td>
-                                                                <td><?php echo htmlspecialchars($tutor['barangay']); ?></td>
-                                                                <td><?php echo htmlspecialchars($tutor['number']); ?></td>
-                                                                <td><a href="<?php echo htmlspecialchars($tutor['fblink']); ?>"><?php echo htmlspecialchars($tutor['fblink']); ?></a></td>
-                                                                <td><?php echo htmlspecialchars($tutor['emailaddress']); ?></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                            </div>
+
+                                            <!-- Barangay Section -->
+                                            <div class="col-12 col-md-4">
+                                                <div class="form-group mb-4">
+                                                    <label class="nav-text info-header">Barangay</label>
+                                                    <div class="border p-2 rounded bg-light">
+                                                        <?php echo htmlspecialchars($tutor['barangay']); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Contact No Section -->
+                                            <div class="col-12 col-md-4">
+                                                <div class="form-group mb-4">
+                                                    <label class="nav-text info-header">Contact No</label>
+                                                    <div class="border p-2 rounded bg-light">
+                                                        <?php echo htmlspecialchars($tutor['number']); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Facebook Link Section -->
+                                            <div class="col-12 col-md-6">
+                                                <div class="form-group mb-4">
+                                                    <label class="nav-text info-header">Facebook Link</label>
+                                                    <div class="border p-2 rounded bg-light">
+                                                        <a href="<?php echo htmlspecialchars($tutor['fblink']); ?>" target="_blank">
+                                                            <?php echo htmlspecialchars($tutor['fblink']); ?>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Email Address Section -->
+                                            <div class="col-12 col-md-6">
+                                                <div class="form-group mb-4">
+                                                    <label class="nav-text info-header">Email Address</label>
+                                                    <div class="border p-2 rounded bg-light">
+                                                        <?php echo htmlspecialchars($tutor['emailaddress']); ?>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="container d-flex flex-column justify-content-center align-items-center update rounded shadow-lg">
-                            <img src="../assets/tutee-blankplaceholder-white.png" alt="Nothing to see here" style="width: 300px; height: 300px;">
-                            <h5 class="opacity">No current tutor</h5><br>
                         </div>
-                    <?php endif; ?>
-
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="container d-flex flex-column justify-content-center align-items-center update rounded shadow-lg">
+                    <img src="../assets/tutee-blankplaceholder-white.png" alt="Nothing to see here" style="width: 300px; height: 300px;">
+                    <h5 class="opacity">No current tutor</h5><br>
                 </div>
-            </div>
+            <?php endif; ?>
         </div>
+    </div>
+</div>
+
     </div>
 
         <!-- Remove Tutee Modal -->
@@ -343,45 +368,59 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
         
         <!-- Message Modal -->
-    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="emailModalLabel">Send Message</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-start d-block">
-                <form id="sendMessageForm" method="POST">
-                    <input type="hidden" name="tutor_id" id="tutor_id">
-                    <input type="hidden" name="tutee_id" value="<?php echo $tutee_id; ?>">
-                    <div class="mb-3">
-                        <label for="recipient" class="form-label">To: </label>
-                        <span id="recipient"></span>
+        <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="emailModalLabel">Send Message</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Message</label>
-                        <textarea class="form-control" name="message" id="message" rows="4" placeholder="Enter your message"></textarea>
+                    <div class="modal-body text-start d-block">
+                    <form id="sendMessageForm" method="POST">
+                        <input type="hidden" name="tutor_id" id="tutor_id">
+                        <input type="hidden" name="tutee_id" value="<?php echo $tutee_id; ?>">
+                        <div class="mb-3">
+                            <label for="recipient" class="form-label">To: </label>
+                            <span id="recipient"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" name="message" id="message" rows="4" placeholder="Enter your message"></textarea>
+                        </div>
+                    </form>
                     </div>
-                </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="msg-sendBtn">
-                        <i class='bx bx-send'></i> Send
-                    </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="msg-sendBtn" data-bs-dismiss="modal">
+                            <i class='bx bx-send'></i> Send
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
+        <!-- Message Sent Success Toast -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="toastMsgSent" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+                <div class="toast-header">
+                    <!-- <img src="..." class="rounded me-2" alt="..."> -->
+                    <strong class="me-auto">TuteeFind</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Message sent successfully!
+                </div>
+            </div>
+        </div>
         <!-- Javascript -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="tutee_sidebar.js"></script>
         <script src="notif.js"></script>
         <script src="tutor.js"></script>
+        <script src="tutee.js"></script>
         <script>
-    
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
+                // Handling message modal logic
     const messageModal = document.getElementById('messageModal');
     messageModal.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
@@ -389,14 +428,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         const tutorName = button.getAttribute('data-tutor-name');
 
         // Set tutor_id in the hidden input field
-        const tutorIdInput = document.querySelector('#sendMessageForm input[name="tutor_id"]');
-        tutorIdInput.value = tutorId;
+        document.querySelector('#sendMessageForm input[name="tutor_id"]').value = tutorId;
 
         // Update the recipient name display in the modal
-        const recipientDisplay = document.getElementById('recipient');
-        recipientDisplay.textContent = tutorName;
+        document.getElementById('recipient').textContent = tutorName;
     });
 
+    // Send message functionality
     document.getElementById('msg-sendBtn').addEventListener('click', function() {
         const form = document.getElementById('sendMessageForm');
         const formData = new FormData(form);
@@ -412,7 +450,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         });
     });
 });
-
 </script>
     </body>
 </html>

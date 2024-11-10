@@ -28,69 +28,31 @@ $tutee_id = $userData['id'];
 // Default image path
 $imagePath = !empty($userData['photo']) ? $userData['photo'] : '../assets/TuteeFindLogoName.jpg'; 
 
-// Initialize flag for changes and toast message
-$hasChanges = false;
+// Initialize toast message
 $toastMessage = '';
 $toastClass = '';
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the updated data from the form
-    $newFirstname = $_POST['firstname'];
-    $newLastname = $_POST['lastname'];
-    $newAge = $_POST['age'];
-    $newSex = $_POST['sex'];
-    $newGuardianname = $_POST['guardianname'];
-    $newFblink = $_POST['fblink'];
-    $newBarangay = $_POST['barangay'];
-    $newNumber = $_POST['number'];
-    $newBio = $_POST['bio'];
-    $newEmailaddress = $_POST['emailaddress'];
+    // Gather all form data
+    $firstname = $_POST['firstname'];
+    $lastname = $_POST['lastname'];
+    $age = $_POST['age'];
+    $sex = $_POST['sex'];
+    $guardianname = $_POST['guardianname'];
+    $fblink = $_POST['fblink'];
+    $barangay = $_POST['barangay'];
+    $number = $_POST['number'];
+    $emailaddress = $_POST['emailaddress'];
+    $bio = $_POST['bio'];
     $newPassword = $_POST['password'];
     $photo = $_FILES['photo'];
 
-    // Check if email is already in use by another account
-    $emailCheckStmt = $user_login->runQuery("SELECT id FROM tutee WHERE emailaddress = :emailaddress AND id != :current_id");
-    $emailCheckStmt->bindParam(":emailaddress", $newEmailaddress);
-    $emailCheckStmt->bindParam(":current_id", $tutee_id);
-    $emailCheckStmt->execute();
+    // Call the update method regardless of the specific changes
+    $user_login->updateDetails($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $bio, $newPassword, $photo, $userData);
 
-    if ($emailCheckStmt->rowCount() > 0) {
-        // Email address already in use
-        $toastMessage = "This email address is already in use. Please choose a different one.";
-        $toastClass = "bg-danger";
-    } else {
-        // Check if there are changes
-        if ($newFirstname != $firstname || $newLastname != $lastname || $newAge != $age || $newSex != $sex ||
-            $newGuardianname != $guardianname || $newFblink != $fblink || $newBarangay != $barangay || 
-            $newNumber != $number || $newBio != $bio || $newEmailaddress != $emailaddress) {
-            
-            // Mark that changes have been made
-            $hasChanges = true;
-            
-            // Update the user data in the database
-            $updateStmt = $user_login->runQuery("UPDATE tutee SET firstname = :firstname, lastname = :lastname, 
-                                                 age = :age, sex = :sex, guardianname = :guardianname, 
-                                                 fblink = :fblink, barangay = :barangay, number = :number, 
-                                                 bio = :bio, emailaddress = :emailaddress WHERE id = :id");
-            $updateStmt->bindParam(":firstname", $newFirstname);
-            $updateStmt->bindParam(":lastname", $newLastname);
-            $updateStmt->bindParam(":age", $newAge);
-            $updateStmt->bindParam(":sex", $newSex);
-            $updateStmt->bindParam(":guardianname", $newGuardianname);
-            $updateStmt->bindParam(":fblink", $newFblink);
-            $updateStmt->bindParam(":barangay", $newBarangay);
-            $updateStmt->bindParam(":number", $newNumber);
-            $updateStmt->bindParam(":bio", $newBio);
-            $updateStmt->bindParam(":emailaddress", $newEmailaddress);
-            $updateStmt->bindParam(":id", $tutee_id);
-            $updateStmt->execute();
-
-            // Set the success toast message
-            $toastMessage = "Your details have been successfully updated.";
-            $toastClass = "bg-success";
-        }
-    }
+    // Set the success toast message
+    $toastMessage = "Your details have been successfully updated.";
+    $toastClass = "bg-success";
 }
 
 // Fetch unread notifications count for the current tutor
@@ -99,12 +61,10 @@ $unreadNotifQuery->bindParam(":tutee_id", $tutee_id);
 $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
 $unreadNotifCount = $unreadNotifData['unread_count'];
-
 ?>
 
 <!-- HTML and Toast Code -->
-<?php if ($hasChanges && !empty($toastMessage)) : ?>
-    <!-- Only show the toast if there are changes -->
+<?php if (!empty($toastMessage)) : ?>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var toastElement = document.getElementById('statusToast');
@@ -115,6 +75,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
         });
     </script>
 <?php endif; ?>
+
 
 
 <!DOCTYPE html>
@@ -214,7 +175,6 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                 </div>
             </div>
         </nav>
-
         <div class="home">
     <form method="post" class="container-lg" style="padding-right: 4px; padding-left: 4px" enctype="multipart/form-data">
         <div class="container-lg p-3">
@@ -223,7 +183,6 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                     <div class="card1">Settings</div>
                 </div>
             </div>
-
             <!-- Toast Container -->
             <div aria-live="polite" aria-atomic="true" class="position-relative">
                 <div class="toast-container position-absolute top-0 end-0 p-3">
@@ -247,10 +206,10 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                 <div class="d-flex align-items-start p-3 flex-wrap">
                     <!-- Image on the left side -->
                     <div class="col-12 col-md-3 text-center">
-                        <img id="profile-image" class="rounded-circle my-3 img-fluid" style="max-width: 50%;" width="200" src="<?php echo $imagePath; ?>">
+                        <img id="profile-image" class="rounded-circle my-3 img-fluid" style="max-width: 30%;" width="200" src="<?php echo $imagePath; ?>">
                         <label for="file-upload" class="blue p-2 mb-2 rounded-3 w-50">
                             Upload File
-                            <input id="file-upload" type="file" name="photo" style="display:none;" onchange="previewImage(event)">
+                            <input id="file-upload" type="file" name="photo" style="display:none;" onchange="previewImage(event)" accept="image/*">
                         </label>
                         <div class="mb-3">
                             <div class="labels">- at least 256 x 256 px recommended JPG or PNG.</div>
@@ -260,7 +219,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                     <div class="col-12 col-md-9 d-flex align-items-center justify-content-center">
                         <div class="form-group my-4  w-100">
                             <label class="nav-text info-header">Tutee Bio</label>
-                            <textarea class="form-control" name="bio" id="bio" rows="3" style="min-height: 100px; resize: none;" placeholder="<?php echo htmlspecialchars($bio); ?>"></textarea>
+                            <textarea class="form-control" name="bio" id="bio" rows="3" style="min-height: 100px; resize: none;" placeholder="<?php echo htmlspecialchars($bio); ?>"><?php echo htmlspecialchars($bio); ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -309,7 +268,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                         <div class="form-group mb-4">
                             <label class="nav-text info-header">Age</label>
                             <select name="age" class="form-select mb-4" style="width:100%;" size="1">
-                                <option selected disabled><?php echo htmlspecialchars($age); ?></option>
+                                <option selected><?php echo htmlspecialchars($age); ?></option>
                                 <option value="6">6</option>
                                 <option value="7">7</option>
                                 <option value="8">8</option>

@@ -46,10 +46,10 @@ $messagesQuery->bindParam(":tutee_id", $tutee_id);
 $messagesQuery->execute();
 $messages = $messagesQuery->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle AJAX request for fetching and sending messages
 if (isset($_POST['fetch_messages'])) {
     $tutor_id = $_POST['tutor_id'];
-
+    
+    // Query for fetching messages
     $messageFetchQuery = $user_login->runQuery("
         SELECT sender_type, message, created_at
         FROM messages
@@ -60,8 +60,9 @@ if (isset($_POST['fetch_messages'])) {
     $messageFetchQuery->bindParam(":tutor_id", $tutor_id);
     $messageFetchQuery->execute();
     $messages = $messageFetchQuery->fetchAll(PDO::FETCH_ASSOC);
+    // Send the messages in JSON format
 
-    // Fetch the tutee's photo for the conversation view
+    // Fetch tutor info for the header
     $tutorInfoQuery = $user_login->runQuery("
         SELECT firstname, lastname, photo
         FROM tutor
@@ -70,49 +71,35 @@ if (isset($_POST['fetch_messages'])) {
     $tutorInfoQuery->bindParam(":tutor_id", $tutor_id);
     $tutorInfoQuery->execute();
     $tutorInfo = $tutorInfoQuery->fetch(PDO::FETCH_ASSOC);
+
     $tutorImage = !empty($tutorInfo['photo']) ? $tutorInfo['photo'] : '../assets/profile-user.png';
 
-    // Chat header with tutor's name
+    // Generate HTML response
+    ob_start();
     echo "<div class='chat-header'>";
     echo "<div class='h2'>" . htmlspecialchars($tutorInfo['firstname']) . " " . htmlspecialchars($tutorInfo['lastname']) . "</div>";
     echo "</div>";
 
-    // Chat body with a notification and messages
     echo "<div class='chat-body' id='chatBody'>";
-    echo "<div class='notification'>";
-    echo "<p>- This is the start of your conversation -</p>";
+    echo "<div class='notification'><p>- This is the start of your conversation -</p></div>";
+
+    foreach ($messages as $message) {
+        $messageClass = $message['sender_type'] == 'tutee' ? 'message outgoing' : 'message incoming';
+        echo "<div class='{$messageClass}'><p>" . htmlspecialchars($message['message']) . "</p></div>";
+    }
+
+    echo "</div>"; // Close chat-body
+    echo "</div>"; // Close messageContent
+
+    // Output the chat footer (message input) separately
+    echo "<div class='chat-footer'>";
+    echo "<input id='messageInput' placeholder='Type your message' type='text' class='form-control' required>";
+    echo "<button id='sendButton' class='btn btn-primary' onclick='sendMessage(event, {$tutor_id})'>Send</button>";
     echo "</div>";
 
-// Display the messages dynamically
-foreach ($messages as $message) {
-    // Adjust message class logic: 'outgoing' for user, 'incoming' for tutor
-    $messageClass = $message['sender_type'] == 'tutee' ? 'message outgoing' : 'message incoming';
-    echo "<div class='{$messageClass}'>";
-    echo "<p>" . htmlspecialchars($message['message']) . "</p>";
-    echo "</div>";
+    exit();
 }
 
-echo "</div>"; // End of chat-body
-
-// Ensure that the scroll happens after the messages are appended
-echo "<script>
-    // Wait for the chatBody element to be populated with messages
-    window.setTimeout(function() {
-        const chatBody = document.getElementById('chatBody');
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }, 100); // Small delay to ensure messages are rendered first
-</script>";
-
-// Chat footer with input and send button
-echo "<div class='chat-footer'>";
-echo "<input id='messageInput' placeholder='Type your message' type='text' class='form-control' required>";
-echo "<button id='sendButton' class='btn btn-primary' onclick='sendMessage(event, {$tutor_id})'>Send</button>";
-echo "</div>"; // End of chat-footer
-
-echo "</div>"; // End of chat-card
-
-exit();
-}
 
 // Handle sending a new message
 if (isset($_POST['send_message'])) {
@@ -132,8 +119,6 @@ if (isset($_POST['send_message'])) {
     exit();
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -281,6 +266,7 @@ if (isset($_POST['send_message'])) {
                     <!-- Second column for message content -->
                     <div class="chat-card col-md-8 message-content" id="messageContent">
                         <div class="chat-header">
+                            <!-- Chat header content will be updated dynamically -->
                         </div>
                         <div class="chat-body" id="chatBody">
                             <div class="notification">
@@ -288,6 +274,13 @@ if (isset($_POST['send_message'])) {
                                 <p>Choose from your existing conversations</p>
                             </div>
                         </div>
+                        <!-- Message Input Form -->
+                        <form id="sendMessageForm" class="mt-2" onsubmit="sendMessage(event, currentTuteeId)" style="display: none;">
+                            <div class="chat-footer">
+                                <input id="messageInput" placeholder="Type your message" type="text" class="form-control" required>
+                                <button id="sendButton" class="btn btn-primary" onclick="sendMessage(event, {$tutor_id})">Send</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
