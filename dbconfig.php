@@ -3,7 +3,7 @@ class Database {
     private $host = "localhost";
     private $db_name = "tuteefind";
     private $username = "root";
-    private $password = "";
+    private $password = "Str0ngP@ssword!";
     public $conn;
 
     public function dbConnection() {
