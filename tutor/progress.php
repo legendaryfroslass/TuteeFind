@@ -635,7 +635,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 
 
 <!-- Other Events Accordion Section -->
-<div class="container-lg p-3">
+<div class="container-lg p-3 text-center">
     <div class="accordion shadow-lg" id="otherEventsAccordion">
         <div class="accordion-item">
             <h4 class="accordion-header" id="headingOtherEvents">
@@ -649,8 +649,8 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         <button id="addEntryBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmAddEventModal">Add Entry</button>
                     </div>
                     <div class="table-wrapper">
-                        <table class="table table-bordered" id="eventsTable">
-                            <thead>
+                        <table class="table mx-auto" id="eventsTable" style="max-width: 100%; text-align: center;">
+                            <thead class="background1">
                                 <tr>
                                     <th>Event</th>
                                     <th>Rendered Hours</th>
@@ -667,7 +667,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                     <td><?php echo htmlspecialchars($event['description']); ?></td>
                                     <td class="file-name-cell">
                                         <?php if ($event['attached_file']): ?>
-                                            <a href="../uploads/events/<?php echo htmlspecialchars($event['attached_file']); ?>" target="_blank">View File</a>
+                                            <a href="../uploads/events/<?php echo htmlspecialchars($event['attached_file']); ?>" target="_blank" class="btn btn-primary">View File</a>
                                         <?php else: ?>
                                             <span>No file uploaded</span>
                                         <?php endif; ?>
@@ -699,6 +699,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
     </div>
 </div>
 
+
 <!-- TUTEES -->
 <div class="container-lg p-3 text-center">
     <h2 class="tutee-title">TUTEES</h2>
@@ -710,12 +711,14 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             <!-- Separate wrapper for each tutee's content -->
             <div class="shadow-lg mb-3">
                 <div class="container-lg p-3 table-container">
+                    <!-- Centering the tutee's name -->
                     <div class="d-flex justify-content-center align-items-center mb-4">
                         <h3><?php echo htmlspecialchars($tutee['firstname'] . ' ' . $tutee['lastname']); ?></h3>
                     </div>
+                    <!-- Centering the table -->
                     <div class="table-wrapper">
-                        <table class="table table-bordered">
-                            <thead>
+                        <table class="table text-center">
+                            <thead class="background1">
                                 <tr>
                                     <th>Week</th>
                                     <th>Uploaded File</th>
@@ -747,7 +750,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                             <td><?php echo htmlspecialchars($progress['subject'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($progress['date'] ?? ''); ?></td>
                                             <td class="text-center">
-                                                <button class="btn btn-primary edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
+                                                <button class="btn btn-primary me-2 edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
                                                     data-tutee-id="<?php echo $tutee['id']; ?>" 
                                                     data-week-number="<?php echo $progress['week_number']; ?>"
                                                     data-description="<?php echo htmlspecialchars($progress['description']); ?>"
@@ -771,8 +774,8 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                             </tbody>
                         </table>
                     </div>
-                    <!-- Buttons for each tutee -->
-                    <div class="d-flex justify-content-center flex-column flex-md-row">
+                    <!-- Centering the buttons for each tutee -->
+                    <div class="d-flex justify-content-center flex-column flex-md-row text-center">
                         <button id="add-week-btn-<?php echo $tutee['id']; ?>" 
                                 class="btn btn-primary m-2" 
                                 data-tutee-id="<?php echo $tutee['id']; ?>" 
@@ -828,6 +831,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 </div>
 
 
+
 <!-- MODALS -->
 
 
@@ -877,46 +881,53 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 
 <!-- Add Week Modal -->
 <?php foreach ($tutees as $tutee): ?>
-<div class="modal fade" id="addWeekModal-<?php echo $tutee['id']; ?>" tabindex="-1" aria-labelledby="addWeekModalLabel-<?php echo $tutee['id']; ?>" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+<div class="modal fade" id="addWeekModal-<?php echo $tutee['id']; ?>" tabindex="-1" aria-labelledby="addWeekModalLabel-<?php echo $tutee['id']; ?>" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: auto;"> <!-- Adjusted width -->
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2 flex-column">
         <h5 class="modal-title" id="addWeekModalLabel-<?php echo $tutee['id']; ?>">Add Week for <?php echo htmlspecialchars($tutee['firstname'] . ' ' . $tutee['lastname']); ?></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="add-week-form-<?php echo $tutee['id']; ?>" enctype="multipart/form-data">
-          <div class="mb-3">
-            <label for="week-number-<?php echo $tutee['id']; ?>" class="form-label">Week Number</label>
-            <input type="number" class="form-control" id="week-number-<?php echo $tutee['id']; ?>" placeholder="Enter week number" required>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="week-number-<?php echo $tutee['id']; ?>" class="form-label">Week Number</label>
+              <input type="number" class="form-control" id="week-number-<?php echo $tutee['id']; ?>" placeholder="Enter week number" required>
+            </div>
+            <div class="col-md-6">
+              <label for="rendered-hours-<?php echo $tutee['id']; ?>" class="form-label">Rendered Hours</label>
+              <input type="number" class="form-control" id="rendered-hours-<?php echo $tutee['id']; ?>" placeholder="Enter rendered hours" required>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="location-<?php echo $tutee['id']; ?>" class="form-label">Location</label>
+              <input type="text" class="form-control" id="location-<?php echo $tutee['id']; ?>" placeholder="Enter Location" required>
+            </div>
+            <div class="col-md-6">
+              <label for="subject-<?php echo $tutee['id']; ?>" class="form-label">Subject</label>
+              <input type="text" class="form-control" id="subject-<?php echo $tutee['id']; ?>" placeholder="Enter Subject" required>
+            </div>
           </div>
           <div class="mb-3">
             <label for="description-<?php echo $tutee['id']; ?>" class="form-label">Description</label>
             <textarea class="form-control" id="description-<?php echo $tutee['id']; ?>" placeholder="Describe the week..." required></textarea>
           </div>
           <div class="mb-3">
-            <label for="rendered-hours-<?php echo $tutee['id']; ?>" class="form-label">Rendered Hours</label>
-            <input type="number" class="form-control" id="rendered-hours-<?php echo $tutee['id']; ?>" placeholder="Enter rendered hours" required>
-          </div>
-          <div class="mb-3">
-            <label for="location-<?php echo $tutee['id']; ?>" class="form-label">Location(School, Home, or etc.)</label>
-            <input type="text" class="form-control" id="location-<?php echo $tutee['id']; ?>" placeholder="Enter Tutoring Location" required>
-          </div>
-          <div class="mb-3">
-            <label for="subject-<?php echo $tutee['id']; ?>" class="form-label">Subject(Numeracy, Literacy)</label>
-            <input type="text" class="form-control" id="subject-<?php echo $tutee['id']; ?>" placeholder="Enter Topic Subject" required>
-          </div>
-          <div class="mb-3">
             <label for="file-upload-<?php echo $tutee['id']; ?>" class="form-label">Upload Files</label>
             <input type="file" class="form-control" id="file-upload-<?php echo $tutee['id']; ?>" accept="*/*">
           </div>
-            <button type="submit" class="btn btn-primary">Save Week</button>
+      </div>
+      <div class="modal-footer d-flex justify-content-center border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Week</button>
         </form>
       </div>
     </div>
   </div>
 </div>
 <?php endforeach; ?>
+
 
 <!-- Confirmation Delete Event Modal -->
 <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
@@ -946,7 +957,6 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
     <div class="modal-dialog modal-dialog-centered" style="max-width: auto;"> <!-- Adjusted width -->
         <div class="modal-content">
             <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2 flex-column">
-                <img src="../assets/plus.png" alt="Add Event" class="add-icon" style="width: 65px; height: 65px;">
                 <h5 class="modal-title" id="confirmAddEventModalLabel">Add New Event</h5>
             </div>
             <div class="modal-body">
@@ -1281,7 +1291,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                     const res = JSON.parse(response);
                     if (res.success) {
                         // Reload the page or remove the row from the table
-                        location.reload(); // or you can remove the row: $(deleteData.row).remove();
+                        window.location.reload();  // Refresh the page to show the new event
                     } else {
                         alert(res.message); // Show any error message
                     }
