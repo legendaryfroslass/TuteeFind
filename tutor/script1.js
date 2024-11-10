@@ -130,34 +130,8 @@ disableButtonsOnCheck();
 
 // NOTIFICATION PAGE
 
-// MESSAGE PAGE
 let currentTuteeId = null;
 let messageInterval = null;
-
-function fetchNewMessages(tuteeId) {
-  if (currentTuteeId === tuteeId) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        // Preserve the current input value
-        var messageInput = document.getElementById("messageInput");
-        var currentMessage = messageInput ? messageInput.value : "";
-
-        // Update the message content
-        document.getElementById("messageContent").innerHTML = xhr.responseText;
-
-        // Restore the input value
-        if (messageInput) {
-          messageInput.value = currentMessage;
-        }
-      }
-    };
-    xhr.send("fetch_messages=1&tutee_id=" + tuteeId);
-  }
-}
 
 function showMessages(tuteeId, autoScroll = true) {
   if (currentTuteeId !== tuteeId) {
@@ -167,59 +141,84 @@ function showMessages(tuteeId, autoScroll = true) {
     if (messageInterval) {
       clearInterval(messageInterval);
     }
+    selectChat(tuteeId);
+    // Fetch messages immediately when the conversation is opened
+    fetchNewMessages(tuteeId);
+
+    // Start polling every 1 second for new messages after opening the conversation
+    messageInterval = setInterval(function () {
+      fetchNewMessages(tuteeId);
+    }, 5000); // 1000 milliseconds = 1 second
   }
+}
 
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", "", true);
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+function fetchNewMessages(tuteeId) {
+  if (currentTuteeId === tuteeId) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      document.getElementById("messageContent").innerHTML = xhr.responseText;
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        // Only update the message content section (not the entire form)
+        document.getElementById("messageContent").innerHTML = xhr.responseText;
 
-      // Auto-scroll to the bottom if required
-      if (autoScroll) {
-        var messageContent = document.getElementById("messageContent");
-        messageContent.scrollTop = messageContent.scrollHeight;
+        // Optionally auto-scroll to the bottom of the messages
+        if (autoScroll) {
+          var messageContent = document.getElementById("messageContent");
+          messageContent.scrollTop = messageContent.scrollHeight;
+        }
       }
-    }
-  };
-  xhr.send("fetch_messages=1&tutee_id=" + tuteeId);
+    };
+    xhr.send("fetch_messages=1&tutee_id=" + tuteeId);
+  }
 }
 
 function sendMessage(event, tuteeId) {
-  event.preventDefault(); // Prevent the form from submitting the traditional way
+  event.preventDefault();
+
   var messageInput = document.getElementById("messageInput");
   var message = messageInput.value;
 
-  if (message.trim() === "") {
-    return; // Do not send empty messages
+  if (message.trim()) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        // After sending the message, we fetch the new messages to reflect the changes
+        fetchNewMessages(tuteeId);
+        messageInput.value = ""; // Clear the message input
+      }
+    };
+
+    xhr.send(
+      "send_message=1&tutee_id=" +
+        tuteeId +
+        "&message=" +
+        encodeURIComponent(message)
+    );
   }
-
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", "", true);
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      // Reload the messages for this tutee
-      showMessages(tuteeId);
-
-      // Clear the input field after sending
-      messageInput.value = "";
-
-      // Focus back to the input field
-      messageInput.focus(); // Ensure focus is on the input
-    }
-  };
-
-  // Send the message to the server
-  xhr.send(
-    "send_message=1&tutee_id=" +
-      tuteeId +
-      "&message=" +
-      encodeURIComponent(message)
-  );
+}
+function closeMessages() {
+  if (messageInterval) {
+    clearInterval(messageInterval);
+  }
+  // You can also clear the message content or perform other cleanup actions
+  document.getElementById("messageContent").innerHTML = "";
+}
+// Function to handle showing the message form
+function selectChat(tuteeId) {
+  if (tuteeId) {
+    // Show the message form when a chat is selected
+    document.getElementById("sendMessageForm").style.display = "block";
+    currentTuteeId = tuteeId; // Set the current tutee ID to send messages
+  } else {
+    // Hide the message form when no chat is selected
+    document.getElementById("sendMessageForm").style.display = "none";
+    currentTuteeId = null; // Reset the current tutee ID
+  }
 }
 
 // TUTOR PAGE

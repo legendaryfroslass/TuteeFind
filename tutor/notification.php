@@ -207,9 +207,14 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
 
         <?php endforeach; ?>
     <?php else: ?>
-        <li class="notification-item">
-            <p>No notifications available.</p>
-        </li>
+    <div class="table-container d-flex justify-content-center align-items-center flex-column">
+        <div class="row text-center">
+            <img src="../assets/tutee-blankplaceholder-grey.png" alt="" style="width: 200px;">
+        </div>
+        <div class="row text-center">
+            <p class="container medium-font pt-3">No Notification at the moment</p>
+        </div>
+    </div>
     <?php endif; ?>
 </ul>
 
