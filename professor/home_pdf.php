@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../vendor/autoload.php'; // Ensure the path is correct
+require_once '../vendor/autoload.php'; // Ensure the path is correct
 include 'includes/conn.php'; // Include the database connection file
 
 if(!isset($_SESSION['professor_id'])){
@@ -141,9 +141,21 @@ $html .= '</table>';
 // Add to PDF
 $pdf->writeHTML($html, true, false, true, false, '');
 
+// Log the download activity
+date_default_timezone_set('Asia/Manila');
+$activity = "Download PDF Report: Professor Dashboard Report";
+$formatted_datetime = date('F j, Y h:i:s A');
+$logSql = "INSERT INTO activity_logs (professor_id, activity, datetime) 
+           VALUES (?, ?, ?)";
+$logStmt = $conn->prepare($logSql);
+$logStmt->bind_param("iss", $professor_id, $activity, $formatted_datetime);
+$logStmt->execute();
+
 // Close and output PDF document
 $pdf->Output('Professor_Dashboard_Report.pdf', 'I'); // 'I' for inline view
 
 // Close the database connection
 $conn->close();
+
+
 ?>

@@ -5,7 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 include 'includes/conn.php';
 
 if (!isset($_SESSION['professor_id']) || trim($_SESSION['professor_id']) == '') {
-    header('location: index.php');
+    header('location: landingpage.php');
     exit(); // Ensure script stops execution after redirection
 }
 

@@ -1,5 +1,5 @@
 <?php
-require_once '../../vendor/autoload.php';
+require_once '../vendor/autoload.php';
 require('includes/conn.php'); // Ensure this path is correct
 
 // Create new PDF document with landscape orientation

@@ -1,5 +1,5 @@
 <?php
-require_once '../../vendor/autoload.php'; // Adjust path if needed
+require_once '../vendor/autoload.php'; // Adjust path if needed
 require('includes/conn.php'); // Ensure this path is correct
 
 // Capture the search input if it exists 
