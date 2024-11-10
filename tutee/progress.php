@@ -552,13 +552,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <?php endforeach; ?>
 
-        <!-- No Tutors Message -->
-        <?php if (empty($tutors)): ?>
-            <div class="container d-flex flex-column justify-content-center align-items-center update rounded shadow-lg py-3">
-                <img src="../assets/tutee-blankplaceholder-white.png" alt="Nothing to see here" style="width: 300px; height: 300px;">
-                <h5 class="opacity">No current tutors</h5><br>
+
+            
+    <?php if (empty($tutors)): ?>
+        <div class="container-lg px-3 " style="padding-bottom: 10px;">
+            <div class="career-form headings d-flex justify-content-center mt-3 update">
+                <div class="row">
+                    <div class="card1 d-flex flex-column justify-content-center align-items-center">
+                        <img src="../assets/tutee-blankplaceholder-white.png" alt="Nothing to see here" style="width: 300px; height: 300px;">
+                        <h5 class="opacity">No current tutors</h5>
+                    </div>
+                </div>
             </div>
-        <?php endif; ?>
+        </div>
+    <?php endif; ?>
                         
 
     <!-- Confirmation Modal -->

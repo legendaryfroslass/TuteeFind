@@ -33,6 +33,40 @@ $unreadNotifQuery->bindParam(":tutee_id", $tutee_id);
 $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
 $unreadNotifCount = $unreadNotifData['unread_count'];
+
+// Fetch notifications for the tutee
+$notifQuery = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutee_id ORDER BY date_sent DESC");
+$notifQuery->bindParam(":tutee_id", $tutee_id);
+$notifQuery->execute();
+
+// Mark unread notifications as read when the notifications page is visited
+$markReadQuery = $user_login->runQuery("UPDATE notifications SET status = 'read' WHERE receiver_id = :tutee_id AND status = 'unread'");
+$markReadQuery->bindParam(":tutee_id", $tutee_id);
+$markReadQuery->execute();
+
+// Set unreadNotifCount to 0 for immediate reset in PHP
+$unreadNotifCount = 0;
+
+// Fetch notifications for the tutee again
+$notifQuery = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutee_id ORDER BY date_sent DESC");
+$notifQuery->bindParam(":tutee_id", $tutee_id);
+$notifQuery->execute();
+
+// Fetch the results as an associative array or set as an empty array if no notifications found
+$notifications = $notifQuery->fetchAll(PDO::FETCH_ASSOC) ?? [];
+
+// Fetch count of unique tutors who have unread messages
+$unreadMessagesQuery = $user_login->runQuery("
+    SELECT COUNT(DISTINCT tutor_id) AS unread_tutor_count 
+    FROM messages 
+    WHERE tutee_id = :tutee_id 
+    AND sender_type = 'tutor' 
+    AND is_read = 0
+");
+$unreadMessagesQuery->bindParam(":tutee_id", $tutee_id);
+$unreadMessagesQuery->execute();
+$unreadMessagesData = $unreadMessagesQuery->fetch(PDO::FETCH_ASSOC);
+$unreadMessageCount = $unreadMessagesData['unread_tutor_count'];
 ?>
 
 <!DOCTYPE html>
@@ -146,7 +180,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
             </div>
 
             <div class="container-lg p-3">
-                <ul class="notification-list">
+                <ul class="notification-list ps-0 shadow-sm rounded">
                     <?php if (count($notifications) > 0): ?>
                         <?php foreach ($notifications as $notif): ?>
                             <?php
@@ -173,7 +207,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                             </li>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <li class="notification-item">
+                        <li class="notification-item shadow-sm rounded-3">
                             <p>No notifications available.</p>
                         </li>
                     <?php endif; ?>
