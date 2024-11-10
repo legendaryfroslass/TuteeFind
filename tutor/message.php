@@ -230,33 +230,34 @@ if (isset($_POST['send_message'])) {
         </div>
 <div class="container-lg p-3">
     <div class="row">
-        <!-- Sidebar for conversation list -->
-        <div class="col-12 col-md-3 mb-3 mb-md-0">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5>Inbox</h5>
-                </div>
-                <div class="card-body p-0">
-                    <ul class="list-group">
-                        <?php foreach ($messages as $message): ?>
-                            <li class="list-group-item d-flex align-items-center" onclick="showMessages('<?php echo $message['tutee_id']; ?>')">
-                                <img src="<?php echo $message['tutee_photo'] ?: '../assets/TuteeFindLogoName.jpg'; ?>" class="rounded-circle me-3" alt="Profile Picture" style="width: 50px; height: 50px;">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between">
-                                        <strong><?php echo $message['tutee_firstname'] . ' ' . $message['tutee_lastname']; ?></strong>
-                                        <small class="text-muted"><?php echo date('M d, Y', strtotime($message['created_at'])); ?></small>
-                                    </div>
-                                    <p class="mb-0">
-                                        <?php echo $message['sender_type'] == 'tutor' ? 'You: ' : ''; ?>
-                                        <?php echo htmlspecialchars($message['message']); ?>
-                                    </p>
-                                </div>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
+<!-- Sidebar for conversation list -->
+<div class="col-12 col-md-3 mb-3 mb-md-0">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5>Inbox</h5>
         </div>
+        <div class="card-body p-0">
+            <ul class="list-group">
+                <?php foreach ($messages as $message): ?>
+                    <li class="list-group-item d-flex align-items-center" onclick="showMessages('<?php echo $message['tutee_id']; ?>')">
+                        <img src="<?php echo $message['tutee_photo'] ?: '../assets/TuteeFindLogoName.jpg'; ?>" class="rounded-circle me-3" alt="Profile Picture" style="width: 50px; height: 50px;">
+                        <div class="flex-grow-1">
+                            <div class="d-flex flex-column">
+                                <strong><?php echo $message['tutee_firstname'] . ' ' . $message['tutee_lastname']; ?></strong>
+                                <small class="text-muted"><?php echo date('M d, Y', strtotime($message['created_at'])); ?></small>
+                            </div>
+                            <p class="mb-0">
+                                <?php echo $message['sender_type'] == 'tutor' ? 'You: ' : ''; ?>
+                                <?php echo htmlspecialchars($message['message']); ?>
+                            </p>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    </div>
+</div>
+
         <!-- Main content area for message details -->
         <div class="col-12 col-md-9">
             <div class="card shadow-sm">
@@ -269,7 +270,7 @@ if (isset($_POST['send_message'])) {
                 </div>
                 <!-- Message Input Form (outside the message content area) -->
                 <form id="sendMessageForm" class="mt-2" onsubmit="sendMessage(event, currentTuteeId)" style="display: none;">
-                    <div class="input-group">
+                    <div class="input-group p-3">
                         <input type="text" id="messageInput" name="message" class="form-control" placeholder="Type your message here..." required>
                         <button class="btn btn-primary" type="submit">Send</button>
                     </div>

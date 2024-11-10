@@ -152,7 +152,7 @@ function showMessages(tuteeId, autoScroll = true) {
   }
 }
 
-function fetchNewMessages(tuteeId) {
+function fetchNewMessages(tuteeId, autoScroll = true) {
   if (currentTuteeId === tuteeId) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "", true);
@@ -160,7 +160,7 @@ function fetchNewMessages(tuteeId) {
 
     xhr.onreadystatechange = function () {
       if (xhr.readyState == 4 && xhr.status == 200) {
-        // Only update the message content section (not the entire form)
+        // Update the message content section with the fetched messages
         document.getElementById("messageContent").innerHTML = xhr.responseText;
 
         // Optionally auto-scroll to the bottom of the messages

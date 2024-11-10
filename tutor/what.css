@@ -1132,7 +1132,7 @@ a:hover {
 #tuteeHeader {
   position: sticky; /* Fixes the tutee's picture and name at the top */
   top: 0; /* Sticks the header to the top of the container */
-  background-color: white;
+  background-color: none;
   padding: 10px 0;
   z-index: 2; /* Ensures it stays above the scrolling content */
   box-shadow: none;
@@ -1195,4 +1195,21 @@ a:hover {
     margin-top: auto; /* Push form to the bottom */
     box-shadow: none;
   }
+}
+
+.list-group-item .d-flex {
+  align-items: flex-start; /* Align items at the start to give space for the profile picture */
+}
+
+.list-group-item .d-flex .d-flex {
+  flex-direction: column; /* Stack the name and date vertically */
+}
+
+.list-group-item .d-flex strong {
+  font-size: 1.1em; /* Increase the size of the name for prominence */
+}
+
+.list-group-item .d-flex small {
+  font-size: 0.85em; /* Slightly smaller font size for the date */
+  color: #6c757d; /* Light grey color for the date */
 }
