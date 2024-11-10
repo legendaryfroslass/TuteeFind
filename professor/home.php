@@ -151,6 +151,7 @@ $professor_id = $_SESSION['professor_id'];
         </div>
       </div>
       
+      
      <?php
         // Select distinct barangays for tutors handled by the professor
         $sqlTutorBarangays = "SELECT DISTINCT t.barangay, COUNT(*) AS total_tutors 

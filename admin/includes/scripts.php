@@ -12,9 +12,9 @@
 <!-- <script src="../bower_components/datatables.net/js/jquery.dataTables.min.js"></script> 
 <script src="../bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script> -->
 <!-- ChartJS -->
-<script src="../bower_components/chart.js/Chart.js"></script>
+<!-- <script src="../bower_components/chart.js/Chart.js"></script> -->
 <!-- ChartJS Horizontal Bar -->
-<script src="../bower_components/chart.js/Chart.HorizontalBar.js"></script>
+<!-- <script src="../bower_components/chart.js/Chart.HorizontalBar.js"></script> -->
 <!-- daterangepicker -->
 <script src="../bower_components/moment/min/moment.min.js"></script>
 <script src="../bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
@@ -102,5 +102,5 @@ $(document).ready(function(){
   });
 });
 
-
 </script>
+
