@@ -721,7 +721,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                             <thead class="background1">
                                 <tr>
                                     <th>Week</th>
-                                    <th>Uploaded File</th>
+                                    <th>Attached File</th>
                                     <th>Description</th>
                                     <th>Rendered Hours</th>
                                     <th>Location</th>

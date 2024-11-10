@@ -1,221 +1,157 @@
-<?php include 'includes/session.php'; ?>
-<?php include 'includes/header.php'; ?>
-<body class="hold-transition skin-blue layout-top-nav">
-<div class="wrapper">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="assets/TuteeFindLogo.png" type="image/png">
+    <link rel="stylesheet" href="landing.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">    
+    <title>TuteeFind</title>
+</head>
+<body>
 
-	<?php include 'includes/navbar.php'; ?>
-	 
-	  <div class="content-wrapper">
-	    <div class="container">
+<!-- Navbar Section -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="">
+            <img src="assets/TuteeFindLogoName.png" alt="" class="navbar-logo">
+        </a>
+        <!-- Navbar Toggler Button -->
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#get-started">Get Started</a></li>
+            </ul>
+            <button class="btn btn-dark" type="button" onclick="showRoleSelection()">Sign In</button>
+        </div>
+    </div>
+</nav>
 
-	      <!-- Main content -->
-	      <section class="content">
-	      	<?php
-	      		$parse = parse_ini_file('admin/config.ini', FALSE, INI_SCANNER_RAW);
-    			$title = $parse['election_title'];
-	      	?>
-	      	<h1 class="page-header text-center title"><b><?php echo strtoupper($title); ?></b></h1>
-	        <div class="row">
-	        	<div class="col-sm-10 col-sm-offset-1">
-	        		<?php
-				        if(isset($_SESSION['error'])){
-				        	?>
-				        	<div class="alert alert-danger alert-dismissible">
-				        		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-					        	<ul>
-					        		<?php
-					        			foreach($_SESSION['error'] as $error){
-					        				echo "
-					        					<li>".$error."</li>
-					        				";
-					        			}
-					        		?>
-					        	</ul>
-					        </div>
-				        	<?php
-				         	unset($_SESSION['error']);
+<!-- Hero Section -->
+<section class="hero-section" id="about">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-start">
+                <h1 class="head display-4 fw-bold">Develop your skill in a new and unique way</h1>
+                <p class="lead">Our platform connects skilled tutors with motivated tutees, offering personalized guidance to help students achieve their learning goals and succeed academically.</p>
+                <a href="#features" class="btn btn-dark btn-lg">Explore Features</a>
+            </div>
+            <div class="col-md-6">
+                <img src="assets/babae.png" alt="Babae Image" class="img-fluid" style="max-width: 160%; height: auto;">
+            </div>
+        </div>
+    </div>
+</section>
 
-				        }
-				        if(isset($_SESSION['success'])){
-				          	echo "
-				            	<div class='alert alert-success alert-dismissible'>
-				              		<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-				              		<h4><i class='icon fa fa-check'></i> Success!</h4>
-				              	".$_SESSION['success']."
-				            	</div>
-				          	";
-				          	unset($_SESSION['success']);
-				        }
+<!-- Features Section -->
+<section id="features" class="feature-section">
+    <div class="container text-center">
+        <h2 class="mb-4 head1">Our Features</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon" style="font-size: 50px; color: #1d0a6b;">
+                    <i class="bi bi-person-check"></i>
+                </div>
+                <h4 style="color: #1d0a6b;">Experienced Tutors</h4>
+                <p>Learn from the best with highly experienced and skilled tutors who are dedicated to your success.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon" style="font-size: 50px; color: #1d0a6b;">
+                    <i class="bi bi-clock"></i>
+                </div>
+                <h4 style="color: #1d0a6b;">Flexible Scheduling</h4>
+                <p>Schedule your sessions at a time that works best for you. We offer flexible timing for every learner.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon" style="font-size: 50px; color: #1d0a6b;">
+                    <i class="bi bi-file-earmark-check"></i>
+                </div>
+                <h4 style="color: #1d0a6b;">Personalized Learning</h4>
+                <p>Each lesson is tailored to meet your specific learning needs and goals, ensuring effective results.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-				    ?>
- 
-				    <div class="alert alert-danger alert-dismissible" id="alert" style="display:none;">
-		        		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-			        	<span class="message"></span>
-			        </div>
+<!-- Start Section -->
+<section class="text-center Start py-5 text-white" id="get-started">
+    <div class="container">
+        <h2 class="head1">Start Your Learning Journey Today!</h2>
+        <p class="lead">Join our community of dedicated learners and expert tutors.</p>
+        <a href="#contact" class="btn btn-dark btn-lg" onclick="showRoleSelection()">Get Started</a>
+    </div>
+</section>
 
-				    <?php
-				    	$sql = "SELECT * FROM matches WHERE matches_id = '".$professor['id']."'";
-				    	$vquery = $conn->query($sql);
-				    	if($vquery->num_rows > 0){
-				    		?>
-				    		<div class="text-center">
-					    		<h3>You have already voted for this election.</h3>
-					    		<a href="#view" data-toggle="modal" class="btn btn-flat btn-primary btn-lg">View Ballot</a>
-					    	</div>
-				    		<?php
-				    	}
-				    	else{
-				    		?>
-			    			<!-- Voting Ballot -->
-						    <form method="POST" id="ballotForm" action="submit_ballot.php">
-				        		<?php
-				        			include 'includes/slugify.php';
 
-				        			$tutee = '';
-				        			$sql = "SELECT * FROM tutor ORDER BY priority ASC";
-									$query = $conn->query($sql);
-									while($row = $query->fetch_assoc()){
-										$sql = "SELECT * FROM tutee WHERE tutor_id='".$row['id']."'";
-										$cquery = $conn->query($sql);
-										while($trow = $cquery->fetch_assoc()){
-											$slug = slugify($row['description']);
-											$checked = '';
-											if(isset($_SESSION['post'][$slug])){
-												$value = $_SESSION['post'][$slug];
 
-												if(is_array($value)){
-													foreach($value as $val){
-														if($val == $trow['id']){
-															$checked = 'checked';
-														}
-													}
-												}
-												else{
-													if($value == $trow['id']){
-														$checked = 'checked';
-													}
-												}
-											}
-											$input = ($row['max_vote'] > 1) ? '<input type="checkbox" class="flat-red '.$slug.'" name="'.$slug."[]".'" value="'.$trow['id'].'" '.$checked.'>' : '<input type="radio" class="flat-red '.$slug.'" name="'.slugify($row['description']).'" value="'.$trow['id'].'" '.$checked.'>';
-											$image = (!empty($trow['photo'])) ? 'images/'.$trow['photo'] : 'images/profile.jpg';
-											$tutee .= '
-												<li>
-													'.$input.'<button type="button" class="btn btn-primary btn-sm btn-flat clist platform" data-platform="'.$crow['platform'].'" data-fullname="'.$trow['firstname'].' '.$trow['lastname'].'"><i class="fa fa-search"></i> Platform</button><img src="'.$image.'" height="100px" width="100px" class="clist"><span class="cname clist">'.$trow['firstname'].' '.$trow['lastname'].'</span>
-												</li>
-											';
-										}
+<!-- Footer Section -->
+<footer class="footer">
+    <p>&copy; 2024 TuteeFind | All Rights Reserved</p>
+</footer>
 
-										$instruct = ($row['max_vote'] > 1) ? 'You may select up to '.$row['max_vote'].' tutee' : 'Select only one tutee';
-
-										echo '
-											<div class="row">
-												<div class="col-xs-12">
-													<div class="box box-solid" id="'.$row['id'].'">
-														<div class="box-header with-border">
-															<h3 class="box-title"><b>'.$row['description'].'</b></h3>
-														</div>
-														<div class="box-body">
-															<p>'.$instruct.'
-																<span class="pull-right">
-																	<button type="button" class="btn btn-success btn-sm btn-flat reset" data-desc="'.slugify($row['description']).'"><i class="fa fa-refresh"></i> Reset</button>
-																</span>
-															</p>
-															<div id="tutee_list">
-																<ul>
-																	'.$tutee.'
-																</ul>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										';
-
-										$tutee = '';
-
-									}	
-
-				        		?>
-				        		<div class="text-center">
-					        		<button type="button" class="btn btn-success btn-flat" id="preview"><i class="fa fa-file-text"></i> Preview</button> 
-					        		<button type="submit" class="btn btn-primary btn-flat" name="vote"><i class="fa fa-check-square-o"></i> Submit</button>
-					        	</div>
-				        	</form>
-				        	<!-- End Voting Ballot -->
-				    		<?php
-				    	}
-
-				    ?>
-
-	        	</div>
-	        </div>
-	      </section>
-	     
-	    </div>
-	  </div>
-  
-  	<?php include 'includes/footer.php'; ?>
-  	<?php include 'includes/ballot_modal.php'; ?>
+<!-- Role Selection Modal (Initially Hidden) -->
+<div id="roleSelection" class="container shadow-lg p-3" style="display: none;">
+    <div class="title">What's your role?</div>
+    <div class="card-container">
+        <a href="tutee/login" class="card" onclick="selectRole(this)">
+            <i class='bx bx-user'></i>
+            <h3>Tutee</h3>
+        </a>
+        <a href="tutor/login" class="card" onclick="selectRole(this)">
+            <i class='bx bx-chalkboard'></i>
+            <h3>Tutor</h3>
+        </a>
+        <a href="professor/login" class="card" onclick="selectRole(this)">
+            <i class='bx bx-brain'></i>
+            <h3>Professor</h3>
+        </a>
+        <a href="admin/login" class="card" onclick="selectRole(this)">
+            <i class='bx bx-cog'></i>
+            <h3>Admin</h3>
+        </a>
+    </div>
 </div>
 
-<?php include 'includes/scripts.php'; ?>
+<!-- Overlay for Modal -->
+<div id="overlay" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;"></div>
+
 <script>
-$(function(){
-	$('.content').iCheck({
-		checkboxClass: 'icheckbox_flat-green',
-		radioClass: 'iradio_flat-green'
-	});
+function showRoleSelection() {
+    const roleSelection = document.getElementById('roleSelection');
+    const overlay = document.getElementById('overlay');
+    
+    if (roleSelection && overlay) {
+        roleSelection.style.display = 'block';
+        overlay.style.display = 'block';
+        
+        roleSelection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-	$(document).on('click', '.reset', function(e){
-	    e.preventDefault();
-	    var desc = $(this).data('desc');
-	    $('.'+desc).iCheck('uncheck');
-	});
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+}
 
-	$(document).on('click', '.platform', function(e){
-		e.preventDefault();
-		$('#platform').modal('show');
-		var platform = $(this).data('platform');
-		var fullname = $(this).data('fullname');
-		$('.tutee').html(fullname);
-		$('#plat_view').html(platform);
-	});
+function selectRole(card) {
+    const allCards = document.querySelectorAll('.card');
+    allCards.forEach(c => c.classList.remove('selected'));
 
-	$('#preview').click(function(e){
-		e.preventDefault();
-		var form = $('#ballotForm').serialize();
-		if(form == ''){
-			$('.message').html('You must vote atleast one tutee');
-			$('#alert').show();
-		}
-		else{
-			$.ajax({
-				type: 'POST',
-				url: 'preview.php',
-				data: form,
-				dataType: 'json',
-				success: function(response){
-					if(response.error){
-						var errmsg = '';
-						var messages = response.message;
-						for (i in messages) {
-							errmsg += messages[i]; 
-						}
-						$('.message').html(errmsg);
-						$('#alert').show();
-					}
-					else{
-						$('#preview_modal').modal('show');
-						$('#preview_body').html(response.list);
-					}
-				}
-			});
-		}
-		
-	});
+    card.classList.add('selected');
+}
 
+// Close the modal when clicking on the overlay
+document.getElementById('overlay')?.addEventListener('click', function() {
+    document.getElementById('roleSelection').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+    
+    document.body.style.overflow = 'hidden'; // Restore background scrolling
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 </html>
