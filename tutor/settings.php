@@ -194,7 +194,7 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                         <img id="profile-image" class="rounded-circle my-3 img-fluid" width="153" src="<?php echo $imagePath; ?>">
                         <label for="file-upload" class="blue p-2 mb-2 rounded-3 w-100">
                             Upload File
-                            <input id="file-upload" type="file" name="photo" style="display:none;" onchange="previewImage(event)" accept="image/*">
+                            <input id="file-upload" type="file" name="photo" style="display:none;" onchange="previewImage(event)">
                         </label>
                         <div class="mb-3">
                             <div class="labels">- at least 256 x 256 px recommended JPG or PNG.</div>
@@ -202,65 +202,65 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                         <!-- Bio section under the image upload -->
                         <div class="form-group text-start mb-4">
                             <label class="nav-text info-header">Bio</label>
-                            <textarea class="form-control " name="bio" id="bio" rows="1" placeholder="<?php echo htmlspecialchars(string: $bio); ?>"><?php echo htmlspecialchars(string: $bio); ?></textarea>
+                            <textarea class="form-control " name="bio" id="bio" rows="1" placeholder="<?php echo htmlspecialchars(string: $bio); ?>"></textarea>
                         </div>
                     </div>
 
-                    <!-- First Name, Email, Barangay, and Password section -->
-                    <div class="col-12 col-md-4">
-                        <div class="form-group mb-4">
-                            <label class="nav-text info-header">First Name</label>
-                            <input type="text" class="form-control custom-input" id="firstname" name="firstname" placeholder="First name" value="<?php echo htmlspecialchars($firstname); ?>">
-                        </div>
-                        <div class="form-group mb-4">
-                            <label class="nav-text info-header">Email Address</label>
-                            <input type="text" class="form-control" placeholder="Email Address" name="emailaddress" value="<?php echo htmlspecialchars($emailaddress); ?>">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="nav-text info-header">Barangay</label>
-                            <input name="barangay" type="text" class="form-control" placeholder="Barangay" value="<?php echo htmlspecialchars($barangay); ?>">
-                        </div>
-                        <hr class="w-100">
-                        <div class="form-group mt-3 mb-4">
-                            <label for="password" class="nav-text info-header">New Password</label>
-                            <input type="password" class="form-control" placeholder="New Password" name="password" id="password">
-                            <div class="invalid-feedback" id="password-feedback">Password must be at least 8 characters long and contain at least one number.</div>
+                            <!-- First Name, Email, Barangay, and Password section -->
+                            <div class="col-12 col-md-4">
+                                <div class="form-group mb-4">
+                                    <label class="nav-text info-header">First Name</label>
+                                    <input type="text" class="form-control custom-input" id="firstname" name="firstname" placeholder="First name" value="<?php echo htmlspecialchars($firstname); ?>">
+                                </div>
+                                <div class="form-group mb-4">
+                                    <label class="nav-text info-header">Email Address</label>
+                                    <input type="text" class="form-control" placeholder="Email Address" name="emailaddress" value="<?php echo htmlspecialchars($emailaddress); ?>">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="nav-text info-header">Barangay</label>
+                                    <input name="barangay" type="text" class="form-control" placeholder="Barangay" value="<?php echo htmlspecialchars($barangay); ?>">
+                                </div>
+                                <hr class="w-100">
+                                <div class="form-group mt-3 mb-4">
+                                    <label for="password" class="nav-text info-header">New Password</label>
+                                    <input type="password" class="form-control" placeholder="New Password" name="password" id="password">
+                                    <div class="invalid-feedback" id="password-feedback">Password must be at least 8 characters long and contain at least one number.</div>
+                                </div>
+                            </div>
+
+                            <!-- Last Name, Contact, Facebook Link, and Confirm Password section -->
+                            <div class="col-12 col-md-4">
+                                <div class="form-group mb-4">
+                                    <label class="nav-text info-header">Last Name</label>
+                                    <input type="text" class="form-control" placeholder="Last name" name="lastname" value="<?php echo htmlspecialchars($lastname); ?>">
+                                </div>
+                                <div class="form-group mb-4">
+                                    <label class="nav-text info-header">Contact Number</label>
+                                    <input type="text" class="form-control" placeholder="Contact number" name="number" value="<?php echo htmlspecialchars($number); ?>">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="nav-text info-header">Facebook Link</label>
+                                    <input type="text" class="form-control" placeholder="Facebook Link" name="fblink" value="<?php echo htmlspecialchars($fblink); ?>">
+                                </div>
+                                <hr class="w-100">
+                                <div class="form-group mt-3 mb-0">
+                                    <label for="confirm-password" class="nav-text info-header">Confirm Password</label>
+                                    <input type="password" class="form-control" placeholder="Confirm Password" name="confirm_password" id="confirm-password">
+                                    <div class="invalid-feedback">Passwords do not match.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Last Name, Contact, Facebook Link, and Confirm Password section -->
-                    <div class="col-12 col-md-4">
-                        <div class="form-group mb-4">
-                            <label class="nav-text info-header">Last Name</label>
-                            <input type="text" class="form-control" placeholder="Last name" name="lastname" value="<?php echo htmlspecialchars($lastname); ?>">
-                        </div>
-                        <div class="form-group mb-4">
-                            <label class="nav-text info-header">Contact Number</label>
-                            <input type="text" class="form-control" placeholder="Contact number" name="number" value="<?php echo htmlspecialchars($number); ?>">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="nav-text info-header">Facebook Link</label>
-                            <input type="text" class="form-control" placeholder="Facebook Link" name="fblink" value="<?php echo htmlspecialchars($fblink); ?>">
-                        </div>
-                        <hr class="w-100">
-                        <div class="form-group mt-3 mb-0">
-                            <label for="confirm-password" class="nav-text info-header">Confirm Password</label>
-                            <input type="password" class="form-control" placeholder="Confirm Password" name="confirm_password" id="confirm-password">
-                            <div class="invalid-feedback">Passwords do not match.</div>
+                    <!-- Save Button -->
+                    </div>
+                        <div class="align-content-center d-flex justify-content-center">
+                            <button type="submit" class="blue m-3 rounded-3" id="saveButton" style="width: 30%; height: 40px;">Save</button>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Save Button -->
-            </div>
-                <div class="align-content-center d-flex justify-content-center">
-                    <button type="submit" class="blue m-3 rounded-3" id="saveButton" style="width: 30%; height: 40px;">Save</button>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
         <!-- Success Modal -->
         <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
@@ -286,91 +286,106 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
 
     </div>
     </form>
-    <style>
-        .invalid-feedback {
-            display: none;
-            color: red;
-            font-size: 0.875em;
-        }
-        .is-invalid ~ .invalid-feedback {
-            display: block;
-        }
-    </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const passwordInput = document.getElementById('password');
-            const confirmPasswordInput = document.getElementById('confirm-password');
-            const passwordFeedback = document.getElementById('password-feedback');
-            const confirmPasswordFeedback = confirmPasswordInput.nextElementSibling;
 
-            function validatePassword() {
-                const passwordValue = passwordInput.value;
-                const passwordValid = passwordValue.length >= 8 && /\d/.test(passwordValue);
-                
-                if (passwordValid) {
-                    passwordInput.classList.remove('is-invalid');
-                    passwordFeedback.style.display = 'none';
-                } else {
-                    passwordInput.classList.add('is-invalid');
-                    passwordFeedback.style.display = 'block';
-                }
-                return passwordValid;
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const saveButton = document.getElementById('saveButton');
+        const form = saveButton.closest('form'); // Find the closest form element
+        const updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+        const modalBody = document.getElementById('modalBody');
+
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const passwordFeedback = document.getElementById('password-feedback');
+        const confirmPasswordFeedback = confirmPasswordInput.nextElementSibling;
+
+        // Function to validate password
+        function validatePassword() {
+            const passwordValue = passwordInput.value;
+            const passwordValid = passwordValue.length >= 8 && /\d/.test(passwordValue);
+            
+            if (passwordValid) {
+                passwordInput.classList.remove('is-invalid');
+                passwordFeedback.style.display = 'none';
+            } else {
+                passwordInput.classList.add('is-invalid');
+                passwordFeedback.style.display = 'block';
             }
+            return passwordValid;
+        }
 
-            function validateConfirmPassword() {
-                if (confirmPasswordInput.value === passwordInput.value) {
-                    confirmPasswordInput.classList.remove('is-invalid');
-                    confirmPasswordFeedback.style.display = 'none';
-                } else {
-                    confirmPasswordInput.classList.add('is-invalid');
-                    confirmPasswordFeedback.style.display = 'block';
+        // Function to validate confirm password
+        function validateConfirmPassword() {
+            if (confirmPasswordInput.value === passwordInput.value) {
+                confirmPasswordInput.classList.remove('is-invalid');
+                confirmPasswordFeedback.style.display = 'none';
+            } else {
+                confirmPasswordInput.classList.add('is-invalid');
+                confirmPasswordFeedback.style.display = 'block';
+            }
+        }
+
+        // Function to check if any form data has been changed
+        function hasFormChanged() {
+            const inputs = form.querySelectorAll('input, textarea, select');
+            for (let input of inputs) {
+                // If any input has changed, return true
+                if (input.value !== input.defaultValue) {
+                    return true;
                 }
             }
+            // Check password fields if the values have changed
+            if (passwordInput.value !== passwordInput.defaultValue || confirmPasswordInput.value !== confirmPasswordInput.defaultValue) {
+                return true;
+            }
+            return false; // No changes made
+        }
 
-            passwordInput.addEventListener('input', function () {
-                validatePassword();
-                validateConfirmPassword();
-            });
+        // Function to enable or disable the save button based on form changes
+        function toggleSaveButton() {
+            if (hasFormChanged()) {
+                saveButton.disabled = false; // Enable the button if changes are made
+            } else {
+                saveButton.disabled = true; // Disable the button if no changes
+            }
+        }
 
-            confirmPasswordInput.addEventListener('input', function () {
-                validateConfirmPassword();
-            });
+        // Initially disable the save button if no changes are made
+        toggleSaveButton();
+
+        // Add event listeners to form inputs to detect changes
+        form.addEventListener('input', function() {
+            validatePassword();  // Validate password on input
+            validateConfirmPassword();  // Validate confirm password on input
+            toggleSaveButton(); // Check if any changes have been made
         });
-    </script>
-    <script>
-            function previewImage(event) {
-            var input = event.target;
-            var reader = new FileReader();
 
-            reader.onload = function(){
-                var img = document.getElementById('profile-image');
-                img.src = reader.result;
-            };
+        saveButton.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent form submission initially
 
-            reader.readAsDataURL(input.files[0]);
-        }
+            // Check if the form has changed
+            if (hasFormChanged()) {
+                modalBody.textContent = 'Updated successfully.'; // Set success message
+            } else {
+                modalBody.textContent = 'You saved nothing.'; // Set "no changes" message
+            }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const saveButton = document.getElementById('saveButton');
-    const form = saveButton.closest('form'); // Find the closest form element
-    const updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+            // Show the modal
+            updateModal.show();
 
-    saveButton.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent form submission initially
-
-        // Show the success modal
-        updateModal.show();
-
-        // After the modal is hidden, submit the form
-        document.getElementById('updateModal').addEventListener('hidden.bs.modal', function () {
-            form.submit(); // Submit the form after modal is closed
+            // After the modal is hidden, submit the form
+            document.getElementById('updateModal').addEventListener('hidden.bs.modal', function () {
+                if (hasFormChanged()) {
+                    form.submit(); // Submit the form if there were changes
+                }
+            });
         });
     });
-});
+</script>
 
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="script.js"></script>
 </body>
 </html>
