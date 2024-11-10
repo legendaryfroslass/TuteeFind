@@ -307,7 +307,7 @@ if (isset($_POST['send_message'])) {
         <div class="menu"> 
                 <ul class="menu-links">
                     <li class="nav-link custom-bg" data-bs-placement="right" title="Home" data-bs-placement="right" title="Home">
-                        <a href="../tutor/tutee">
+                        <a href="../tutor/suggestedtutee">
                             <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Home</span>
                         </a>

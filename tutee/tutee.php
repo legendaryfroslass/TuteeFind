@@ -3,6 +3,7 @@
 session_start();
 require_once '../tutee.php';
 $user_login = new TUTEE();
+include('spinner.php');
 
 // $currentPage = 'home'; 
 // include 'navbar.php'; 
@@ -254,6 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="notif.css">
         <link rel="stylesheet" href="tutee.css">
+        <link rel="stylesheet" href="spinner.css">
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link rel="icon" href="../assets/TuteeFindLogo.png" type="image/png">
@@ -283,19 +285,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="menu-bar">
                 <div class="menu">  
                     <ul class="menu-links">
-                        <li class="nav-link navbar-active">
+                        <li class="nav-link navbar-active" data-bs-toggle="tooltip" data-bs-placement="right" title="Home">
                             <a href="../tutee/tutee">
                                 <i class='bx bx-home-alt icon'></i>
                                 <span class="text nav-text">Home</span>
                             </a>
                         </li>
-                        <li class="nav-link">
+                        <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                             <a href="../tutee/message">
                                 <i class='bx bxs-inbox icon' ></i>
                                 <span class="text nav-text">Messages</span>
                             </a>
                         </li>
-                        <li class="nav-link">
+                        <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Notification">
                             <a href="../tutee/notif" class="d-flex align-items-center">
                                 <div style="position: relative;">
                                     <i class='bx bx-bell icon'></i>
@@ -306,19 +308,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <span class="text nav-text">Notification</span>
                             </a>
                         </li>                         
-                        <li class="nav-link">
+                        <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Progress">
                             <a href="../tutee/progress">
                                 <i class='bx bx-bar-chart-alt icon'></i>
                                 <span class="text nav-text">Progress</span>
                             </a>
                         </li>
-                        <li class="nav-link">
+                        <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Tutor">
                             <a href="../tutee/tutor">
                                 <i class='bx bx-user icon'></i>
                                 <span class="text nav-text">Tutors</span>
                             </a>
                         </li>
-                        <li class="nav-link">
+                        <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Settings">
                             <a href="../tutee/settings">
                                 <i class='bx bx-cog icon'></i>
                                 <span class="text nav-text">Settings</span>
@@ -329,7 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <div class="bottom-content">
                     <ul class="navbar-nav">
-                        <li class="nav-link d-flex justify-content-center align-items-center">
+                        <li class="nav-link d-flex justify-content-center align-items-center" data-bs-toggle="tooltip" data-bs-placement="right" title="Logout">
                             <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
                                 <div class="icon-container d-flex justify-content-center align-items-center">
                                     <i class='bx bx-log-out icon'></i>
@@ -338,7 +340,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </button>
                         </li>
                     </ul>
-                        <li class="mode">
+                        <li class="mode" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle dark mode">
                             <div class="moon-sun">
                                 <i class='bx bx-moon icon moon'></i>
                                 <i class='bx bx-sun icon sun'></i>
@@ -497,73 +499,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 </div>
 
-
-<script>
-    
-    document.addEventListener('DOMContentLoaded', function() {
-    const messageModal = document.getElementById('messageModal');
-    messageModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const tutorId = button.getAttribute('data-tutor-id');
-        const tutorName = button.getAttribute('data-tutor-name');
-
-        // Set tutor_id in the hidden input field
-        const tutorIdInput = document.querySelector('#sendMessageForm input[name="tutor_id"]');
-        tutorIdInput.value = tutorId;
-
-        // Update the recipient name display in the modal
-        const recipientDisplay = document.getElementById('recipient');
-        recipientDisplay.textContent = tutorName;
-    });
-
-    document.getElementById('msg-sendBtn').addEventListener('click', function() {
-        const form = document.getElementById('sendMessageForm');
-        const formData = new FormData(form);
-
-        fetch('', { // Add your PHP file here
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.text())
-        .then(result => {
-            form.reset(); // Clear the form
-            $('#messageModal').modal('hide'); // Close the modal
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Message could not be sent.');
-        });
-    });
-});
-
-</script>
-
-        <script>
-            // Function to submit the form when select options change
-            function submitForm() {
-                console.log("Form submitted");
-                document.getElementById('filter-form').submit();
-            }
-
-            $(document).ready(function() {
-                <?php if (isset($_SESSION['request_result'])): ?>
-                    var requestResult = "<?php echo $_SESSION['request_result']; ?>";
-                    $('#tuteeModalBody').text(requestResult);
-                    $('#tuteeNotificationModal').modal('show');
-                <?php unset($_SESSION['request_result']); ?>
-                <?php endif; ?>
-            });
-
-            function setRequestId(action, button) {
-                var requestId = button.getAttribute('data-request-id');
-                if (action === 'accept') {
-                document.getElementById('acceptRequestId').value = requestId;
-                } else if (action === 'reject') {
-                document.getElementById('rejectRequestId').value = requestId;
-                }
-            }
-        </script>
-
         <!-- Notification Modal for Tutee's Side -->
         <div class="modal fade" id="tuteeNotificationModal" tabindex="-1" role="dialog" aria-labelledby="tuteeModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -653,7 +588,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="modal-footer">
                     <form method="post" id="rejectForm">
                     <input type="hidden" name="request_id" id="rejectRequestId">
-                    <button type="submit" name="reject_request" class="btn btn-outline-danger" id="reqReject" data-bs-toggle="modal" data-bs-target="#rejectModal">Reject</button>
+                    <button type="submit" name="reject_request" onclick="showSpinner(); setTimeout(hideSpinner, 4000);" class="btn btn-outline-danger" id="reqReject" data-bs-toggle="modal" data-bs-target="#rejectModal">Reject</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     </form>
                 </div>
@@ -748,11 +683,74 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="spinner.js"></script>
         <script src="tutee_sidebar.js"></script>
         <script src="notif.js"></script>
         <script src="tutee.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const messageModal = document.getElementById('messageModal');
+                messageModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const tutorId = button.getAttribute('data-tutor-id');
+                    const tutorName = button.getAttribute('data-tutor-name');
+
+                    // Set tutor_id in the hidden input field
+                    const tutorIdInput = document.querySelector('#sendMessageForm input[name="tutor_id"]');
+                    tutorIdInput.value = tutorId;
+
+                    // Update the recipient name display in the modal
+                    const recipientDisplay = document.getElementById('recipient');
+                    recipientDisplay.textContent = tutorName;
+                });
+
+                document.getElementById('msg-sendBtn').addEventListener('click', function() {
+                    const form = document.getElementById('sendMessageForm');
+                    const formData = new FormData(form);
+
+                    fetch('', { // Add your PHP file here
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(result => {
+                        form.reset(); // Clear the form
+                        $('#messageModal').modal('hide'); // Close the modal
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Message could not be sent.');
+                    });
+                });
+            });
+
+
+            // Function to submit the form when select options change
+            function submitForm() {
+                console.log("Form submitted");
+                document.getElementById('filter-form').submit();
+            }
+
+            $(document).ready(function() {
+                <?php if (isset($_SESSION['request_result'])): ?>
+                    var requestResult = "<?php echo $_SESSION['request_result']; ?>";
+                    $('#tuteeModalBody').text(requestResult);
+                    $('#tuteeNotificationModal').modal('show');
+                <?php unset($_SESSION['request_result']); ?>
+                <?php endif; ?>
+            });
+
+            function setRequestId(action, button) {
+                var requestId = button.getAttribute('data-request-id');
+                if (action === 'accept') {
+                document.getElementById('acceptRequestId').value = requestId;
+                } else if (action === 'reject') {
+                document.getElementById('rejectRequestId').value = requestId;
+                }
+            }
+        </script>
     </body>
 </html>
