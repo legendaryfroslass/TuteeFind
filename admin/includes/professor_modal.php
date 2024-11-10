@@ -216,6 +216,44 @@
   </div>
 </div>
 
+ <!-- Activity Logs Modal --> 
+ <div class="modal fade" id="viewLogsModal" tabindex="-1" role="dialog" aria-labelledby="viewLogsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="viewLogsModalLabel"><b id="professorName">Professor Name</b></h4>
+            </div>
+            <div class="modal-body">
+                <!-- Message for empty logs -->
+                <div id="emptyLogsMessage" style="display: none; text-align: center; margin: 10px 0;">
+                    No activity logs available.
+                </div>
+                
+                <!-- Activity Logs Table -->
+                <table class="table" id="logsTable">
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-flat pull-right" data-dismiss="modal">
+                    <i class='fa fa-close'></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Edit Professor Modal -->
 <div class="modal fade" id="edit">
   <div class="modal-dialog">

@@ -2,39 +2,78 @@
 <?php include 'includes/header.php'; ?>
 
 <style>
-  /* Style for making the table header fixed and the body scrollable */
   .scrollable-table {
-    max-height: 280px; /* Set the desired max height for scrolling */
-    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 230px;
+    overflow-y: auto;
     border-collapse: collapse;
-    display: block; /* Make the table behave like a block element */
+    display: block;
   }
-
-  /* Ensures that the header stays fixed at the top */
   .scrollable-table thead {
     position: sticky;
     top: 0;
-    background-color: #fff; /* You can set a background color for the header */
+    background-color: #fff;
     z-index: 1;
   }
-
-  /* Style for making the scrollbar thinner */
   .scrollable-table::-webkit-scrollbar {
-    width: 2px; /* Change scrollbar width */
+    width: 2px;
   }
-
   .scrollable-table::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Scrollbar track background */
+    background: #f1f1f1;
   }
-
   .scrollable-table::-webkit-scrollbar-thumb {
-    background: #888; /* Scrollbar thumb color */
-    border-radius: 8px; /* Rounded corners for the thumb */
+    background: #888;
+    border-radius: 8px;
   }
-
   .scrollable-table::-webkit-scrollbar-thumb:hover {
-    background: #555; /* Scrollbar thumb color on hover */
+    background: #555;
   }
+  /* Make sure the table takes up the full width */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Add padding and border to table cells */
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Style for active/inactive status in the table */
+table td.status {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Button styling for the actions column */
+table td button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Hover effect for buttons */
+table td button:hover {
+    background-color: #0056b3;
+}
+/* Center text in table headers */
+table th {
+    text-align: center;
+}
+
+/* Center text inside table body cells */
+table td {
+    text-align: center;
+}
+
+/* Optional: Adjust button alignment */
+table td button {
+    display: inline-block;
+    text-align: center;
+}
 </style>
 
 <?php

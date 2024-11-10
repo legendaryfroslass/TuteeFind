@@ -867,6 +867,11 @@ body {
   }
 }
 
+.background1 {
+  background-color: var(--a-bgcolor);
+  color: white;
+}
+
 /* Cross-specific styles */
 .cross {
   stroke: #f44336; /* Error red */
@@ -1044,42 +1049,15 @@ a:hover {
 }
 
 /* MESSAGES */
-.truncateMessage {
-  max-width: 15ch;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-/* Container for the message list */
-.message-list {
-  border-right: 1px solid #ddd;
-  height: 70vh;
-  overflow-y: auto;
-}
-
-/* Main message container */
-.message-content {
-  max-height: calc(80vh - 100px);
-  padding: 15px;
-  padding-top: 0;
-  padding-bottom: 0;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto; /* Allow scrolling when content exceeds max height */
-}
-
-/* Allows the message content to scroll if it exceeds the view height */
-.flex-grow-1 {
-  overflow-y: auto;
-}
-
+/* Container for messages */
 .message-container {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100vh; /* Ensures the container takes up full viewport height */
 }
 
-/* Container for individual messages with dynamic alignment */
+/* Wrapper for individual messages */
 .message-wrapper {
   display: flex;
   margin-bottom: 10px;
@@ -1116,28 +1094,105 @@ a:hover {
   margin: 0;
 }
 
+/* Message content area */
 #messageContent {
   display: flex;
   flex-direction: column; /* Align items in a column */
-  justify-content: center; /* Center items vertically */
-  height: 100vh; /* Full viewport height or adjust as needed */
-  text-align: center; /* Center text within the content */
+  justify-content: flex-start; /* Align items to the top */
+  padding: 10px;
+  height: calc(100vh - 150px); /* Full viewport height minus header/footer */
+  text-align: left; /* Align text to the left */
+  overflow-y: auto; /* Allow scrolling if the messages exceed the height */
+  background-color: #f9f9f9; /* Light background for the content */
+  max-height: 80vh; /* Limit the height to 80% of the viewport */
+  min-height: 50vh; /* Ensure it doesn't shrink too much */
+}
+#messageContent::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+#messageContent {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
+/* Form at the bottom */
 #sendMessageForm {
   position: sticky; /* Makes the form stay at the bottom */
   bottom: 0; /* Sticks the form to the bottom of the container */
-  background-color: transparent; /* Keeps the form visible even if scrolling */
+  background-color: transparent;
   padding-top: 10px;
-  padding-bottom: 0;
+  padding-bottom: 10px;
   z-index: 1; /* Ensures it stays above the content */
+  width: 100%; /* Full width for the form */
+  background-color: #ffffff; /* White background for better visibility */
+  box-shadow: none;
 }
 
+/* Header (Tutee's info) */
 #tuteeHeader {
   position: sticky; /* Fixes the tutee's picture and name at the top */
   top: 0; /* Sticks the header to the top of the container */
-  background-color: white; /* Keeps the header visible when scrolling */
-  padding-top: 10px;
-  padding-bottom: 10px;
+  background-color: white;
+  padding: 10px 0;
   z-index: 2; /* Ensures it stays above the scrolling content */
+  box-shadow: none;
+}
+
+/* Conversation list styles */
+.message-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: calc(100vh - 100px); /* Full height minus header/footer */
+}
+
+.message-list .list-group-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+}
+
+.message-list .list-group-item:hover {
+  background-color: #f1f0f0;
+}
+
+/* Styling for profile image and message preview */
+.message-list img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+  /* Stack the conversation list and message content on small screens */
+  .message-list {
+    flex-direction: row;
+    overflow-y: scroll;
+    height: 100%; /* Ensure it doesn't overflow */
+  }
+
+  .message-content {
+    flex-direction: column;
+    height: auto; /* Allow content to adjust based on messages */
+    padding: 10px;
+    max-height: none; /* Remove max-height so it can grow */
+  }
+
+  /* Adjust message bubbles to take full width on small screens */
+  .message-wrapper {
+    max-width: 100%;
+  }
+
+  /* Make the form stay at the bottom */
+  #sendMessageForm {
+    position: relative; /* Remove sticky position on smaller screens */
+    margin-top: auto; /* Push form to the bottom */
+    box-shadow: none;
+  }
 }

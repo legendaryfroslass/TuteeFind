@@ -1,5 +1,5 @@
 <?php
-require_once '../../vendor/autoload.php'; // Adjust the path as necessary
+require_once '../vendor/autoload.php'; // Adjust the path as necessary
 require('includes/conn.php'); // Ensure this path is correct
 
 // Create new PDF document with portrait orientation

@@ -26,6 +26,53 @@
   .scrollable-table::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+  /* Make sure the table takes up the full width */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Add padding and border to table cells */
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Style for active/inactive status in the table */
+table td.status {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Button styling for the actions column */
+table td button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Hover effect for buttons */
+table td button:hover {
+    background-color: #0056b3;
+}
+/* Center text in table headers */
+table th {
+    text-align: center;
+}
+
+/* Center text inside table body cells */
+table td {
+    text-align: center;
+}
+
+/* Optional: Adjust button alignment */
+table td button {
+    display: inline-block;
+    text-align: center;
+}
 </style>
 <?php
 // Search and pagination variables
@@ -41,11 +88,12 @@ $professor_id = $_SESSION['professor_id'];
 $sql = "
     SELECT tutee.id AS tutee_id, tutee.firstname AS tutee_firstname, tutee.lastname AS tutee_lastname, 
            tutee.barangay, tutee.age, tutee.school
-    FROM tutor t
+    FROM tutee
+    INNER JOIN requests r ON tutee.id = r.tutee_id
+    INNER JOIN tutor t ON r.tutor_id = t.id
     INNER JOIN professor p ON t.professor = p.faculty_id
-    INNER JOIN requests r ON t.id = r.tutor_id
-    INNER JOIN tutee ON r.tutee_id = tutee.id
-    WHERE p.id = ?
+    WHERE p.id = ? 
+    AND r.status = 'accepted'
     AND (
         CONCAT(LOWER(tutee.firstname), ' ', LOWER(tutee.lastname)) LIKE LOWER(?) OR
         LOWER(tutee.barangay) LIKE LOWER(?) OR
@@ -63,11 +111,12 @@ $result = $stmt->get_result();
 // Query to get total count for pagination
 $total_sql = "
     SELECT COUNT(*) as total
-    FROM tutor t
+    FROM tutee
+    INNER JOIN requests r ON tutee.id = r.tutee_id
+    INNER JOIN tutor t ON r.tutor_id = t.id
     INNER JOIN professor p ON t.professor = p.faculty_id
-    INNER JOIN requests r ON t.id = r.tutor_id
-    INNER JOIN tutee ON r.tutee_id = tutee.id
-    WHERE p.id = ?
+    WHERE p.id = ? 
+    AND r.status = 'accepted'
     AND (
         CONCAT(LOWER(tutee.firstname), ' ', LOWER(tutee.lastname)) LIKE LOWER(?) OR
         LOWER(tutee.barangay) LIKE LOWER(?) OR
@@ -128,8 +177,11 @@ $total_pages = ceil($total_rows / $limit);
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header with-border">
+            <a href="tutee_pdf.php?search=<?php echo urlencode($search); ?>" class="btn btn-primary btn-sm btn-flat" target="_blank">
+                <i class="fa fa-file-pdf-o"></i> Export to PDF
+              </a>
             </div>
-            <div class="box-body">
+      <div class="box-body">
 
 
 
@@ -175,24 +227,20 @@ if (isset($_SESSION['professor_id'])) {
 
     // SQL query to fetch required data
     $sql = "
-        SELECT 
-            tutee.id AS tutee_id, 
-            tutee.firstname AS tutee_firstname, 
-            tutee.lastname AS tutee_lastname, 
-            tutee.barangay, 
-            tutee.age, 
-            tutee.school
-        FROM tutor t
-        INNER JOIN professor p ON t.professor = p.faculty_id
-        INNER JOIN requests r ON t.id = r.tutor_id
-        INNER JOIN tutee ON r.tutee_id = tutee.id
-        WHERE p.id = ?
-        AND (
-            CONCAT(LOWER(tutee.firstname), ' ', LOWER(tutee.lastname)) LIKE ? OR
-            LOWER(tutee.barangay) LIKE ? OR
-            LOWER(tutee.age) LIKE ? OR
-            LOWER(tutee.school) LIKE ?
-        )
+    SELECT tutee.id AS tutee_id, tutee.firstname AS tutee_firstname, tutee.lastname AS tutee_lastname, 
+           tutee.barangay, tutee.age, tutee.school
+    FROM tutee
+    INNER JOIN requests r ON tutee.id = r.tutee_id
+    INNER JOIN tutor t ON r.tutor_id = t.id
+    INNER JOIN professor p ON t.professor = p.faculty_id
+    WHERE p.id = ? 
+    AND r.status = 'accepted'
+    AND (
+        CONCAT(LOWER(tutee.firstname), ' ', LOWER(tutee.lastname)) LIKE LOWER(?) OR
+        LOWER(tutee.barangay) LIKE LOWER(?) OR
+        LOWER(tutee.school) LIKE LOWER(?) OR
+        LOWER(tutee.age) LIKE LOWER(?)
+    )      
     ";
 
     if ($stmt = $conn->prepare($sql)) {

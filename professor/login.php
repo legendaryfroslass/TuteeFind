@@ -12,7 +12,7 @@ if (isset($_POST['login'])) {
     // Check for empty fields
     if (empty($username) || empty($password)) {
         $_SESSION['error'] = 'Input admin credentials first';
-        header('location: index.php');
+        header('location: landingpage.php');
         exit();
     }
 
@@ -62,11 +62,11 @@ if (isset($_POST['login'])) {
             $_SESSION['error'] = 'Incorrect password';
         }
     }
-    header('location: index.php');
+    header('location: landingpage.php');
     exit();
 } else {
     $_SESSION['error'] = 'Input admin credentials first';
-    header('location: index.php');
+    header('location: landingpage.php');
     exit();
 }
 ?>

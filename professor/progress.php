@@ -27,6 +27,53 @@
   .scrollable-table::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+  /* Make sure the table takes up the full width */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Add padding and border to table cells */
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Style for active/inactive status in the table */
+table td.status {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Button styling for the actions column */
+table td button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Hover effect for buttons */
+table td button:hover {
+    background-color: #0056b3;
+}
+/* Center text in table headers */
+table th {
+    text-align: center;
+}
+
+/* Center text inside table body cells */
+table td {
+    text-align: center;
+}
+
+/* Optional: Adjust button alignment */
+table td button {
+    display: inline-block;
+    text-align: center;
+}
 </style>
 
 <?php

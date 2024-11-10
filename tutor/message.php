@@ -40,7 +40,6 @@ $unreadMessagesQuery->execute();
 $unreadMessagesData = $unreadMessagesQuery->fetch(PDO::FETCH_ASSOC);
 $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
 
-
 $messagesQuery = $user_login->runQuery("
     SELECT m.tutee_id, t.firstname AS tutee_firstname, t.lastname AS tutee_lastname,
            t.photo AS tutee_photo, m.message, m.created_at, m.sender_type
@@ -58,12 +57,10 @@ $messagesQuery = $user_login->runQuery("
 $messagesQuery->bindParam(":tutor_id", $tutor_id);
 $messagesQuery->execute();
 $messages = $messagesQuery->fetchAll(PDO::FETCH_ASSOC);
-
-
 // Handle AJAX request for fetching and sending messages
 if (isset($_POST['fetch_messages'])) {
     $tutee_id = $_POST['tutee_id'];
-
+    // Fetch messages for the selected tutee
     $messageFetchQuery = $user_login->runQuery("
         SELECT sender_type, message, created_at
         FROM messages
@@ -74,21 +71,19 @@ if (isset($_POST['fetch_messages'])) {
     $messageFetchQuery->bindParam(":tutee_id", $tutee_id);
     $messageFetchQuery->execute();
     $messages = $messageFetchQuery->fetchAll(PDO::FETCH_ASSOC);
-
-        // Mark all unread messages from this tutee as read
+    // Mark all unread messages as read
     $markAsReadQuery = $user_login->runQuery("
-    UPDATE messages
-    SET is_read = 1
-    WHERE tutor_id = :tutor_id 
-    AND tutee_id = :tutee_id 
-    AND sender_type = 'tutee'
-    AND is_read = 0
+        UPDATE messages
+        SET is_read = 1
+        WHERE tutor_id = :tutor_id 
+        AND tutee_id = :tutee_id 
+        AND sender_type = 'tutee'
+        AND is_read = 0
     ");
     $markAsReadQuery->bindParam(":tutor_id", $tutor_id);
     $markAsReadQuery->bindParam(":tutee_id", $tutee_id);
     $markAsReadQuery->execute();
-
-    // Fetch the tutee's photo for the conversation view
+    // Output the conversation header (tutee name and picture)
     $tuteeInfoQuery = $user_login->runQuery("
         SELECT firstname, lastname, photo
         FROM tutee
@@ -98,38 +93,24 @@ if (isset($_POST['fetch_messages'])) {
     $tuteeInfoQuery->execute();
     $tuteeInfo = $tuteeInfoQuery->fetch(PDO::FETCH_ASSOC);
     $tuteeImage = !empty($tuteeInfo['photo']) ? $tuteeInfo['photo'] : '../assets/TuteeFindLogoName.jpg';
-
-    // Display the tutee's picture at the top of the conversation
-    echo "<div id='tuteeHeader' class='d-flex align-items-center mb-3' style='background-color: transparent;'>";
+    // Display the tutee's header
+    echo "<div id='tuteeHeader' class='d-flex align-items-center mb-3'>";
     echo "<img src='$tuteeImage' class='rounded-circle me-3' alt='Tutee Picture' style='width: 50px; height: 50px;'>";
     echo "<h5><strong>{$tuteeInfo['firstname']} {$tuteeInfo['lastname']}</strong></h5>";
     echo "</div>";
-
-
-    // Display the messages dynamically
+    // Loop through and display each message in a bubble
     foreach ($messages as $message) {
         $messageClass = $message['sender_type'] == 'tutor' ? 'message-bubble-right' : 'message-bubble-left';
         echo "<div class='message-bubble {$messageClass}'>";
         echo "<p>{$message['message']}</p>";
         echo "</div>";
     }
-
-    // Add a form for sending a new message
-    echo '<form id="sendMessageForm" class="mt-2" onsubmit="sendMessage(event, '.$tutee_id.')">
-            <div class="input-group">
-                <input type="text" id="messageInput" name="message" class="form-control" placeholder="Type your message here..." required>
-                <button class="btn btn-primary" type="submit">Send</button>
-            </div>
-          </form>';
-
-    exit();
+    exit(); // Ensure that no further output is sent
 }
-
 // Handle sending a new message
 if (isset($_POST['send_message'])) {
     $tutee_id = $_POST['tutee_id'];
     $message = $_POST['message'];
-
     $insertMessageQuery = $user_login->runQuery("
         INSERT INTO messages (tutor_id, tutee_id, sender_type, message, created_at)
         VALUES (:tutor_id, :tutee_id, 'tutor', :message, NOW())
@@ -138,11 +119,8 @@ if (isset($_POST['send_message'])) {
     $insertMessageQuery->bindParam(":tutee_id", $tutee_id);
     $insertMessageQuery->bindParam(":message", $message);
     $insertMessageQuery->execute();
-
     exit();
 }
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -154,7 +132,7 @@ if (isset($_POST['send_message'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="icon" href="../assets/TuteeFindLogo.png" type="image/png">
     <title>Messages</title>
-
+    
 </head>
 <body>
     <nav class="sidebar close">
@@ -169,10 +147,8 @@ if (isset($_POST['send_message'])) {
                     <span class="position">Tutor</span>
                 </div>
             </div>
-
             <i class='bx bxs-chevron-right toggle'></i>
         </header>
-
         <div class="menu-bar">
         <div class="menu">
                 <ul class="menu-links">
@@ -224,7 +200,6 @@ if (isset($_POST['send_message'])) {
                     </li>
                 </ul>
             </div>
-
             <div class="bottom-content">
                 <li class="">
                     <a href="../tutor/logout">
@@ -232,18 +207,15 @@ if (isset($_POST['send_message'])) {
                         <span class="text nav-text">Logout</span>
                     </a>
                 </li>
-
                 <li class="mode">
                     <div class="moon-sun">
                         <i class='bx bx-moon icon moon'></i>
                         <i class='bx bx-sun icon sun'></i>
                     </div>
                     <span class="mode-text text">Dark Mode</span>
-
                     <div class="toggle-switch">
                         <span class="switch"></span>
                     </div>
-
                 </li>
             </div>
         </div>
@@ -256,56 +228,58 @@ if (isset($_POST['send_message'])) {
                 </div>
             </div>
         </div>
-
-        <div class="container-lg p-3">
-            <div class="container-lg p-3 table-container">
-                <div class="row ">
-                    <!-- First column for conversation list -->
-                    <div class="col-md-4 message-table message-list">
-                        <table class="table">
-                            <tbody>
-                                <?php foreach ($messages as $message): ?>
-                                    <?php
-                                        // Use the tutee's profile picture if available; otherwise, use a default image
-                                        $tuteeImage = !empty($message['tutee_photo']) ? $message['tutee_photo'] : '../assets/TuteeFindLogoName.jpg';
-                                        // Determine the message display style
-                                        $messageClass = $message['sender_type'] == 'tutee' ? 'font-weight-bold' : '';
-                                    ?>
-                                    <tr onclick="showMessages('<?php echo $message['tutee_id']; ?>')">
-                                        <td class="d-flex align-items-center">
-                                            <img src="<?php echo $tuteeImage; ?>" class="rounded-circle me-3" alt="Profile Picture" style="width: 50px; height: 50px;">
-                                            <div>
-                                                <div class="mb-1">
-                                                    <strong><?php echo $message['tutee_firstname'] . ' ' . $message['tutee_lastname']; ?></strong>
-                                                    <small class="text-muted"><?php echo date('M d, Y', strtotime($message['created_at'])); ?></small>
-                                                </div>
-                                                <!-- Display the most recent message with styling based on sender -->
-                                                <p class="mb-0 truncateMessage <?php echo $messageClass; ?>">
-                                                    <?php echo $message['sender_type'] == 'tutor' ? 'You: ' : ''; ?>
-                                                    <?php echo htmlspecialchars($message['message']); ?>
-                                                </p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Second column for message content -->
-                    <div class="col-md-8 message-content" id="messageContent">
-                        <h3>Select a Message</h3>
-                        <p>Choose from your existing conversations</p>
-                    </div>
+<div class="container-lg p-3">
+    <div class="row">
+        <!-- Sidebar for conversation list -->
+        <div class="col-12 col-md-3 mb-3 mb-md-0">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5>Inbox</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group">
+                        <?php foreach ($messages as $message): ?>
+                            <li class="list-group-item d-flex align-items-center" onclick="showMessages('<?php echo $message['tutee_id']; ?>')">
+                                <img src="<?php echo $message['tutee_photo'] ?: '../assets/TuteeFindLogoName.jpg'; ?>" class="rounded-circle me-3" alt="Profile Picture" style="width: 50px; height: 50px;">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <strong><?php echo $message['tutee_firstname'] . ' ' . $message['tutee_lastname']; ?></strong>
+                                        <small class="text-muted"><?php echo date('M d, Y', strtotime($message['created_at'])); ?></small>
+                                    </div>
+                                    <p class="mb-0">
+                                        <?php echo $message['sender_type'] == 'tutor' ? 'You: ' : ''; ?>
+                                        <?php echo htmlspecialchars($message['message']); ?>
+                                    </p>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
             </div>
-
+        </div>
+        <!-- Main content area for message details -->
+        <div class="col-12 col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5>Messages</h5>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center align-items-center" id="messageContent" style="height: 70vh;">
+                    <h3>Select a Conversation</h3>
+                    <p>Choose from your existing conversations to view or respond to messages.</p>
+                </div>
+                <!-- Message Input Form (outside the message content area) -->
+                <form id="sendMessageForm" class="mt-2" onsubmit="sendMessage(event, currentTuteeId)" style="display: none;">
+                    <div class="input-group">
+                        <input type="text" id="messageInput" name="message" class="form-control" placeholder="Type your message here..." required>
+                        <button class="btn btn-primary" type="submit">Send</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-
+</div>
 </body>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="script1.js"></script>
-
+    <script src="script1.js"></script>          
 </html>

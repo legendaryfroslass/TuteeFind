@@ -3,7 +3,7 @@
 
 <style>
   .scrollable-table {
-    max-height: 270px;
+    max-height: 230px;
     overflow-y: auto;
     border-collapse: collapse;
     display: block;
@@ -27,6 +27,53 @@
   .scrollable-table::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+  /* Make sure the table takes up the full width */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Add padding and border to table cells */
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Style for active/inactive status in the table */
+table td.status {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Button styling for the actions column */
+table td button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Hover effect for buttons */
+table td button:hover {
+    background-color: #0056b3;
+}
+/* Center text in table headers */
+table th {
+    text-align: center;
+}
+
+/* Center text inside table body cells */
+table td {
+    text-align: center;
+}
+
+/* Optional: Adjust button alignment */
+table td button {
+    display: inline-block;
+    text-align: center;
+}
 </style>
 
 <?php
@@ -108,6 +155,28 @@ $total_pages = ceil($total_rows / $limit);
     </section>
 
     <section class="content">
+    <?php
+        if(isset($_SESSION['error'])){
+          echo "
+            <div class='alert alert-danger alert-dismissible'>
+              <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+              <h4><i class='icon fa fa-warning'></i> Error!</h4>
+              ".$_SESSION['error']."
+            </div>
+          ";
+          unset($_SESSION['error']);
+        }
+        if(isset($_SESSION['success'])){
+          echo "
+            <div class='alert alert-success alert-dismissible'>
+              <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+              <h4><i class='icon fa fa-check'></i> Success!</h4>
+              ".$_SESSION['success']."
+            </div>
+          ";
+          unset($_SESSION['success']);
+        }
+      ?>
       <div class="row">
         <div class="col-xs-12">
           <div class="box">
