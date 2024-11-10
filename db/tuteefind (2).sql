@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2024 at 05:01 AM
+-- Generation Time: Nov 10, 2024 at 05:23 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -513,6 +513,7 @@ CREATE TABLE `tutor` (
   `photo` varchar(255) DEFAULT NULL,
   `professor` varchar(50) NOT NULL,
   `fblink` varchar(255) NOT NULL,
+  `bio` text NOT NULL,
   `emailaddress` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -521,8 +522,8 @@ CREATE TABLE `tutor` (
 -- Dumping data for table `tutor`
 --
 
-INSERT INTO `tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `emailaddress`, `password`) VALUES
-(116, 'Eljohn', 'Fernandez', 21, 'Female', '09682226610', 'Dalandanan', '21-1252', 'BSIT', '2-2', '../uploads/21-1251.png', '21-1261', 'jasmine/me.', 'cuaresmaeljohn@gmail.com', '$2y$10$bgddRa1O7U2vfD/FM0p1vOkOP77Zehm2zCpFZ4H/vWQpsgLSrGCj.');
+INSERT INTO `tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `bio`, `emailaddress`, `password`) VALUES
+(116, 'Eljohn', 'Fernandez', 21, 'Female', '09682226610', 'Dalandanan', '21-1252', 'BSIT', '2-2', '../uploads/21-1251.png', '21-1261', 'jasmine/me.', 'Im Eljohn Cuaresma from BSIT 4-3, im good at teaching shits', 'cuaresmaeljohn@gmail.com', '$2y$10$bgddRa1O7U2vfD/FM0p1vOkOP77Zehm2zCpFZ4H/vWQpsgLSrGCj.');
 
 -- --------------------------------------------------------
 

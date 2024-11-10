@@ -163,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
 document.addEventListener('DOMContentLoaded', function () {
     const likertButtons = document.querySelectorAll('.likert-btn');
     const nextButtons = document.querySelectorAll('[id^="nextBtn-"]');

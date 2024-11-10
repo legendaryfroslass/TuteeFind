@@ -20,6 +20,7 @@ $student_id = $userData['student_id'];
 $course = $userData['course'];
 $year_section = $userData['year_section'];
 $fblink = $userData['fblink'];
+$bio = $userData['bio'];
 $emailaddress = $userData['emailaddress'];
 $tutor_id = $userData['id'];
 
@@ -45,11 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $number = $_POST['number'];
     $barangay = $_POST['barangay'];
     $emailaddress = $_POST['emailaddress'];
+    $bio = $_POST['bio'];
     $newPassword = $_POST['password'];
     $photo = $_FILES['photo'];
 
     // Assuming you have $userData available before calling updateDetails
-    $user_login->updateDetails($firstname, $lastname, $age, $sex, $number, $barangay, $student_id, $course, $year_section, $fblink, $emailaddress, $newPassword, $photo, $userData);
+    $user_login->updateDetails($firstname, $lastname, $age, $sex, $number, $barangay, $student_id, $course, $year_section, $fblink, $emailaddress, $bio, $newPassword, $photo, $userData);
 
 }
 // Fetch count of unique tutees who have unread messages
@@ -200,7 +202,7 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                         <!-- Bio section under the image upload -->
                         <div class="form-group text-start mb-4">
                             <label class="nav-text info-header">Bio</label>
-                            <input class="form-control custom-input" name="bio" id="bio" rows="1" placeholder="Tell us a little about yourself..."></input>
+                            <textarea class="form-control " name="bio" id="bio" rows="1" placeholder="<?php echo htmlspecialchars(string: $bio); ?>"></textarea>
                         </div>
                     </div>
 

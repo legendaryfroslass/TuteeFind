@@ -54,7 +54,7 @@ class TUTOR
 		session_destroy();
 		$_SESSION[ 'tutorSession' ] = false;
 	}
-    public function updateDetails($firstname, $lastname, $age, $sex, $number, $barangay, $student_id, $course, $year_section, $fblink, $emailaddress, $newPassword, $photo, $userData) {
+    public function updateDetails($firstname, $lastname, $age, $sex, $number, $barangay, $student_id, $course, $year_section, $fblink, $emailaddress, $bio, $newPassword, $photo, $userData) {
 		try {
 			$query = "UPDATE tutor SET 
 				firstname = :firstname, 
@@ -67,7 +67,8 @@ class TUTOR
 				course = :course, 
 				year_section = :year_section,
 				fblink = :fblink, 
-				emailaddress = :emailaddress";
+				emailaddress = :emailaddress,
+				bio = :bio";
 			
 			if (!empty($newPassword)) {
 				$hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
@@ -99,6 +100,7 @@ class TUTOR
 			$stmt->bindParam(":course", $course);
 			$stmt->bindParam(":year_section", $year_section);
 			$stmt->bindParam(":fblink", $fblink);
+			$stmt->bindParam(":bio", $bio);
 			$stmt->bindParam(":emailaddress", $emailaddress);
 			$stmt->bindParam(":original_student_id", $userData['student_id']);
 	
