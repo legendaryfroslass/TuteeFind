@@ -9,6 +9,7 @@ class Database {
     public function dbConnection() {
         $this->conn = null;    
         try {
+            // Make sure the password is being passed correctly
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);    
         } catch(PDOException $exception) {
