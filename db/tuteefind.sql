@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2024 at 05:23 AM
+-- Generation Time: Nov 10, 2024 at 09:44 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -342,7 +342,9 @@ INSERT INTO `messages` (`id`, `tutor_id`, `tutee_id`, `sender_type`, `message`, 
 (230, 116, 60, 'tutee', '312', '2024-11-07 10:19:46', 1),
 (231, 116, 60, 'tutee', 'qeqweqeq', '2024-11-07 10:26:22', 1),
 (232, 116, 61, 'tutor', 'yow', '2024-11-09 08:34:11', 0),
-(233, 116, 61, 'tutee', 'hello', '2024-11-09 08:41:10', 1);
+(233, 116, 61, 'tutee', 'hello', '2024-11-09 08:41:10', 1),
+(234, 116, 60, 'tutee', 'ge', '2024-11-10 04:42:04', 0),
+(235, 116, 62, 'tutor', 'yo\r\n', '2024-11-10 06:06:42', 0);
 
 -- --------------------------------------------------------
 
@@ -359,6 +361,14 @@ CREATE TABLE `notifications` (
   `status` varchar(20) DEFAULT 'unread',
   `date_sent` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`id`, `sender_id`, `receiver_id`, `title`, `message`, `status`, `date_sent`) VALUES
+(66, 116, 62, 'New Tutor Request', 'You have a new tutor request from Eljohn Fernandez.', 'read', '2024-11-10 14:45:06'),
+(67, 62, 116, 'Request Accepted', 'Your tutor request has been accepted by Oreo Dizon.', 'unread', '2024-11-10 14:54:28');
 
 -- --------------------------------------------------------
 
@@ -408,8 +418,9 @@ CREATE TABLE `requests` (
 --
 
 INSERT INTO `requests` (`request_id`, `tutor_id`, `tutee_id`, `status`) VALUES
-(111, 116, 61, 'accepted'),
-(112, 116, 60, 'accepted');
+(111, 116, 61, 'removed'),
+(112, 116, 60, 'accepted'),
+(113, 116, 62, 'accepted');
 
 -- --------------------------------------------------------
 
@@ -432,16 +443,18 @@ CREATE TABLE `tutee` (
   `password` varchar(255) NOT NULL,
   `tutee_bday` varchar(255) NOT NULL,
   `school` varchar(255) NOT NULL,
-  `grade` varchar(255) NOT NULL
+  `grade` varchar(255) NOT NULL,
+  `bio` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `tutee`
 --
 
-INSERT INTO `tutee` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `guardianname`, `fblink`, `barangay`, `emailaddress`, `photo`, `password`, `tutee_bday`, `school`, `grade`) VALUES
-(60, 'Elmerson', 'Reyes', '8', 'Male', '09771240013', 'Elmerson Mirasol Cuaresma', 'https://www.facebook.com/eljohn.cuaresma.54/', 'Malinta', 'cuaresmaeljohn@gmail.com', '../uploads/John_Reyes.jpg', '$2y$10$O/M8Ffd9YdZB7yWOr5tCXu0mytdWl7YUqVZQAJoYKPwieqbOUDdsG', '2016-06-20', 'Maysan Elementary School', 'Grade 5'),
-(61, 'John Paul', 'Gracio', '9', 'Male', '09480921896', 'mamamo', 'jp.com', 'Bignay', 'johnpaul.gracio.27@gmail.com', '', '$2y$10$7u2VGqajREwlQXFpHtxlAeVGZ2txdOP4146xFsSn8PCB6kpPy1PoS', '2015-08-27', 'plv', 'Grade 3');
+INSERT INTO `tutee` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `guardianname`, `fblink`, `barangay`, `emailaddress`, `photo`, `password`, `tutee_bday`, `school`, `grade`, `bio`) VALUES
+(60, 'Elmerson', 'Reyes', '8', 'Male', '09771240013', 'Elmerson Mirasol Cuaresma', 'https://www.facebook.com/eljohn.cuaresma.54/', 'Malinta', 'cuaresmaeljohn@gmail.com', '../uploads/John_Reyes.jpg', '$2y$10$O/M8Ffd9YdZB7yWOr5tCXu0mytdWl7YUqVZQAJoYKPwieqbOUDdsG', '2016-06-20', 'Maysan Elementary School', 'Grade 5', ''),
+(61, 'John Paul', 'Gracio', '9', 'Male', '09480921896', 'mamamo', 'jp.com', 'Bignay', 'johnpaul.gracio.27@gmail.com', '', '$2y$10$7u2VGqajREwlQXFpHtxlAeVGZ2txdOP4146xFsSn8PCB6kpPy1PoS', '2015-08-27', 'plv', 'Grade 3', ''),
+(62, 'Oreo', 'Dizon', '8', 'Male', '09499808419', 'Clarisse Dizon', 'https://www.facebook.com/clarisse.dizon.5264/', 'Coloong', 'itsoreodadoggo@gmail.com', '../uploads/Oreo_Dizon.jpg', '$2y$10$FqaAlTDZ3lvuJF/lJo7HW.CTTjKFTQMwhzf3LMJMk.KjzfsJlA3gC', '2015-01-01', 'San Diego Parochial School', 'Grade 3', '');
 
 -- --------------------------------------------------------
 
@@ -469,8 +482,9 @@ CREATE TABLE `tutee_progress` (
 INSERT INTO `tutee_progress` (`id`, `tutee_id`, `tutor_id`, `week_number`, `uploaded_files`, `description`, `date`, `rendered_hours`, `location`, `subject`) VALUES
 (329, 61, 116, 1, '../uploads/tutor (2).xlsx', 'dwa', '2024-11-10 11:11:27', 5, 'dwa', 'dwad'),
 (336, 60, 116, 1, '../uploads/Document (2).docx', 'dawd', '2024-11-10 11:57:32', 5, 'dwdwa', 'dwada'),
-(337, 60, 116, 2, '../uploads/Document.docx', 'dwada', '2024-11-10 11:58:24', 5, 'dwa', 'dwada'),
-(339, 61, 116, 2, '../uploads/Eljohn Cuaresma BSIT 3-Paul.docx', 'dwad', '2024-11-10 12:00:34', 5, 'dwada', 'dawda');
+(339, 61, 116, 2, '../uploads/Eljohn Cuaresma BSIT 3-Paul.docx', 'dwad', '2024-11-10 12:00:34', 5, 'dwada', 'dawda'),
+(340, 62, 116, 1, '../uploads/2024_ENDORSEMENT for IT Experts Approval Letter.docx', 'daweawd', '2024-11-10 15:08:48', 5, 'dawdaw', 'dawdaw'),
+(341, 62, 116, 2, '../uploads/8464b274-939e-403b-acc7-b4559dd3896d.webp', 'dawdawd', '2024-11-10 15:16:16', 5, 'dawdaw', 'dawd');
 
 -- --------------------------------------------------------
 
@@ -490,8 +504,9 @@ CREATE TABLE `tutee_summary` (
 --
 
 INSERT INTO `tutee_summary` (`tutee_id`, `tutor_id`, `completed_weeks`, `registered_weeks`) VALUES
-(60, 116, 2, 2),
-(61, 116, 1, 2);
+(60, 116, 2, 1),
+(61, 116, 1, 2),
+(62, 116, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -559,7 +574,8 @@ CREATE TABLE `tutor_sessions` (
 
 INSERT INTO `tutor_sessions` (`id`, `tutor_id`, `tutee_id`, `status`) VALUES
 (49, 116, 60, 'ongoing'),
-(50, 116, 61, 'ongoing');
+(50, 116, 61, 'ongoing'),
+(53, 116, 62, 'completed');
 
 --
 -- Indexes for dumped tables
@@ -785,13 +801,13 @@ ALTER TABLE `events`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=234;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=236;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `professor`
@@ -803,19 +819,19 @@ ALTER TABLE `professor`
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
 
 --
 -- AUTO_INCREMENT for table `tutee`
 --
 ALTER TABLE `tutee`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `tutee_progress`
 --
 ALTER TABLE `tutee_progress`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=340;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=342;
 
 --
 -- AUTO_INCREMENT for table `tutor`
@@ -833,7 +849,7 @@ ALTER TABLE `tutor_ratings`
 -- AUTO_INCREMENT for table `tutor_sessions`
 --
 ALTER TABLE `tutor_sessions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- Constraints for dumped tables
