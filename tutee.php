@@ -26,7 +26,7 @@ class TUTEE
 		return $stmt;
 	}
 
-public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $newPassword, $photo, $userData)
+public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $bio, $newPassword, $photo, $userData)
 {
     try {
         // Initialize $sql variable
@@ -38,6 +38,7 @@ public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, 
         guardianname = :guardianname,
         fblink = :fblink,
         barangay = :barangay,
+        bio = :bio,
         emailaddress = :emailaddress,
         number = :number";
 
@@ -71,6 +72,7 @@ public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, 
         $stmt->bindParam(":fblink", $fblink);
         $stmt->bindParam(":barangay", $barangay);
         $stmt->bindParam(":number", $number);
+        $stmt->bindParam(":bio", $bio);
         $stmt->bindParam(":emailaddress", $emailaddress);  // Bind the new email address
         $stmt->bindParam(":id", $userData['id']);  // Use a unique identifier like tutee_id
 

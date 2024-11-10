@@ -343,19 +343,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="menu-bar">
         <div class="menu">
                 <ul class="menu-links">
-                    <li class="nav-link">
+                    <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Home">
                         <a href="../tutee/tutee">
                             <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Home</span>
                         </a>
                     </li>
-                    <li class="nav-link">
+                    <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                         <a href="../tutee/message">
                             <i class='bx bxs-inbox icon' ></i>
                             <span class="text nav-text">Messages</span>
                         </a>
                     </li>
-                    <li class="nav-link">
+                    <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Notification">
                         <a href="../tutee/notif" class="d-flex align-items-center">
                             <div style="position: relative;">
                                 <i class='bx bx-bell icon'></i>
@@ -366,19 +366,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <span class="text nav-text">Notification</span>
                         </a>
                     </li>                
-                    <li class="nav-link navbar-active">
+                    <li class="nav-link navbar-active" data-bs-toggle="tooltip" data-bs-placement="right" title="Progress">
                         <a href="../tutee/progress">
                             <i class='bx bx-bar-chart-alt icon'></i>
                             <span class="text nav-text">Progress</span>
                         </a>
                     </li>
-                    <li class="nav-link">
+                    <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Tutor">
                         <a href="../tutee/tutor">
                             <i class='bx bx-user icon'></i>
                             <span class="text nav-text">Tutors</span>
                         </a>
                     </li>
-                    <li class="nav-link">
+                    <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Settings">
                         <a href="../tutee/settings">
                             <i class='bx bx-cog icon'></i>
                             <span class="text nav-text">Settings</span>
@@ -388,23 +388,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
 
             <div class="bottom-content">
-                <ul class="navbar-nav">
-                    <li class="nav-link d-flex justify-content-center align-items-center">
-                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                            <div class="icon-container d-flex justify-content-center align-items-center">
-                                <i class='bx bx-log-out icon'></i>
-                            </div>
-                            <span class="text nav-text ms-2">Logout</span>
-                        </button>
+                <ul class="menu-links">
+                    <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Logout">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                            <i class='bx bx-log-out icon'></i>
+                            <span class="text nav-text">Logout</span>
+                        </a>
                     </li>
                 </ul>
-                <li class="mode">
+                <li class="mode" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle dark mode">
                     <div class="moon-sun">
                         <i class='bx bx-moon icon moon'></i>
                         <i class='bx bx-sun icon sun'></i>
                     </div>
                     <span class="mode-text text">Dark Mode</span>
-
                     <div class="toggle-switch">
                         <span class="switch"></span>
                     </div>
@@ -485,7 +482,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                         foreach ($weeks as $week): ?>
                                                         <tr>
                                                             <td>
-                                                                <input type="checkbox" class="form-check-input checkbox" id="checkbox<?php echo htmlspecialchars($tutor['id']); ?>-<?php echo $week['week_number']; ?>" disabled>
+                                                                <input type="checkbox" class="form-check-input checkbox" id="checkbox<?php echo htmlspecialchars($tutor['id']); ?>-<?php echo $week['week_number']; ?>" checked disabled>
                                                                 Week <?php echo htmlspecialchars($week['week_number']); ?>
                                                             </td>
                                                             <td>
@@ -570,13 +567,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Confirmation Modal -->
     <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="confirmationModalLabel">Confirm Finish Session</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     Are you sure you want to confirm the finish for this session?
@@ -1036,7 +1031,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="progress.js"></script>
         <script src="tutee_sidebar.js"></script>
         <script src="notif.js"></script>

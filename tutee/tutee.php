@@ -293,7 +293,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </li>
                         <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                             <a href="../tutee/message">
-                                <i class='bx bxs-inbox icon' ></i>
+                                <i class='bx bxs-inbox icon'></i>
                                 <span class="text nav-text">Messages</span>
                             </a>
                         </li>
@@ -303,7 +303,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <i class='bx bx-bell icon'></i>
                                     <span id="notif-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
                                         <?php echo $unreadNotifCount; ?>
-                                    </span> <!-- Notification counter -->
+                                    </span>
                                 </div>
                                 <span class="text nav-text">Notification</span>
                             </a>
@@ -317,7 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Tutor">
                             <a href="../tutee/tutor">
                                 <i class='bx bx-user icon'></i>
-                                <span class="text nav-text">Tutors</span>
+                                <span class="text nav-text">Tutor</span>
                             </a>
                         </li>
                         <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Settings">
@@ -330,29 +330,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
                 <div class="bottom-content">
-                    <ul class="navbar-nav">
-                        <li class="nav-link d-flex justify-content-center align-items-center" data-bs-toggle="tooltip" data-bs-placement="right" title="Logout">
-                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                                <div class="icon-container d-flex justify-content-center align-items-center">
-                                    <i class='bx bx-log-out icon'></i>
-                                </div>
-                                <span class="text nav-text ms-2">Logout</span>
-                            </button>
+                    <ul class="menu-links">
+                        <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Logout">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                                <i class='bx bx-log-out icon'></i>
+                                <span class="text nav-text">Logout</span>
+                            </a>
                         </li>
                     </ul>
-                        <li class="mode" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle dark mode">
-                            <div class="moon-sun">
-                                <i class='bx bx-moon icon moon'></i>
-                                <i class='bx bx-sun icon sun'></i>
-                            </div>
-                            <span class="mode-text text">Dark Mode</span>
-
-                            <div class="toggle-switch">
-                                <span class="switch"></span>
-                            </div>
-                        </li>
-                    </div>
+                    <li class="mode" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle dark mode">
+                        <div class="moon-sun">
+                            <i class='bx bx-moon icon moon'></i>
+                            <i class='bx bx-sun icon sun'></i>
+                        </div>
+                        <span class="mode-text text">Dark Mode</span>
+                        <div class="toggle-switch">
+                            <span class="switch"></span>
+                        </div>
+                    </li>
                 </div>
+            </div>
             </nav>
 
         <div class="home">
@@ -372,11 +369,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <option <?php if(!empty($_POST['barangay'])) echo 'selected'; ?> value="">All Barangay</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Arkong Bato') echo 'selected'; ?> value="Arkong Bato">Arkong Bato</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Bagbaguin') echo 'selected'; ?> value="Bagbaguin">Bagbaguin</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Balangkas') echo 'selected'; ?> value="Balangkas">Balangkas</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Bignay') echo 'selected'; ?> value="Bignay">Bignay</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Bisig') echo 'selected'; ?> value="Bisig">Bisig</option>
-                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Canumayn') echo 'selected'; ?> value="Canumayn">Canumayn</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Canumay East') echo 'selected'; ?> value="Canumay East">Canumay East</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Canumay West') echo 'selected'; ?> value="Canumay West">Canumay West</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Coloong') echo 'selected'; ?> value="Coloong">Coloong</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Dalandanan') echo 'selected'; ?> value="Dalandanan">Dalandanan</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Gen. T. de Leon') echo 'selected'; ?> value="Gen. T. de Leon">Gen. T. de Leon</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Isla') echo 'selected'; ?> value="Isla">Isla</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Karuhatan') echo 'selected'; ?> value="Karuhatan">Karuhatan</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Lawang Bato') echo 'selected'; ?> value="Lawang Bato">Lawang Bato</option>
@@ -385,17 +385,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Malanday') echo 'selected'; ?> value="Malanday">Malanday</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Malinta') echo 'selected'; ?> value="Malinta">Malinta</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Mapulang Lupa') echo 'selected'; ?> value="Mapulang Lupa">Mapulang Lupa</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Marulas') echo 'selected'; ?> value="Marulas">Marulas</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Maysan') echo 'selected'; ?> value="Maysan">Maysan</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Palasan') echo 'selected'; ?> value="Palasan">Palasan</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Parada') echo 'selected'; ?> value="Parada">Parada</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Pariancillo Villa') echo 'selected'; ?> value="Pariancillo Villa">Pariancillo Villa</option>
-                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Pasolo') echo 'selected'; ?> value="Pasolo">Pasolo</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Paso de Blas') echo 'selected'; ?> value="Paso de Blas">Paso de Blas</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Pasolo') echo 'selected'; ?> value="Pasolo">Pasolo</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Poblacion') echo 'selected'; ?> value="Poblacion">Poblacion</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Polo') echo 'selected'; ?> value="Polo">Polo</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Punturin') echo 'selected'; ?> value="Punturin">Punturin</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Rincon') echo 'selected'; ?> value="Rincon">Rincon</option>
                                 <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Tagalag') echo 'selected'; ?> value="Tagalag">Tagalag</option>
-                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Viente Reales') echo 'selected'; ?> value="Viente Reales">Viente Reales</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Ugong') echo 'selected'; ?> value="Ugong">Ugong</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Veinte Reales') echo 'selected'; ?> value="Veinte Reales">Veinte Reales</option>
+                                <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Wawang Pulo') echo 'selected'; ?> value="Wawang Pulo">Wawang Pulo</option>
                             </select>
                             </div>
                         </div>
@@ -437,6 +441,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                         <td class="text-center justify-content-center">
                                                             <form method="post" class="text-center">
                                                             <button type="button" 
+                                                                    style="height: 6vh"
                                                                     id="SendMessage" 
                                                                     class="btn btn-outline-primary bx" 
                                                                     data-bs-toggle="modal" 
@@ -446,8 +451,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                                 <i class='bx bx-message-square-dots'></i>
                                                             </button>
                                                                 <?php if ($request['status'] != 'accepted'): ?>
-                                                                <button type="button" class="btn btn-outline-success bx bx-check" data-bs-toggle="modal" data-bs-target="#acceptRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('accept', this)"></button>
-                                                                <button type="button" class="btn btn-outline-danger bx bx-x" data-bs-toggle="modal" data-bs-target="#rejectRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('reject', this)"></button>
+                                                                <button type="button" style="height: 6vh" class="btn btn-outline-success bx bx-check" data-bs-toggle="modal" data-bs-target="#acceptRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('accept', this)"></button>
+                                                                <button type="button" style="height: 6vh" class="btn btn-outline-danger bx bx-x" data-bs-toggle="modal" data-bs-target="#rejectRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('reject', this)"></button>
                                                             <?php else: ?>
                                                                 <button class="btn btn-success" disabled>Already Accepted</button>
                                                             <?php endif; ?>
