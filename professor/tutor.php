@@ -29,6 +29,53 @@ include 'includes/header.php';
   .scrollable-table::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+  /* Make sure the table takes up the full width */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Add padding and border to table cells */
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Style for active/inactive status in the table */
+table td.status {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Button styling for the actions column */
+table td button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Hover effect for buttons */
+table td button:hover {
+    background-color: #0056b3;
+}
+/* Center text in table headers */
+table th {
+    text-align: center;
+}
+
+/* Center text inside table body cells */
+table td {
+    text-align: center;
+}
+
+/* Optional: Adjust button alignment */
+table td button {
+    display: inline-block;
+    text-align: center;
+}
 </style>
 <?php
 // Search and pagination variables
@@ -117,11 +164,14 @@ $total_pages = ceil($total_rows / $limit);
           unset($_SESSION['success']);
         }
       ?>
-<div class="row">
-  <div class="col-xs-12">
-    <div class="box">
-      <div class="box-header with-border">
-      </div>
+ <div class="row">
+        <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header with-border">
+            <a href="tutor_pdf.php?search=<?php echo urlencode($search); ?>" class="btn btn-primary btn-sm btn-flat" target="_blank">
+                <i class="fa fa-file-pdf-o"></i> Export to PDF
+              </a>
+            </div>
       <div class="box-body">
   <!-- Search Form --> 
   <form method="GET" action="tutor.php" class="form-inline d-flex justify-content-between align-items-center">

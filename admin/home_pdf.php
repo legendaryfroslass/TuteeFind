@@ -1,5 +1,5 @@
 <?php
-require_once '../../vendor/autoload.php';
+require_once '../vendor/autoload.php';
 require('includes/conn.php'); // Ensure this path is correct
 
 // Create new PDF document with landscape orientation
@@ -138,4 +138,16 @@ $pdf->writeHTML($html, true, false, true, false, '');
 
 // Close and output PDF document
 $pdf->Output('dashboard_report.pdf', 'I');
+// Set the time zone to Asia/Manila
+date_default_timezone_set('Asia/Manila');
+
+ // Log the activity
+ $activity = "Download PDF Report";
+ $formatted_datetime = date('F j, Y h:i:s A'); // Example: October 6, 2024 11:14:33 PM
+ $logSql = "INSERT INTO activity_logs (professor_id, activity, datetime) 
+            VALUES (?, ?, ?)";
+ $logStmt = $conn->prepare($logSql);
+ $logStmt->bind_param("iss", $_SESSION['professor_id'], $activity, $formatted_datetime);
+ $logStmt->execute();
+?>
 ?>

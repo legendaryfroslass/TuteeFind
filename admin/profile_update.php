@@ -8,7 +8,6 @@
 	else{
 		$return = 'home';
 	}
-
 	if(isset($_POST['save'])){
 		$curr_password = $_POST['curr_password'];
 		$username = $_POST['username'];
