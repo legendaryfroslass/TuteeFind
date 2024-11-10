@@ -110,7 +110,7 @@
             <i class='bx bx-brain'></i>
             <h3>Professor</h3>
         </a>
-        <a href="admin/login" class="card" onclick="selectRole(this)">
+        <a href="admin/landingpage" class="card" onclick="selectRole(this)">
             <i class='bx bx-cog'></i>
             <h3>Admin</h3>
         </a>
