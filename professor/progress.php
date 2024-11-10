@@ -86,19 +86,39 @@ $offset = ($page - 1) * $limit;
 // Current professor's ID
 $current_faculty_id = $_SESSION['professor_id'];
 
-// SQL query
+// Fetch pagination, search, and sort parameters
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+$offset = ($page - 1) * $limit;
+
+// Current professor's ID
+$current_faculty_id = $_SESSION['professor_id'];
+
+// Prepare SQL query with placeholders
 $sql = "
     SELECT 
-        t.id, t.lastname, t.firstname, t.student_id, t.course, t.year_section,
+        t.id, 
+        t.lastname, 
+        t.firstname, 
+        t.student_id, 
+        t.course, 
+        t.year_section, 
         COALESCE(ts.completed_weeks, 0) AS completed_weeks,
         COALESCE(rt.rating, 'No Rating') AS rating,
         COALESCE(rt.comment, 'No Comment') AS comment,
-        r.tutor_id, r.tutee_id
+        r.tutor_id, 
+        r.tutee_id,
+        COALESCE(SUM(tp.rendered_hours), 0) AS total_rendered_hours,
+        COALESCE(SUM(e.rendered_hours), 0) AS event_rendered_hours,
+        rt.pdf_content 
     FROM tutor t
     INNER JOIN professor p ON t.professor = p.faculty_id
     LEFT JOIN requests r ON t.id = r.tutor_id AND r.status = 'accepted'
     LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
     LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
+    LEFT JOIN tutee_progress tp ON t.id = tp.tutor_id
+    LEFT JOIN events e ON t.id = e.tutor_id
     WHERE p.id = ? 
     AND (
         LOWER(t.lastname) LIKE LOWER(?) OR
@@ -106,14 +126,17 @@ $sql = "
         LOWER(t.course) LIKE LOWER(?) OR
         LOWER(t.year_section) LIKE LOWER(?)
     )
+    GROUP BY t.id
     LIMIT $limit OFFSET $offset";
 
+// Set up wildcard search term and bind parameters
 $search_term = '%' . $search . '%';
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("issss", $current_faculty_id, $search_term, $search_term, $search_term, $search_term);
 $stmt->execute();
 $result = $stmt->get_result();
 
+// Fetch total count for pagination
 $total_sql = "
     SELECT COUNT(*) AS total
     FROM tutor t
@@ -126,6 +149,7 @@ $total_sql = "
         LOWER(t.course) LIKE LOWER(?) OR
         LOWER(t.year_section) LIKE LOWER(?)
     )";
+
 $stmt_total = $conn->prepare($total_sql);
 $stmt_total->bind_param("issss", $current_faculty_id, $search_term, $search_term, $search_term, $search_term);
 $stmt_total->execute();
@@ -153,6 +177,28 @@ $total_pages = ceil($total_rows / $limit);
       </ol>
     </section>
     <section class="content">
+    <?php
+        if(isset($_SESSION['error'])){
+          echo "
+            <div class='alert alert-danger alert-dismissible'>
+              <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+              <h4><i class='icon fa fa-warning'></i> Error!</h4>
+              ".$_SESSION['error']."
+            </div>
+          ";
+          unset($_SESSION['error']);
+        }
+        if(isset($_SESSION['success'])){
+          echo "
+            <div class='alert alert-success alert-dismissible'>
+              <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+              <h4><i class='icon fa fa-check'></i> Success!</h4>
+              ".$_SESSION['success']."
+            </div>
+          ";
+          unset($_SESSION['success']);
+        }
+      ?>
       <div class="row">
         <div class="col-xs-12">
           <div class="box">
@@ -189,9 +235,8 @@ $total_pages = ceil($total_rows / $limit);
                 <th onclick="sortTable(0)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(1)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(2)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(3)">Completed Weeks <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(4)">Rendered Hours <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(5)">Ratings and Comments <i class="fa fa-sort" aria-hidden="true"></i></th>
+                <th onclick="sortTable(3)">Rendered Hours <i class="fa fa-sort" aria-hidden="true"></i></th>
+                <th>Ratings and Feedback</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -213,53 +258,55 @@ $sql = "
         COALESCE(rt.rating, 'No Rating') AS rating,
         COALESCE(rt.comment, 'No Comment') AS comment,
         r.tutor_id, 
-        r.tutee_id
+        r.tutee_id,
+        COALESCE(SUM(tp.rendered_hours), 0) AS total_rendered_hours,  -- Summing rendered hours from tutee_progress
+        COALESCE(SUM(e.rendered_hours), 0) AS event_rendered_hours,  -- Summing rendered hours from events
+        rt.pdf_content  -- Fetching PDF content from tutor_ratings
     FROM tutor t
     INNER JOIN professor p ON t.professor = p.faculty_id
     LEFT JOIN requests r ON t.id = r.tutor_id AND r.status = 'accepted'
     LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
     LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
-    WHERE p.id = ?
+    LEFT JOIN tutee_progress tp ON t.id = tp.tutor_id  -- Joining tutee_progress table
+    LEFT JOIN events e ON t.id = e.tutor_id  -- Joining events table
+    WHERE p.id = ? 
     AND (
-        LOWER(CONCAT(t.firstname, ' ', t.lastname)) LIKE ? OR
-        LOWER(CONCAT(t.course, ' ', t.year_section)) LIKE ?
+        LOWER(t.lastname) LIKE CONCAT('%', LOWER(?), '%') OR
+        LOWER(t.firstname) LIKE CONCAT('%', LOWER(?), '%') OR
+        LOWER(t.course) LIKE CONCAT('%', LOWER(?), '%') OR
+        LOWER(t.year_section) LIKE CONCAT('%', LOWER(?), '%')
     )
+    GROUP BY t.id
 ";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("iss", $professor_id, $search, $search); // Bind the professor ID and search term
+$stmt->bind_param("issss", $professor_id, $search, $search, $search, $search);
 $stmt->execute();
 $result = $stmt->get_result();
 
 // Display results in HTML table
 while ($row = $result->fetch_assoc()) {
-    $name = $row['firstname'] . ' ' . $row['lastname'];
-    $student_id = isset($row['student_id']) ? $row['student_id'] : 'N/A';
-    $course_year_section = (isset($row['course']) ? $row['course'] : 'N/A') . 
-                           ' ' . 
-                           (isset($row['year_section']) ? $row['year_section'] : 'N/A');
-    $completed_weeks = isset($row['completed_weeks']) ? $row['completed_weeks'] : '0';
-    $rating = isset($row['rating']) ? $row['rating'] : 'No Rating';
-    $comment = isset($row['comment']) ? $row['comment'] : 'No Comment';
-    $tutor_id = isset($row['tutor_id']) ? $row['tutor_id'] : 'N/A';
-    $tutee_id = isset($row['tutee_id']) ? $row['tutee_id'] : 'N/A';
+    $name = htmlspecialchars($row['firstname'] . ' ' . $row['lastname']);
+    $student_id = isset($row['student_id']) ? htmlspecialchars($row['student_id']) : 'N/A';
+    $course_year_section = htmlspecialchars($row['course'] . ': ' . $row['year_section']);
+    $total_rendered_hours = htmlspecialchars($row['total_rendered_hours']);
+    $pdf_content = !empty($row['pdf_content']) ? nl2br(htmlspecialchars($row['pdf_content'])) : 'No Feedback Available';
 
     echo "
       <tr>
-        <td>".$name."</td> <!-- Display full name in one column -->
-        <td>".$student_id."</td>
-        <td>".$course_year_section."</td> <!-- Combined Course and Year & Section -->
-        <td>".$completed_weeks."</td> <!-- Display completed weeks -->
-        <td></td> <!-- Display rendered hours if needed -->
-        <td>".$rating." star"."<br>".$comment."</td> <!-- Display rating and comment -->
-        <td>
-          <button class='btn btn-primary btn-sm view btn-flat' 
-                  data-id='".$row['id']."'
-                  data-tutor-id='".$tutor_id."'
-                  data-tutee-id='".$tutee_id."'>
-              <i class='fa fa-eye'></i> View
-          </button>
-        </td>
+         <td>{$name}</td>
+         <td>{$student_id}</td>
+         <td>{$course_year_section}</td>
+         <td>{$total_rendered_hours}</td>
+         <td>{$pdf_content}</td>
+         <td>
+             <button class='btn btn-primary btn-sm view btn-flat' 
+                     data-id='".htmlspecialchars($row['id'])."'
+                     data-tutor-id='".htmlspecialchars($row['tutor_id'])."'
+                     data-tutee-id='".htmlspecialchars($row['tutee_id'])."'>
+                 <i class='fa fa-eye'></i> View
+             </button>
+         </td>
       </tr>
     ";
 }
