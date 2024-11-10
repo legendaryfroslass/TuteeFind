@@ -1,0 +1,231 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap");
+
+* {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: 0;
+}
+
+html,
+body {
+  overflow-x: hidden; /* Hides the horizontal scrollbar */
+}
+
+:root {
+  --body-color: #fefefe;
+  --side-bar: #1d0a6b;
+  --primary-color: #3f2fd6;
+  --primary-color-light: #3f2fd6;
+  --card-color: #fefefe;
+  --weeks-color: #fefefe;
+  --update: rgb(255, 255, 255);
+  --gray: #afafaf;
+  --toggle-color: #ffffff;
+  --text-color: #ffffff;
+  --text-color1: #000000;
+  --a-bgcolor: #3f2fd6;
+
+  --tran-03: all 0.2s ease;
+  --tran-04: all 0.3s ease;
+  --tran-05: all 0.4s ease;
+  --tran-06: all 0.5s ease;
+}
+
+.hero-section {
+  background-color: #f8f9fa;
+  background-size: cover;
+  height: 100v;
+  color: black;
+  text-align: center;
+  padding-top: 100px;
+}
+
+.Start {
+  background-color: #f8f9fa;
+}
+.navbar-logo {
+  width: 150px;
+  height: auto;
+}
+.head {
+  color: #1d0a6b;
+  font-size: larger;
+}
+
+.head1 {
+  color: #1d0a6b;
+  font-size: 36px;
+}
+
+.lead {
+  font-size: 11px;
+  color: #343a40;
+}
+
+.feature-section {
+  background-color: #f4ca44;
+  padding: 20px 0;
+}
+.feature-icon {
+  font-size: 40px;
+  color: #007bff;
+}
+.footer {
+  background-color: #343a40;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+}
+
+/* Styling for the fixed navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+.navbar .navbar-nav {
+  margin-left: 20px; /* Space between the logo and links */
+}
+.navbar-nav .nav-item {
+  margin-left: 20px; /* Space between each link */
+}
+
+/* Override Bootstrap button colors */
+.btn {
+  background-color: #1d0a6b !important; /* Change background color on hover */
+  color: #f8f9fa !important; /* Change text color on hover */
+  border: 2px solid #1d0a6b;
+}
+
+/* On hover */
+.btn:hover {
+  background-color: #f8f9fa !important; /* Custom background color */
+  color: #1d0a6b !important; /* Custom text color */
+  border: 2px solid #1d0a6b;
+}
+
+/* Positioning for the role selection container to behave like a modal */
+#roleSelection {
+  display: none; /* Initially hidden */
+  position: fixed; /* Fixed at the top of the screen */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for true centering */
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1050; /* Ensure it's above other elements */
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Fullscreen overlay background */
+#overlay {
+  display: none; /* Initially hidden */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 1040; /* Slightly below the modal */
+}
+
+/* The rest of your styles remain the same... */
+.container {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.card {
+  flex: 0 1 45%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card.selected {
+  border: 2px solid #1d0a6b;
+  background-color: #fff3f3;
+}
+
+.card i {
+  font-size: 3.5rem;
+  color: #1d0a6b;
+  margin-bottom: 10px;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.next-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #1d0a6b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.next-button:hover {
+  background-color: #3e268c;
+}
+
+.navbar-toggler {
+  border: none; /* Remove border */
+  background-color: transparent; /* Make the background transparent */
+}
+
+.navbar-toggler-icon {
+  background-color: none; /* Optional: Change icon color */
+}
+
+/* Use ms-auto to push the toggler to the right */
+.navbar-nav {
+  margin-left: auto; /* Push nav items to the left */
+}
+
+/* Center the toggler vertically */
+.navbar-toggler {
+  align-self: center;
+}
+
+.card-container a {
+  text-decoration: none; /* Removes underline from links */
+}
+
+.card-container a:hover {
+  text-decoration: none; /* Ensures no underline on hover */
+}

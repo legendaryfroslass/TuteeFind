@@ -597,6 +597,15 @@ ul {
   border: solid 1px #ba68c8;
 }
 
+.invalid-feedback {
+  display: none;
+  color: red;
+  font-size: 0.875em;
+}
+.is-invalid ~ .invalid-feedback {
+  display: block;
+}
+
 /* PROGRESS */
 /* pie chart css */
 /* Dark mode background and text colors */
