@@ -293,7 +293,38 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                                     <select class="form-select mb-3" style="width:50vh;" size="1" name="barangay">
                                         <option selected><?php echo htmlspecialchars($barangay); ?></option>
                                         <option value="Arkong Bato">Arkong Bato</option>
-                                        <!-- Add more options as needed -->
+                                        <option value="Bagbaguin">Bagbaguin</option>
+                                        <option value="Balangkas">Balangkas</option>
+                                        <option value="Bignay">Bignay</option>
+                                        <option value="Bisig">Bisig</option>
+                                        <option value="Canumay East">Canumay East</option>
+                                        <option value="Canumay West">Canumay West</option>
+                                        <option value="Coloong">Coloong</option>
+                                        <option value="Dalandanan">Dalandanan</option>
+                                        <option value="Gen. T. de Leon">Gen. T. de Leon</option>
+                                        <option value="Isla">Isla</option>
+                                        <option value="Karuhatan">Karuhatan</option>
+                                        <option value="Lawang Bato">Lawang Bato</option>
+                                        <option value="Lingunan">Lingunan</option>
+                                        <option value="Mabolo">Mabolo</option>
+                                        <option value="Malanday">Malanday</option>
+                                        <option value="Malinta">Malinta</option>
+                                        <option value="Mapulang Lupa">Mapulang Lupa</option>
+                                        <option value="Marulas">Marulas</option>
+                                        <option value="Maysan">Maysan</option>
+                                        <option value="Palasan">Palasan</option>
+                                        <option value="Parada">Parada</option>
+                                        <option value="Pariancillo Villa">Pariancillo Villa</option>
+                                        <option value="Paso de Blas">Paso de Blas</option>
+                                        <option value="Pasolo">Pasolo</option>
+                                        <option value="Poblacion">Poblacion</option>
+                                        <option value="Polo">Polo</option>
+                                        <option value="Punturin">Punturin</option>
+                                        <option value="Rincon">Rincon</option>
+                                        <option value="Tagalag">Tagalag</option>
+                                        <option value="Ugong">Ugong</option>
+                                        <option value="Veinte Reales">Veinte Reales</option>
+                                        <option value="Wawang Pulo">Wawang Pulo</option>
                                     </select>
                                 </div>
                             </div>
@@ -326,7 +357,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
 
                 <!-- Save Button -->
                 <div class="align-content-center d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary mb-5" style="width: 50vh;">Save</button>
+                    <button type="submit" id="saveButton" class="btn btn-primary mb-5" style="width: 50vh;">Save</button>
                 </div>
             </div>
         </div>
