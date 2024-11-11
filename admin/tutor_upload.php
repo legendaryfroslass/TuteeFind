@@ -20,7 +20,7 @@ if (isset($_POST['upload'])) {
         // Prepare the SQL statement for inserting or updating records
         $sql = "INSERT INTO tutor (firstname, lastname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio
         ) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
                 ON DUPLICATE KEY UPDATE 
                 firstname = VALUES(firstname), 
                 lastname = VALUES(lastname), 
