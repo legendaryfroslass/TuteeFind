@@ -94,3 +94,4 @@ if (isset($_POST['upload'])) {
 
 
 header('location: professor.php');
+?>
