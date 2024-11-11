@@ -106,7 +106,7 @@
             <i class='bx bx-chalkboard'></i>
             <h3>Tutor</h3>
         </a>
-        <a href="professor/login" class="card" onclick="selectRole(this)">
+        <a href="professor/landingpage" class="card" onclick="selectRole(this)">
             <i class='bx bx-brain'></i>
             <h3>Professor</h3>
         </a>
