@@ -14,15 +14,14 @@ if (isset($_POST['upload'])) {
         // SQL statements for checking and inserting/updating
         $check_sql = "SELECT * FROM professor WHERE faculty_id = ?";
         $check_stmt = $conn->prepare($check_sql);
-        $sql = "INSERT INTO professor (firstname, lastname, middlename, age, faculty_id, emailaddress, employment_status, prof_photo, prof_username, prof_password)
-                VALUES (?, ?, ?, ?, ?, ?, ?, COALESCE(?, 'profile.jpg'), ?, ?)
+        $sql = "INSERT INTO professor (firstname, lastname, middlename, age, faculty_id, emailaddress, prof_photo, prof_username, prof_password)
+                VALUES (?, ?, ?, ?, ?, ?, COALESCE(?, 'profile.jpg'), ?, ?)
                 ON DUPLICATE KEY UPDATE 
                 firstname = VALUES(firstname),
                 lastname = VALUES(lastname),
                 middlename = VALUES(middlename),
                 age = VALUES(age),
                 emailaddress = VALUES(emailaddress),
-                employment_status = VALUES(employment_status),
                 prof_photo = COALESCE(VALUES(prof_photo), 'profile.jpg'),
                 prof_username = VALUES(prof_username),
                 prof_password = VALUES(prof_password)";
@@ -43,9 +42,8 @@ if (isset($_POST['upload'])) {
             $age = $values[3];
             $faculty_id = $values[4];
             $emailaddress = $values[5];
-            $employment_status = $values[6];
-            $prof_password = $values[7];
-            $prof_username = $values[8];
+            $prof_password = $values[6];
+            $prof_username = $values[7];
             $prof_photo = 'profile.jpg';
             $hashed_password = password_hash($prof_password, PASSWORD_DEFAULT);
 
@@ -54,7 +52,7 @@ if (isset($_POST['upload'])) {
             $check_stmt->execute();
             $result = $check_stmt->get_result();
 
-            $stmt->bind_param("ssssssssss", $firstname, $lastname, $middlename, $age, $faculty_id, $emailaddress, $employment_status, $prof_photo, $prof_username, $hashed_password);
+            $stmt->bind_param("sssssssss", $firstname, $lastname, $middlename, $age, $faculty_id, $emailaddress, $prof_photo, $prof_username, $hashed_password);
 
             if ($result->num_rows > 0) {
                 if ($stmt->execute()) {
