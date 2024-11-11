@@ -122,7 +122,29 @@
 </div>
 
 
-
+<!-- Add New Professor Modal -->
+<div id="addnew" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="professor_upload.php" method="post" enctype="multipart/form-data">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Upload Excel File</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="excel_file">Choose Excel File:</label>
+            <input type="file" name="excel_file" id="excel_file" accept=".xls,.xlsx" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" name="upload" class="btn btn-primary">Upload</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <!-- View Professor Modal -->
 <div class="modal fade" id="view">
