@@ -8,7 +8,7 @@ if (isset($_POST['upload'])) {
         $file = $_FILES['excel_file']['tmp_name'];
 
         // Load Excel file using PhpSpreadsheet
-        require __DIR__ . '../vendor/autoload.php';
+        require __DIR__ . '../../vendor/autoload.php';
 
         // Load Excel file
         $spreadsheet = IOFactory::load($file);
@@ -91,5 +91,6 @@ if (isset($_POST['upload'])) {
         $_SESSION['error'] = 'Error uploading file';
     }
 }
+
 
 header('location: professor.php');
