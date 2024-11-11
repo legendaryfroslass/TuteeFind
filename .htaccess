@@ -1,13 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-
-    # Remove .php extension from URLs
-    RewriteCond %{REQUEST_FILENAME}.php -f
-    RewriteRule ^([^/]+)$ $1.php [L]
-
-    # Redirect to index.php when accessing the root of your project
+    # Redirect all traffic to /var/www/tuteefind/TuteeFind/index.php
     RewriteRule ^$ /TuteeFind/index.php [L]
-    
-    # Redirect everything else to index.php (optional, depending on your routing logic)
     RewriteRule ^(.*)$ /TuteeFind/index.php [L]
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^([^\.]+)$ $1.php [NC,L]
 </IfModule>

@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         unset($_SESSION['verified']); // Clear the verified flag
         // $success = "Password changed successfully.";
 
-        header('Location: login.php?passwordChanged=true');
+        header('Location: login?passwordChanged=true');
         exit();
     } else {
         $error = "Passwords do not match. Please try again.";
