@@ -7,7 +7,7 @@ if (isset($_POST['upload'])) {
         $file = $_FILES['excel_file']['tmp_name'];
 
         // Load PhpSpreadsheet
-        require __DIR__ . '/../../vendor/autoload.php';
+        require __DIR__ . '/../vendor/autoload.php';
         $spreadsheet = IOFactory::load($file);
         $sheet = $spreadsheet->getActiveSheet();
 
