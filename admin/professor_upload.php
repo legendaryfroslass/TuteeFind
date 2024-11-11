@@ -1,12 +1,14 @@
 <?php
 include 'includes/session.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
-// Load Excel file using PhpSpreadsheet
-require __DIR__ . '/../vendor/autoload.php';
+
 if (isset($_POST['upload'])) {
     // Check if file was uploaded without errors
     if (isset($_FILES["excel_file"]) && $_FILES["excel_file"]["error"] == 0) {
         $file = $_FILES['excel_file']['tmp_name'];
+
+        // Load Excel file using PhpSpreadsheet
+        require __DIR__ . '/../vendor/autoload.php';
 
         // Load Excel file
         $spreadsheet = IOFactory::load($file);
@@ -33,7 +35,6 @@ if (isset($_POST['upload'])) {
                 prof_photo = COALESCE(VALUES(prof_photo), 'profile.jpg'),
                 prof_username = VALUES(prof_username),
                 prof_password = VALUES(prof_password)";
-
         $stmt = $conn->prepare($sql);
 
         // Loop through rows (assuming the first row contains column headers)
@@ -54,12 +55,22 @@ if (isset($_POST['upload'])) {
             $faculty_id = $values[5];
             $emailaddress = $values[6];
             $employment_status = $values[7];
-            $prof_password = $values[8]; // Correct the order here
+            $prof_password = $values[8];
             $prof_username = $values[9];
             $prof_photo = 'profile.jpg'; // Default value for prof_photo
 
             // Hash the password
             $hashed_password = password_hash($prof_password, PASSWORD_DEFAULT);
+
+            // Validate and format the birthday date
+            try {
+                $date = new DateTime($birthday);
+                $formattedDate = $date->format('Y-m-d'); // Reformat to YYYY-MM-DD
+            } catch (Exception $e) {
+                $_SESSION['error'] = 'Invalid date format in uploaded file.';
+                header('location: professor.php');
+                exit();
+            }
 
             // Check if record with the same faculty_id already exists
             $check_stmt->bind_param("s", $faculty_id);
@@ -67,13 +78,12 @@ if (isset($_POST['upload'])) {
             $result = $check_stmt->get_result();
 
             // Bind parameters and execute the statement
-            $stmt->bind_param("ssssissssss", $firstname, $lastname, $middlename, $age, $birthday, $faculty_id, $emailaddress, $employment_status, $prof_photo, $prof_username, $hashed_password);
+            $stmt->bind_param("ssssissssss", $firstname, $lastname, $middlename, $age, $formattedDate, $faculty_id, $emailaddress, $employment_status, $prof_photo, $prof_username, $hashed_password);
 
             if ($result->num_rows > 0) {
                 // Record exists, update it
                 if ($stmt->execute()) {
                     $_SESSION['success'] = 'Data updated successfully';
-                    header('location: professor.php');
                 } else {
                     $_SESSION['error'] = 'Error updating data: ' . $stmt->error;
                 }
@@ -81,7 +91,6 @@ if (isset($_POST['upload'])) {
                 // Record doesn't exist, insert it
                 if ($stmt->execute()) {
                     $_SESSION['success'] = 'Data imported successfully';
-                    header('location: professor.php');
                 } else {
                     $_SESSION['error'] = 'Error inserting data: ' . $stmt->error;
                 }
@@ -91,4 +100,8 @@ if (isset($_POST['upload'])) {
         $_SESSION['error'] = 'Error uploading file';
     }
 }
+
+// Redirect back to professor.php
+header('location: professor.php');
+exit();
 ?>
