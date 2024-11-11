@@ -626,7 +626,8 @@ function archiveAllSelected() {
   document.getElementById('uploadBtn').addEventListener('click', function() {
     const form = document.getElementById('uploadForm');
     const formData = new FormData(form);
-    formData.append('action', 'professor_upload');  // Add the action
+    formData.append('action', 'professor_upload');
+    console.log(...formData);
 
     fetch('', {
         method: 'POST',
