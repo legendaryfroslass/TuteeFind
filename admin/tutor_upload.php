@@ -18,7 +18,8 @@ if (isset($_POST['upload'])) {
         $sheet = $spreadsheet->getActiveSheet();
 
         // Prepare the SQL statement for inserting or updating records
-        $sql = "INSERT INTO tutor (firstname, lastname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password) 
+        $sql = "INSERT INTO tutor (firstname, lastname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio
+        ) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
                 ON DUPLICATE KEY UPDATE 
                 firstname = VALUES(firstname), 
@@ -33,7 +34,8 @@ if (isset($_POST['upload'])) {
                 professor = VALUES(professor),
                 fblink = VALUES(fblink),
                 emailaddress = VALUES(emailaddress),
-                password = VALUES(password)";
+                password = VALUES(password),
+                bio = VALUES(bio)";
                 
         $stmt = $conn->prepare($sql);
 
@@ -59,15 +61,18 @@ if (isset($_POST['upload'])) {
             $fblink = $values[10];
             $emailaddress = $values[11];
             $password = password_hash($values[12], PASSWORD_DEFAULT); // Hash the password
+            $bio = $values[13];
 
             // Bind parameters and execute the statement
-            $stmt->bind_param("ssissssssssss", $firstname, $lastname, $age, $sex, $number, $barangay, $student_id, $course, $year_section, $professor, $fblink, $emailaddress, $password);
+            $stmt->bind_param("ssisssssssssss", $firstname, $lastname, $age, $sex, $number, $barangay, $student_id, $course, $year_section, $professor, $fblink, $emailaddress, $password, $bio);
 
             // Execute the statement
             if ($stmt->execute()) {
                 $_SESSION['success'] = 'Data imported successfully';
+                header('location: tutor.php');
             } else {
                 $_SESSION['error'] = 'Error inserting data: ' . $stmt->error;
+                header('location: tutor.php');
             }
         }
     } else {
@@ -75,5 +80,5 @@ if (isset($_POST['upload'])) {
     }
 }
 
-header('location: tutor');
+header('location: tutor.php');
 ?>
