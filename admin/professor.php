@@ -3,8 +3,9 @@
 <?php
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-if (isset($_POST['action'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if file was uploaded without errors
+    if (isset($_POST['action'])) {
     if ($_POST['action'] === 'professor_upload') {
       if (isset($_FILES["excel_file"]) && $_FILES["excel_file"]["error"] == 0) {
         $file = $_FILES['excel_file']['tmp_name'];
@@ -93,7 +94,7 @@ if (isset($_POST['action'])) {
         $_SESSION['error'] = 'Error uploading file';
     }
     }
-
+  }
 }
 ?>
 <style>
@@ -253,7 +254,7 @@ $total_pages = ceil($total_rows / $limit);
 <div id="addnew" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form action="professor_upload" method="post" enctype="multipart/form-data">
+      <form method="post" enctype="multipart/form-data" id="uploadForm">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4 class="modal-title">Upload Excel File</h4>
@@ -266,7 +267,7 @@ $total_pages = ceil($total_rows / $limit);
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="submit" name="upload" class="btn btn-primary">Upload</button>
+          <button type="submit" name="upload" class="btn btn-primary" id="uploadBtn">Upload</button>
         </div>
       </form>
     </div>
@@ -620,3 +621,25 @@ function archiveAllSelected() {
         </div>
     </div>
 </div>
+
+<script>
+  document.getElementById('uploadBtn').addEventListener('click', function() {
+    const form = document.getElementById('uploadForm');
+    const formData = new FormData(form);
+    formData.append('action', 'professor_upload');  // Add the action
+
+    fetch('', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload(); // Reload to reflect changes
+        } else {
+            alert('Error uploading the record: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
