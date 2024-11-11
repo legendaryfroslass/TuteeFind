@@ -1,14 +1,12 @@
 <?php
 include 'includes/session.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
+// Load Excel file using PhpSpreadsheet
+require __DIR__ . '/../vendor/autoload.php';
 if (isset($_POST['upload'])) {
     // Check if file was uploaded without errors
     if (isset($_FILES["excel_file"]) && $_FILES["excel_file"]["error"] == 0) {
         $file = $_FILES['excel_file']['tmp_name'];
-
-        // Load Excel file using PhpSpreadsheet
-        require __DIR__ . '/../vendor/autoload.php';
 
         // Load Excel file
         $spreadsheet = IOFactory::load($file);
@@ -75,6 +73,7 @@ if (isset($_POST['upload'])) {
                 // Record exists, update it
                 if ($stmt->execute()) {
                     $_SESSION['success'] = 'Data updated successfully';
+                    header('location: professor.php');
                 } else {
                     $_SESSION['error'] = 'Error updating data: ' . $stmt->error;
                 }
@@ -82,6 +81,7 @@ if (isset($_POST['upload'])) {
                 // Record doesn't exist, insert it
                 if ($stmt->execute()) {
                     $_SESSION['success'] = 'Data imported successfully';
+                    header('location: professor.php');
                 } else {
                     $_SESSION['error'] = 'Error inserting data: ' . $stmt->error;
                 }
@@ -91,7 +91,4 @@ if (isset($_POST['upload'])) {
         $_SESSION['error'] = 'Error uploading file';
     }
 }
-
-
-header('location: professor.php');
 ?>
