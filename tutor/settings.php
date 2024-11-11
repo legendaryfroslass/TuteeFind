@@ -202,7 +202,7 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                         <!-- Bio section under the image upload -->
                         <div class="form-group text-start mb-4">
                             <label class="nav-text info-header">Bio</label>
-                            <textarea class="form-control " name="bio" id="bio" rows="1" placeholder="<?php echo htmlspecialchars(string: $bio); ?>"></textarea>
+                            <textarea class="form-control " name="bio" id="bio" rows="1" placeholder="<?php echo htmlspecialchars(string: $bio); ?>"><?php echo htmlspecialchars(string: $bio); ?></textarea>
                         </div>
                     </div>
 

@@ -1219,41 +1219,6 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
         </div>
     </div>
 </div>
-
-<!-- Modal for Adding Event -->
-<div class="modal fade" id="confirmAddEventModal" tabindex="-1" aria-labelledby="confirmAddEventModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmAddEventModalLabel">Add New Event</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="eventName" class="form-label">Event Name</label>
-                    <input type="text" class="form-control" id="eventName" placeholder="Enter event name">
-                </div>
-                <div class="mb-3">
-                    <label for="renderedHours" class="form-label">Rendered Hours</label>
-                    <input type="number" class="form-control" id="renderedHours" placeholder="Enter hours" min="0" step="1">
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <input type="text" class="form-control" id="description" placeholder="Enter description">
-                </div>
-                <div class="mb-3">
-                    <label for="fileInput" class="form-label">Attach File</label>
-                    <input type="file" class="form-control" id="fileInput" accept=".pdf" onchange="handleFileUpload(event)">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="saveEventBtn">Save Event</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 </div>
 </div>
 
