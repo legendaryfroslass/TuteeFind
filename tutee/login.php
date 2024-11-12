@@ -23,7 +23,7 @@ if(isset($_POST['btn-login'])) {
         $user_login->redirect("tutee");
     } else {
         $_SESSION['login_failed'] = true;
-        header("Location: login.php?error");
+        header("Location: login?error");
         exit();
     }
 }

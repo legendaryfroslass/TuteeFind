@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.1deb3
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Nov 10, 2024 at 09:44 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost:3306
+-- Generation Time: Nov 11, 2024 at 09:27 AM
+-- Server version: 8.0.39-1
+-- PHP Version: 8.3.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,18 +28,11 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `activity_logs` (
-  `id` int(11) NOT NULL,
-  `professor_id` int(11) NOT NULL,
-  `activity` varchar(255) NOT NULL,
-  `datetime` varchar(255) NOT NULL
+  `id` int NOT NULL,
+  `professor_id` int NOT NULL,
+  `activity` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `datetime` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `activity_logs`
---
-
-INSERT INTO `activity_logs` (`id`, `professor_id`, `activity`, `datetime`) VALUES
-(26, 331, 'Log-in', 'November 9, 2024 01:42:42 PM');
 
 -- --------------------------------------------------------
 
@@ -48,7 +41,7 @@ INSERT INTO `activity_logs` (`id`, `professor_id`, `activity`, `datetime`) VALUE
 --
 
 CREATE TABLE `admin` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(60) NOT NULL,
   `firstname` varchar(50) NOT NULL,
@@ -56,7 +49,7 @@ CREATE TABLE `admin` (
   `photo` varchar(150) NOT NULL,
   `created_on` date NOT NULL,
   `emailaddress` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `admin`
@@ -72,25 +65,17 @@ INSERT INTO `admin` (`id`, `username`, `password`, `firstname`, `lastname`, `pho
 --
 
 CREATE TABLE `archive_professor` (
-  `id` int(11) NOT NULL,
-  `lastname` varchar(255) DEFAULT NULL,
-  `firstname` varchar(255) DEFAULT NULL,
-  `middlename` varchar(255) DEFAULT NULL,
-  `faculty_id` varchar(255) DEFAULT NULL,
-  `age` int(11) DEFAULT NULL,
-  `birthday` date DEFAULT NULL,
-  `employment_status` varchar(255) DEFAULT NULL,
-  `prof_username` varchar(255) DEFAULT NULL,
-  `prof_password` varchar(255) DEFAULT NULL,
-  `archived_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `id` int NOT NULL,
+  `lastname` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `firstname` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `middlename` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `faculty_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  `emailaddress` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `prof_username` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `prof_password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `archived_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `archive_professor`
---
-
-INSERT INTO `archive_professor` (`id`, `lastname`, `firstname`, `middlename`, `faculty_id`, `age`, `birthday`, `employment_status`, `prof_username`, `prof_password`, `archived_at`) VALUES
-(100, 'Fernandez', 'Jasmine', 'Meralles', '21-1261', 27, '0000-00-00', 'Part-time', 'prof1', '$2y$10$AWnZxcbOYqNkqhDGj8v0/uBz7qeJ3aFV71wV2Xb2lI3rmHDXsAleS', '2024-11-06 10:33:23');
 
 -- --------------------------------------------------------
 
@@ -99,10 +84,10 @@ INSERT INTO `archive_professor` (`id`, `lastname`, `firstname`, `middlename`, `f
 --
 
 CREATE TABLE `archive_requests` (
-  `request_id` int(11) NOT NULL,
-  `tutor_id` int(11) DEFAULT NULL,
-  `tutee_id` int(11) DEFAULT NULL,
-  `status` enum('pending','accepted','rejected') DEFAULT NULL
+  `request_id` int NOT NULL,
+  `tutor_id` int DEFAULT NULL,
+  `tutee_id` int DEFAULT NULL,
+  `status` enum('pending','accepted','rejected') COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -121,22 +106,22 @@ INSERT INTO `archive_requests` (`request_id`, `tutor_id`, `tutee_id`, `status`) 
 --
 
 CREATE TABLE `archive_tutee` (
-  `id` int(11) NOT NULL,
-  `firstname` varchar(30) NOT NULL,
-  `lastname` varchar(30) NOT NULL,
-  `age` varchar(255) NOT NULL,
-  `sex` varchar(255) NOT NULL,
-  `number` varchar(255) NOT NULL,
-  `guardianname` varchar(255) NOT NULL,
-  `fblink` varchar(255) DEFAULT NULL,
-  `barangay` varchar(50) NOT NULL,
+  `id` int NOT NULL,
+  `firstname` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `lastname` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `age` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `sex` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `number` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `guardianname` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `fblink` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `barangay` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `tutee_bday` date NOT NULL,
-  `school` varchar(50) NOT NULL,
-  `grade` varchar(20) NOT NULL,
-  `emailaddress` varchar(255) NOT NULL,
-  `photo` varchar(255) DEFAULT NULL,
-  `password` varchar(255) NOT NULL,
-  `archive_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `school` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `grade` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `emailaddress` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `archive_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -154,12 +139,12 @@ INSERT INTO `archive_tutee` (`id`, `firstname`, `lastname`, `age`, `sex`, `numbe
 --
 
 CREATE TABLE `archive_tutee_progress` (
-  `id` int(11) NOT NULL,
-  `tutee_id` int(11) DEFAULT NULL,
-  `tutor_id` int(11) DEFAULT NULL,
-  `week_number` int(11) DEFAULT NULL,
-  `uploaded_files` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
+  `id` int NOT NULL,
+  `tutee_id` int DEFAULT NULL,
+  `tutor_id` int DEFAULT NULL,
+  `week_number` int DEFAULT NULL,
+  `uploaded_files` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -177,30 +162,31 @@ INSERT INTO `archive_tutee_progress` (`id`, `tutee_id`, `tutor_id`, `week_number
 --
 
 CREATE TABLE `archive_tutor` (
-  `id` int(11) NOT NULL,
-  `firstname` varchar(255) NOT NULL,
-  `lastname` varchar(255) NOT NULL,
-  `age` int(11) NOT NULL,
-  `sex` varchar(10) NOT NULL,
-  `number` varchar(20) NOT NULL,
-  `barangay` varchar(255) NOT NULL,
-  `student_id` varchar(50) NOT NULL,
-  `course` varchar(100) NOT NULL,
-  `year_section` varchar(255) NOT NULL,
-  `photo` varchar(255) DEFAULT NULL,
-  `professor` varchar(50) DEFAULT NULL,
-  `fblink` varchar(255) DEFAULT NULL,
-  `emailaddress` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `archive_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` int NOT NULL,
+  `firstname` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `lastname` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `age` int NOT NULL,
+  `sex` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
+  `number` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `barangay` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `student_id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `course` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `year_section` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `professor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `fblink` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `emailaddress` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `archive_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `bio` text COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `archive_tutor`
 --
 
-INSERT INTO `archive_tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `emailaddress`, `password`, `archive_at`) VALUES
-(111, 'Eljohn', 'Fernandez', 21, 'Female', '09682226610', 'Dalandanan', '21-1251', 'BSIT', '2-2', NULL, '21-1261', 'jasmine/me.', 'eljohn.cuaresma6@gmail.com', '$2y$10$bgddRa1O7U2vfD/FM0p1vOkOP77Zehm2zCpFZ4H/vWQpsgLSrGCj.', '2024-11-06 10:33:31');
+INSERT INTO `archive_tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `emailaddress`, `password`, `archive_at`, `bio`) VALUES
+(111, 'Eljohn', 'Fernandez', 21, 'Female', '09682226610', 'Dalandanan', '21-1251', 'BSIT', '2-2', NULL, '21-1261', 'jasmine/me.', 'eljohn.cuaresma6@gmail.com', '$2y$10$bgddRa1O7U2vfD/FM0p1vOkOP77Zehm2zCpFZ4H/vWQpsgLSrGCj.', '2024-11-06 10:33:31', '');
 
 -- --------------------------------------------------------
 
@@ -209,11 +195,11 @@ INSERT INTO `archive_tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `numbe
 --
 
 CREATE TABLE `archive_tutor_ratings` (
-  `id` int(11) NOT NULL,
-  `tutee_id` int(11) DEFAULT NULL,
-  `tutor_id` int(11) DEFAULT NULL,
-  `rating` int(11) DEFAULT NULL,
-  `comment` text DEFAULT NULL,
+  `id` int NOT NULL,
+  `tutee_id` int DEFAULT NULL,
+  `tutor_id` int DEFAULT NULL,
+  `rating` int DEFAULT NULL,
+  `comment` text COLLATE utf8mb4_general_ci,
   `pdf_content` longblob NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -231,9 +217,9 @@ INSERT INTO `archive_tutor_ratings` (`id`, `tutee_id`, `tutor_id`, `rating`, `co
 --
 
 CREATE TABLE `archive_tutor_sessions` (
-  `id` int(11) NOT NULL,
-  `tutor_id` int(11) DEFAULT NULL,
-  `tutee_id` int(11) DEFAULT NULL
+  `id` int NOT NULL,
+  `tutor_id` int DEFAULT NULL,
+  `tutee_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -250,9 +236,9 @@ INSERT INTO `archive_tutor_sessions` (`id`, `tutor_id`, `tutee_id`) VALUES
 --
 
 CREATE TABLE `districts` (
-  `id` int(11) NOT NULL,
-  `barangay` varchar(255) NOT NULL,
-  `district` enum('District 1','District 2') NOT NULL
+  `id` int NOT NULL,
+  `barangay` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `district` enum('District 1','District 2') COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -301,22 +287,14 @@ INSERT INTO `districts` (`id`, `barangay`, `district`) VALUES
 --
 
 CREATE TABLE `events` (
-  `id` int(11) NOT NULL,
-  `tutor_id` int(11) DEFAULT NULL,
-  `event_name` varchar(255) NOT NULL,
-  `rendered_hours` int(11) DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `attached_file` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `id` int NOT NULL,
+  `tutor_id` int DEFAULT NULL,
+  `event_name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `rendered_hours` int DEFAULT NULL,
+  `description` text COLLATE utf8mb4_general_ci,
+  `attached_file` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `events`
---
-
-INSERT INTO `events` (`id`, `tutor_id`, `event_name`, `rendered_hours`, `description`, `attached_file`, `created_at`) VALUES
-(21, 116, 'PLV', 20, 'HIV', 'bball.jpg', '2024-11-10 01:37:40'),
-(22, 116, 'PLV', 5, 'dawda', 'Brown and Black Vintage National Heroes Day Philippines Instagram Post (1).png', '2024-11-10 03:36:57');
 
 -- --------------------------------------------------------
 
@@ -325,26 +303,14 @@ INSERT INTO `events` (`id`, `tutor_id`, `event_name`, `rendered_hours`, `descrip
 --
 
 CREATE TABLE `messages` (
-  `id` int(11) NOT NULL,
-  `tutor_id` int(11) DEFAULT NULL,
-  `tutee_id` int(11) DEFAULT NULL,
-  `sender_type` enum('tutor','tutee') DEFAULT NULL,
-  `message` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `is_read` tinyint(1) DEFAULT 0
+  `id` int NOT NULL,
+  `tutor_id` int DEFAULT NULL,
+  `tutee_id` int DEFAULT NULL,
+  `sender_type` enum('tutor','tutee') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `message` text COLLATE utf8mb4_general_ci,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_read` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `messages`
---
-
-INSERT INTO `messages` (`id`, `tutor_id`, `tutee_id`, `sender_type`, `message`, `created_at`, `is_read`) VALUES
-(230, 116, 60, 'tutee', '312', '2024-11-07 10:19:46', 1),
-(231, 116, 60, 'tutee', 'qeqweqeq', '2024-11-07 10:26:22', 1),
-(232, 116, 61, 'tutor', 'yow', '2024-11-09 08:34:11', 0),
-(233, 116, 61, 'tutee', 'hello', '2024-11-09 08:41:10', 1),
-(234, 116, 60, 'tutee', 'ge', '2024-11-10 04:42:04', 0),
-(235, 116, 62, 'tutor', 'yo\r\n', '2024-11-10 06:06:42', 0);
 
 -- --------------------------------------------------------
 
@@ -353,22 +319,14 @@ INSERT INTO `messages` (`id`, `tutor_id`, `tutee_id`, `sender_type`, `message`, 
 --
 
 CREATE TABLE `notifications` (
-  `id` int(11) NOT NULL,
-  `sender_id` int(11) NOT NULL,
-  `receiver_id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `message` text NOT NULL,
-  `status` varchar(20) DEFAULT 'unread',
-  `date_sent` datetime DEFAULT current_timestamp()
+  `id` int NOT NULL,
+  `sender_id` int NOT NULL,
+  `receiver_id` int NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `message` text COLLATE utf8mb4_general_ci NOT NULL,
+  `status` varchar(20) COLLATE utf8mb4_general_ci DEFAULT 'unread',
+  `date_sent` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `notifications`
---
-
-INSERT INTO `notifications` (`id`, `sender_id`, `receiver_id`, `title`, `message`, `status`, `date_sent`) VALUES
-(66, 116, 62, 'New Tutor Request', 'You have a new tutor request from Eljohn Fernandez.', 'read', '2024-11-10 14:45:06'),
-(67, 62, 116, 'Request Accepted', 'Your tutor request has been accepted by Oreo Dizon.', 'unread', '2024-11-10 14:54:28');
 
 -- --------------------------------------------------------
 
@@ -377,28 +335,27 @@ INSERT INTO `notifications` (`id`, `sender_id`, `receiver_id`, `title`, `message
 --
 
 CREATE TABLE `professor` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `firstname` varchar(30) NOT NULL,
   `lastname` varchar(30) NOT NULL,
   `middlename` varchar(20) NOT NULL,
-  `age` int(100) NOT NULL,
-  `birthday` date NOT NULL,
+  `age` int NOT NULL,
   `faculty_id` varchar(20) NOT NULL,
   `emailaddress` varchar(50) NOT NULL,
-  `employment_status` varchar(20) NOT NULL,
   `prof_password` varchar(250) NOT NULL,
   `prof_username` varchar(250) NOT NULL,
   `prof_photo` varchar(250) NOT NULL,
   `last_login` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `professor`
 --
 
-INSERT INTO `professor` (`id`, `firstname`, `lastname`, `middlename`, `age`, `birthday`, `faculty_id`, `emailaddress`, `employment_status`, `prof_password`, `prof_username`, `prof_photo`, `last_login`) VALUES
-(331, 'John Paul', 'Gracio', 'Meralles', 27, '0000-00-00', '21-1262', 'jasmine.elisolutions@gmail.com', 'Part-time', '$2y$10$bQJFqSTf4GHCQm.P.qZcQu9nXyZU5tQI0pkJmn7qLyKB.kiQhf7VO', 'prof2', 'profile.jpg', '2024-11-09 13:42:42'),
-(332, 'Clarisse', 'Dizon', 'Claus', 27, '0000-00-00', '21-1263', 'fernandezjasmine095@gmail.com', 'Full-time', '$2y$10$aNNiXtxOzza7WZvgzVKs3.lClp9Vz8qKsaCFimFh/Vz9tgJ/3V/GS', 'prof3', 'profile.jpg', NULL);
+INSERT INTO `professor` (`id`, `firstname`, `lastname`, `middlename`, `age`, `faculty_id`, `emailaddress`, `prof_password`, `prof_username`, `prof_photo`, `last_login`) VALUES
+(333, 'Jasmine', 'Fernandez', 'Meralles', 27, '21-1261', 'jasminefernandez031@gmail.com', '$2y$10$2eFaUB10.mTuWi99dbbF3eJVM.ZFsMHXWJtmRk4rqUsTDGYvOD1Oy', 'prof1', 'profile.jpg', NULL),
+(334, 'John Paul', 'Gracio', 'Meralles', 27, '21-1262', 'jasmine.elisolutions@gmail.com', '$2y$10$haetOD1F0s.MU7i38VCzhuB6veZGLv3BgPt4kwv4o2W5rbTflDP4O', 'prof2', 'profile.jpg', NULL),
+(335, 'Clarisse', 'Dizon', 'Claus', 27, '21-1263', 'fernandezjasmine095@gmail.com', '$2y$10$dLnTr9yHVj2IO0605fdPN.lvS1Hu1IdngHWrDRFCavqNyib.hR39S', 'prof3', 'profile.jpg', NULL);
 
 -- --------------------------------------------------------
 
@@ -407,20 +364,11 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `middlename`, `age`, `bi
 --
 
 CREATE TABLE `requests` (
-  `request_id` int(11) NOT NULL,
-  `tutor_id` int(11) DEFAULT NULL,
-  `tutee_id` int(11) DEFAULT NULL,
-  `status` enum('pending','accepted','rejected','removed') DEFAULT 'pending'
+  `request_id` int NOT NULL,
+  `tutor_id` int DEFAULT NULL,
+  `tutee_id` int DEFAULT NULL,
+  `status` enum('pending','accepted','rejected','removed') COLLATE utf8mb4_general_ci DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `requests`
---
-
-INSERT INTO `requests` (`request_id`, `tutor_id`, `tutee_id`, `status`) VALUES
-(111, 116, 61, 'removed'),
-(112, 116, 60, 'accepted'),
-(113, 116, 62, 'accepted');
 
 -- --------------------------------------------------------
 
@@ -429,7 +377,7 @@ INSERT INTO `requests` (`request_id`, `tutor_id`, `tutee_id`, `status`) VALUES
 --
 
 CREATE TABLE `tutee` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `firstname` varchar(30) NOT NULL,
   `lastname` varchar(30) NOT NULL,
   `age` varchar(255) NOT NULL,
@@ -445,7 +393,7 @@ CREATE TABLE `tutee` (
   `school` varchar(255) NOT NULL,
   `grade` varchar(255) NOT NULL,
   `bio` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `tutee`
@@ -463,28 +411,17 @@ INSERT INTO `tutee` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `gua
 --
 
 CREATE TABLE `tutee_progress` (
-  `id` int(11) NOT NULL,
-  `tutee_id` int(11) NOT NULL,
-  `tutor_id` int(11) NOT NULL,
-  `week_number` int(11) NOT NULL,
-  `uploaded_files` varchar(255) DEFAULT NULL,
-  `description` varchar(255) NOT NULL,
-  `date` datetime DEFAULT NULL ON UPDATE current_timestamp(),
-  `rendered_hours` int(11) NOT NULL,
-  `location` varchar(255) NOT NULL,
-  `subject` varchar(255) NOT NULL
+  `id` int NOT NULL,
+  `tutee_id` int NOT NULL,
+  `tutor_id` int NOT NULL,
+  `week_number` int NOT NULL,
+  `uploaded_files` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `date` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `rendered_hours` int NOT NULL,
+  `location` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `subject` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tutee_progress`
---
-
-INSERT INTO `tutee_progress` (`id`, `tutee_id`, `tutor_id`, `week_number`, `uploaded_files`, `description`, `date`, `rendered_hours`, `location`, `subject`) VALUES
-(329, 61, 116, 1, '../uploads/tutor (2).xlsx', 'dwa', '2024-11-10 11:11:27', 5, 'dwa', 'dwad'),
-(336, 60, 116, 1, '../uploads/Document (2).docx', 'dawd', '2024-11-10 11:57:32', 5, 'dwdwa', 'dwada'),
-(339, 61, 116, 2, '../uploads/Eljohn Cuaresma BSIT 3-Paul.docx', 'dwad', '2024-11-10 12:00:34', 5, 'dwada', 'dawda'),
-(340, 62, 116, 1, '../uploads/2024_ENDORSEMENT for IT Experts Approval Letter.docx', 'daweawd', '2024-11-10 15:08:48', 5, 'dawdaw', 'dawdaw'),
-(341, 62, 116, 2, '../uploads/8464b274-939e-403b-acc7-b4559dd3896d.webp', 'dawdawd', '2024-11-10 15:16:16', 5, 'dawdaw', 'dawd');
 
 -- --------------------------------------------------------
 
@@ -493,20 +430,11 @@ INSERT INTO `tutee_progress` (`id`, `tutee_id`, `tutor_id`, `week_number`, `uplo
 --
 
 CREATE TABLE `tutee_summary` (
-  `tutee_id` int(11) NOT NULL,
-  `tutor_id` int(11) NOT NULL,
-  `completed_weeks` int(11) DEFAULT 0,
-  `registered_weeks` int(11) DEFAULT 0
+  `tutee_id` int NOT NULL,
+  `tutor_id` int NOT NULL,
+  `completed_weeks` int DEFAULT '0',
+  `registered_weeks` int DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tutee_summary`
---
-
-INSERT INTO `tutee_summary` (`tutee_id`, `tutor_id`, `completed_weeks`, `registered_weeks`) VALUES
-(60, 116, 2, 1),
-(61, 116, 1, 2),
-(62, 116, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -515,22 +443,22 @@ INSERT INTO `tutee_summary` (`tutee_id`, `tutor_id`, `completed_weeks`, `registe
 --
 
 CREATE TABLE `tutor` (
-  `id` int(11) NOT NULL,
-  `firstname` varchar(255) NOT NULL,
-  `lastname` varchar(255) NOT NULL,
-  `age` int(11) DEFAULT NULL,
-  `sex` varchar(10) DEFAULT NULL,
-  `number` varchar(20) DEFAULT NULL,
-  `barangay` varchar(255) DEFAULT NULL,
-  `student_id` varchar(50) DEFAULT NULL,
-  `course` varchar(100) DEFAULT NULL,
-  `year_section` varchar(255) DEFAULT NULL,
-  `photo` varchar(255) DEFAULT NULL,
-  `professor` varchar(50) NOT NULL,
-  `fblink` varchar(255) NOT NULL,
-  `bio` text NOT NULL,
-  `emailaddress` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `id` int NOT NULL,
+  `firstname` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `lastname` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `age` int DEFAULT NULL,
+  `sex` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `number` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `barangay` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `student_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `course` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `year_section` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `professor` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `fblink` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `bio` text COLLATE utf8mb4_general_ci NOT NULL,
+  `emailaddress` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -538,7 +466,11 @@ CREATE TABLE `tutor` (
 --
 
 INSERT INTO `tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `bio`, `emailaddress`, `password`) VALUES
-(116, 'Eljohn', 'Fernandez', 21, 'Female', '09682226610', 'Dalandanan', '21-1252', 'BSIT', '2-2', '../uploads/21-1251.png', '21-1261', 'jasmine/me.', 'Im Eljohn Cuaresma from BSIT 4-3, im good at teaching shits', 'cuaresmaeljohn@gmail.com', '$2y$10$bgddRa1O7U2vfD/FM0p1vOkOP77Zehm2zCpFZ4H/vWQpsgLSrGCj.');
+(117, 'Jasmine', 'Fernandez', 21, 'Female', '9682226610', 'Dalandanan', '21-1251', 'BSIT', '2-2', NULL, '21-1261', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$/g5d8L0aBDGWU6TVBXRI7epWPKPIoJFVnahP9vy0Xyk7YHKDPYlIK'),
+(118, 'Lyka', 'Fernandez', 20, 'Female', '9682226610', 'Parada', '21-1252', 'BSED', '2-3', NULL, '21-1261', 'lyka/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$0ZAoqUCf1wyFgP3nDGO3DOCoW8ZKRsHgLI1qKr5xpzYvQEIUTioyK'),
+(119, 'Marbie', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1253', 'BSIT', '2-4', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$fi2ytEf7c4x9jDOyCNRNyeiUV764yIPrUkl7jyauNrIZ9mlj8Qcay'),
+(120, 'Clara', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1254', 'BSIT', '2-5', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$JwDJ5grUAEnKjG9P86pwQ.m2zRkkYz9YpAKdJsK2HZo6KGpKo83HG'),
+(121, 'Tiny', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1255', 'BSIT', '2-6', NULL, '21-1262', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$kQapw9dlhf/JIXXxVusw9OGWskXY52MPlZxSQOr2NKigYenbj4wHS');
 
 -- --------------------------------------------------------
 
@@ -547,11 +479,11 @@ INSERT INTO `tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `bar
 --
 
 CREATE TABLE `tutor_ratings` (
-  `id` int(11) NOT NULL,
-  `tutee_id` int(11) DEFAULT NULL,
-  `tutor_id` int(11) DEFAULT NULL,
-  `rating` text DEFAULT NULL,
-  `comment` text DEFAULT NULL,
+  `id` int NOT NULL,
+  `tutee_id` int DEFAULT NULL,
+  `tutor_id` int DEFAULT NULL,
+  `rating` text COLLATE utf8mb4_general_ci,
+  `comment` text COLLATE utf8mb4_general_ci,
   `pdf_content` longblob NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -562,20 +494,11 @@ CREATE TABLE `tutor_ratings` (
 --
 
 CREATE TABLE `tutor_sessions` (
-  `id` int(11) NOT NULL,
-  `tutor_id` int(11) NOT NULL,
-  `tutee_id` int(11) NOT NULL,
-  `status` enum('ongoing','requested','completed') DEFAULT 'ongoing'
+  `id` int NOT NULL,
+  `tutor_id` int NOT NULL,
+  `tutee_id` int NOT NULL,
+  `status` enum('ongoing','requested','completed') COLLATE utf8mb4_general_ci DEFAULT 'ongoing'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tutor_sessions`
---
-
-INSERT INTO `tutor_sessions` (`id`, `tutor_id`, `tutee_id`, `status`) VALUES
-(49, 116, 60, 'ongoing'),
-(50, 116, 61, 'ongoing'),
-(53, 116, 62, 'completed');
 
 --
 -- Indexes for dumped tables
@@ -735,121 +658,121 @@ ALTER TABLE `tutor_sessions`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `archive_professor`
 --
 ALTER TABLE `archive_professor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- AUTO_INCREMENT for table `archive_requests`
 --
 ALTER TABLE `archive_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `request_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
 
 --
 -- AUTO_INCREMENT for table `archive_tutee`
 --
 ALTER TABLE `archive_tutee`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `archive_tutee_progress`
 --
 ALTER TABLE `archive_tutee_progress`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=304;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=304;
 
 --
 -- AUTO_INCREMENT for table `archive_tutor`
 --
 ALTER TABLE `archive_tutor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=218;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=218;
 
 --
 -- AUTO_INCREMENT for table `archive_tutor_ratings`
 --
 ALTER TABLE `archive_tutor_ratings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `archive_tutor_sessions`
 --
 ALTER TABLE `archive_tutor_sessions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `districts`
 --
 ALTER TABLE `districts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=236;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=241;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `professor`
 --
 ALTER TABLE `professor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=333;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=336;
 
 --
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
+  MODIFY `request_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
 
 --
 -- AUTO_INCREMENT for table `tutee`
 --
 ALTER TABLE `tutee`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `tutee_progress`
 --
 ALTER TABLE `tutee_progress`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=342;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=343;
 
 --
 -- AUTO_INCREMENT for table `tutor`
 --
 ALTER TABLE `tutor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
 -- AUTO_INCREMENT for table `tutor_ratings`
 --
 ALTER TABLE `tutor_ratings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `tutor_sessions`
 --
 ALTER TABLE `tutor_sessions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- Constraints for dumped tables
