@@ -80,7 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signUp'])) {
     $barangay = $_POST['barangay'];
     $number = $_POST['number'];
     $emailaddress = $_POST['emailaddress'];
-    // $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
     $password = $_POST['password'];
     $tutee_bday = $_POST['birthday'];
     $school = $_POST['school'];
@@ -88,11 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signUp'])) {
 
         // Insert data into the database
         if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade)) {
-            $message = "Registration successful!";
-            $messageType = 'success';
-
             // Redirect to the login page
-            header("Location: ../tutee/login.php?registered=success");
+            header("Location: ../tutee/login?registered=success");
             exit();
         } else {
             $message = "Registration failed!";
