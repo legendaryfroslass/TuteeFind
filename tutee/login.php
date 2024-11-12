@@ -7,6 +7,7 @@ $user_login = new TUTEE();
 // Check if there's a message in the session
 $message = '';
 $messageType = '';
+
 if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];
     $messageType = $_SESSION['messageType'];
