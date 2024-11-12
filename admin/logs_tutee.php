@@ -81,7 +81,7 @@
                 </thead>
                 <tbody>
                 <?php
-$sql = "SELECT id, firstname, lastname, barangay, number, age, tutee_birthday, school, grade FROM archive_tutee";
+$sql = "SELECT id, firstname, lastname, barangay, number, age, tutee_bday, school, grade FROM archive_tutee";
 $query = $conn->query($sql);
 while ($row = $query->fetch_assoc()) {
     echo "
