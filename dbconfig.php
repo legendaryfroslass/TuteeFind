@@ -2,6 +2,8 @@
 class Database {
     private $host = "localhost";
     private $db_name = "tuteefind";
+    private $username = "tuteefind";
+    private $password = "tutee_1234Find";
     public $conn;
 
     public function dbConnection() {
