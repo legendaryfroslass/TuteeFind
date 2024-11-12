@@ -23,14 +23,17 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav w-100 text-lg-start text-center">
                 <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#get-started">Get Started</a></li>
+                <li class="nav-item"><a class="nav-link" href="#get-started">Get Started</a></li> 
+                <li class="nav-item ms-lg-auto text-lg-end text-center">
+                    <button class="btn btn-dark" type="button" onclick="showRoleSelection()">Sign In</button>
+                </li>
             </ul>
-            <button class="btn btn-dark" type="button" onclick="showRoleSelection()">Sign In</button>
         </div>
     </div>
 </nav>
+
 
 <!-- Hero Section -->
 <section class="hero-section" id="about">
@@ -39,7 +42,7 @@
             <div class="col-md-6 text-start">
                 <h1 class="head display-4 fw-bold">Develop your skill in a new and unique way</h1>
                 <p class="lead">Our platform connects skilled tutors with motivated tutees, offering personalized guidance to help students achieve their learning goals and succeed academically.</p>
-                <a href="#features" class="btn btn-dark btn-lg">Explore Features</a>
+                <a href="#features" class="btn btn-dark btn-lg mb-3">Explore Features</a>
             </div>
             <div class="col-md-6">
                 <img src="assets/babae.png" alt="Babae Image" class="img-fluid" style="max-width: 160%; height: auto;">

@@ -86,7 +86,7 @@ body {
   z-index: 1000;
 }
 .navbar .navbar-nav {
-  margin-left: 20px; /* Space between the logo and links */
+  margin-left: 0; /* Space between the logo and links */
 }
 .navbar-nav .nav-item {
   margin-left: 20px; /* Space between each link */
