@@ -291,7 +291,7 @@ include('../tutee/spinner.php');
                 
                 <div class="col-md-6 right-box">
                     <div class="row justify-content-center">
-                    <form id="registrationForm" class="form-floating" action="register.php" method="post">
+                    <form id="registrationForm" class="form-floating" method="post">
                         <div class="header-text text-center mb-4">
                         
                             <h2>Create Account</h2>
