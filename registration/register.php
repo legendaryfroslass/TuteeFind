@@ -91,17 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signUp'])) {
             header("Location: ../tutee/login?registered=success");
             exit();
         } else {
-            $message = "Registration failed!";
-            $messageType = 'error';
+            exit();
         }
-
-    // Store message in session for displaying on the same page
-    $_SESSION['message'] = $message;
-    $_SESSION['messageType'] = $messageType;
-
-    // Refresh the page to clear POST data
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
 }
 
 // Check for a message in the session to display it in the modal
