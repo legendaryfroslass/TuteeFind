@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verifyOTP'])) {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signUp'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve form data
     $firstname = $_POST['firstname'];
     $lastname = $_POST['lastname'];
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signUp'])) {
         // Insert data into the database
         if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade)) {
             // Redirect to the login page
-            header("Location: ?registered=success");
+            header("Location: ../tutee/login?registered=success");
             exit();
         } else {
             $message = "Registration failed!";
@@ -568,7 +568,7 @@ include('../tutee/spinner.php');
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-5">Back</a>
                                 </div>
                                 <div class="col-md-6">
-                                    <button type="submit" class="btn btn-lg btn-primary fs-6" id="signUp" name="signUp">Register</button>
+                                    <button type="submit" class="btn btn-lg btn-primary fs-6">Register</button>
                                 </div>
                             </div>
                         </div>
