@@ -1,37 +1,27 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 require_once '../tutee.php';
 session_start();
 $reg_user = new TUTEE();
-
 $message = '';
 $messageType = '';
-
 require '../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
-
 require '../vendor/phpmailer/phpmailer/src/Exception.php';
 require '../vendor/phpmailer/phpmailer/src/SMTP.php';
 require '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
-
 // Handle OTP generation and email sending
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendEmail'])) {
     $emailaddress = $_POST['emailaddress'];
-    
     // Check for duplicate email
     if ($reg_user->isDuplicate($emailaddress)) {
         echo "duplicate";
         exit;  // Stop further execution to avoid additional output
     }
-
     // Generate OTP and attempt to send email
     $otp = random_int(100000, 999999);
     $_SESSION['otp'] = $otp;
-
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
@@ -41,12 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendEmail'])) {
         $mail->Password = 'tzbb qafz fhar ryzf';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
-        
         $mail->setFrom('findtutee@gmail.com', 'TUTEEFIND');
         $mail->addAddress($emailaddress);
         $mail->Subject = 'Your Verification Code';
         $mail->Body = "Your Verification code is: $otp";
-
         if ($mail->send()) {
             echo "success";
             exit;  // Exit to ensure no additional output
@@ -56,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendEmail'])) {
         exit;  // Exit to ensure no additional output
     }
 }
-
 // Verify OTP and proceed to password form
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verifyOTP'])) {
     $userOtp = $_POST['otp'];
@@ -71,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verifyOTP'])) {
         exit;
     }
 }
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve form data
     $firstname = $_POST['firstname'];
@@ -88,18 +74,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $school = $_POST['school'];
     $grade = $_POST['grade'];
     $bio = $_POST['bio'];
-
-    // Insert data into the database
-    $reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio);
-    // Redirect to the login page
-    header("Location: ../tutee/login?registered=success");
-
+    
+    if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio)) {
+        // Redirect to the login page
+        header("Location: ../tutee/login?registered=success");
+        exit();
+    } else {
+        echo "Error in registration. Please try again.";
+    }
     // Store message in session for displaying on the same page
     $_SESSION['message'] = $message;
     $_SESSION['messageType'] = $messageType;
     exit();
 }
-
 // Check for a message in the session to display it in the modal
 if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];
@@ -119,9 +106,7 @@ if (isset($_SESSION['message'])) {
 // Get birthday and age from session (if previously set)
 $tutee_bday = isset($_SESSION['birthday']) ? $_SESSION['birthday'] : '';
 $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
-
 include('../tutee/spinner.php');
-
 ?>
 
 <!DOCTYPE html>
