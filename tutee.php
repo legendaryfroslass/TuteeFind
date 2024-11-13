@@ -113,7 +113,7 @@ public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, 
         try {
             $password = password_hash($password, PASSWORD_DEFAULT);
 
-            $stmt = $this->conn->prepare("INSERT INTO tutee (firstname, lastname, age, sex, guardianname, fblink, barangay, number, emailaddress, password, tutee_bday, school, grade, bio) 
+            $stmt = $this->conn->prepare("INSERT INTO tutee (firstname, lastname, age, sex, guardianname, fblink, barangay, number, emailaddress, password, tutee_bday, school, grade, bio, address) 
                 VALUES (:firstname, :lastname, :age, :sex, :guardianname, :fblink, :barangay, :number, :emailaddress, :password, :tutee_bday, :school, :grade, :bio, :address)");
 
             $stmt->bindParam(":firstname", $firstname, PDO::PARAM_STR);
