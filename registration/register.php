@@ -74,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $school = $_POST['school'];
     $grade = $_POST['grade'];
     $bio = $_POST['bio'];
+    $address = $_POST['address'];
     
     // Error messages array
     $errors = [];
@@ -92,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($tutee_bday)) $errors[] = "Birthday is required.";
     if (empty($school)) $errors[] = "School is required.";
     if (empty($grade)) $errors[] = "Grade is required.";
+    if (empty($address)) $errors[] = "Address is required.";
 
     // If there are errors, display them
     if (!empty($errors)) {
@@ -102,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "</ul>";
     } else {
         // Proceed with registration if no errors
-        if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio)) {
+        if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio, $address)) {
             header("Location: ../tutee/login?registered=success");
             exit();
         } else {
