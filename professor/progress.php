@@ -104,36 +104,37 @@ $current_faculty_id = $_SESSION['professor_id'];
 // Prepare SQL query with placeholders
 $sql = "
     SELECT 
-        t.id, 
-        t.lastname, 
-        t.firstname, 
-        t.student_id, 
-        t.course, 
-        t.year_section, 
-        COALESCE(ts.completed_weeks, 0) AS completed_weeks,
-        COALESCE(rt.rating, 'No Rating') AS rating,
-        COALESCE(rt.comment, 'No Comment') AS comment,
-        r.tutor_id, 
-        r.tutee_id,
-        COALESCE(SUM(tp.rendered_hours), 0) AS total_rendered_hours,
-        COALESCE(SUM(e.rendered_hours), 0) AS event_rendered_hours,
-        rt.pdf_content 
-    FROM tutor t
-    INNER JOIN professor p ON t.professor = p.faculty_id
-    LEFT JOIN requests r ON t.id = r.tutor_id AND r.status = 'accepted'
-    LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
-    LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
-    LEFT JOIN tutee_progress tp ON t.id = tp.tutor_id
-    LEFT JOIN events e ON t.id = e.tutor_id
-    WHERE p.id = ? 
-    AND (
-        LOWER(t.lastname) LIKE LOWER(?) OR
-        LOWER(t.firstname) LIKE LOWER(?) OR
-        LOWER(t.course) LIKE LOWER(?) OR
-        LOWER(t.year_section) LIKE LOWER(?)
-    )
-    GROUP BY t.id
-    LIMIT $limit OFFSET $offset";
+    t.id, 
+    t.lastname, 
+    t.firstname, 
+    t.student_id, 
+    t.course, 
+    t.year_section, 
+    COALESCE(MAX(ts.completed_weeks), 0) AS completed_weeks,
+    COALESCE(MAX(rt.rating), 'No Rating') AS rating,
+    COALESCE(MAX(rt.comment), 'No Comment') AS comment,
+    MAX(r.tutor_id) AS tutor_id, 
+    MAX(r.tutee_id) AS tutee_id,
+    COALESCE(SUM(tp.rendered_hours), 0) AS total_rendered_hours,
+    COALESCE(SUM(e.rendered_hours), 0) AS event_rendered_hours,
+    MAX(rt.pdf_content) AS pdf_content
+FROM tutor t
+INNER JOIN professor p ON t.professor = p.faculty_id
+LEFT JOIN requests r ON t.id = r.tutor_id AND r.status = 'accepted'
+LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
+LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
+LEFT JOIN tutee_progress tp ON t.id = tp.tutor_id
+LEFT JOIN events e ON t.id = e.tutor_id
+WHERE p.id = ? 
+AND (
+    LOWER(t.lastname) LIKE LOWER(?) OR
+    LOWER(t.firstname) LIKE LOWER(?) OR
+    LOWER(t.course) LIKE LOWER(?) OR
+    LOWER(t.year_section) LIKE LOWER(?)
+)
+GROUP BY t.id
+LIMIT $limit OFFSET $offset;
+";
 
 // Set up wildcard search term and bind parameters
 $search_term = '%' . $search . '%';
