@@ -75,18 +75,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $grade = $_POST['grade'];
     $bio = $_POST['bio'];
     
-    if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio)) {
-        // Redirect to the login page
-        header("Location: ../tutee/login?registered=success");
-        exit();
+    // Error messages array
+    $errors = [];
+    
+    // Validation checks
+    if (empty($firstname)) $errors[] = "First name is required.";
+    if (empty($lastname)) $errors[] = "Last name is required.";
+    if (empty($age) || $age < 6 || $age > 11) $errors[] = "Age must be between 6 and 11.";
+    if (empty($sex)) $errors[] = "Sex is required.";
+    if (empty($guardianname)) $errors[] = "Guardian's name is required.";
+    if (!empty($fblink) && !filter_var($fblink, FILTER_VALIDATE_URL)) $errors[] = "Facebook link must be a valid URL.";
+    if (empty($barangay)) $errors[] = "Barangay is required.";
+    if (empty($number) || !preg_match('/^[0-9]{11}$/', $number)) $errors[] = "Contact number must be 11 digits.";
+    if (empty($emailaddress) || !filter_var($emailaddress, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email address is required.";
+    if (empty($password) || strlen($password) < 8 || !preg_match('/\d/', $password)) $errors[] = "Password must be at least 8 characters long and contain at least one number.";
+    if (empty($tutee_bday)) $errors[] = "Birthday is required.";
+    if (empty($school)) $errors[] = "School is required.";
+    if (empty($grade)) $errors[] = "Grade is required.";
+
+    // If there are errors, display them
+    if (!empty($errors)) {
+        echo "<ul class='error-messages'>";
+        foreach ($errors as $error) {
+            echo "<li>" . htmlspecialchars($error) . "</li>";
+        }
+        echo "</ul>";
     } else {
-        echo "Error in registration. Please try again.";
+        // Proceed with registration if no errors
+        if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio)) {
+            header("Location: ../tutee/login?registered=success");
+            exit();
+        } else {
+            echo "Error in registration. Please try again.";
+        }
     }
+    
     // Store message in session for displaying on the same page
     $_SESSION['message'] = $message;
     $_SESSION['messageType'] = $messageType;
     exit();
 }
+
 // Check for a message in the session to display it in the modal
 if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];
@@ -554,7 +583,7 @@ include('../tutee/spinner.php');
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-5">Back</a>
                                 </div>
                                 <div class="col-md-6">
-                                    <button type="submit" class="btn btn-lg btn-primary fs-6">Register</button>
+                                    <button type="submit" class="btn btn-lg btn-primary fs-6" >Register</button>
                                 </div>
                             </div>
                         </div>
