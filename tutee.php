@@ -138,8 +138,8 @@ public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, 
                 return false; // Return false on failure
             }
         } catch (PDOException $ex) {
-            return false; // Return false on exception
-        }
+            return $ex->getMessage(); // Return the actual error message
+        }        
     }
 
 	//Login Code
