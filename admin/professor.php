@@ -273,10 +273,8 @@ function getViewRow(id){
       $('#view_lastname').text(response.lastname);
       $('#view_middlename').text(response.middlename);
       $('#view_age').text(response.age);
-      $('#view_birthday').text(response.birthday);
       $('#view_faculty_id').text(response.faculty_id);
       $('#view_emailaddress').text(response.emailaddress);
-      $('#view_employment_status').text(response.employment_status);
       $('#view_prof_password').text(response.prof_password);
       $('#view_prof_username').text(response.prof_username);
     }
@@ -320,10 +318,8 @@ function getRow(id){
       $('#edit_lastname').val(response.lastname);
       $('#edit_middlename').val(response.middlename);
       $('#edit_age').val(response.age);
-      $('#edit_birthday').val(response.birthday);
       $('#edit_faculty_id').val(response.faculty_id);
       $('#edit_emailaddress').val(response.emailaddress);
-      $('#edit_employment_status').val(response.employment_status);
       $('#edit_prof_password').val(response.prof_password);
       $('#edit_prof_username').val(response.prof_username);
       $('.fullname').html(response.firstname+' '+response.lastname);
