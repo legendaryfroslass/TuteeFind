@@ -15,8 +15,8 @@ if(isset($_POST['archiveAllTutee'])){
                 $id = $row['id'];
 
                 // Insert each tutee's data into the archive_tutee table
-                $sql_archive = "INSERT INTO archive_tutee (firstname, lastname, age, sex, number, guardianname, fblink, barangay, tutee_birthday, school, grade, emailaddress, photo, password) 
-                                VALUES ('".$row['firstname']."', '".$row['lastname']."', '".$row['age']."', '".$row['sex']."', '".$row['number']."', '".$row['guardianname']."', '".$row['fblink']."', '".$row['barangay']."', '".$row['tutee_bday']."', '".$row['school']."', '".$row['grade']."', '".$row['emailaddress']."', '".$row['photo']."', '".$row['password']."')";
+                $sql_archive = "INSERT INTO archive_tutee (firstname, lastname, age, sex, number, guardianname, fblink, barangay, tutee_birthday, school, grade, emailaddress, photo, password, bio) 
+                                VALUES ('".$row['firstname']."', '".$row['lastname']."', '".$row['age']."', '".$row['sex']."', '".$row['number']."', '".$row['guardianname']."', '".$row['fblink']."', '".$row['barangay']."', '".$row['tutee_bday']."', '".$row['school']."', '".$row['grade']."', '".$row['emailaddress']."', '".$row['photo']."', '".$row['password']."', '".$row['bio']."')";
                 $conn->query($sql_archive);
 
                 // Delete related records for each tutee
