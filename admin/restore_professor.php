@@ -15,8 +15,8 @@ if(isset($_POST['restore'])){
 
     if($check_query->num_rows == 0) {
         // Insert back into the professor table
-        $sql_restore = "INSERT INTO professor (lastname, firstname, middlename, faculty_id, age, prof_username, prof_password) 
-                        VALUES ('".$row['lastname']."', '".$row['firstname']."', '".$row['middlename']."', '".$row['faculty_id']."', '".$row['age']."', '".$row['prof_username']."', '".$row['prof_password']."')";
+        $sql_restore = "INSERT INTO professor (lastname, firstname, middlename, faculty_id, age, emailaddress, prof_username, prof_password) 
+                        VALUES ('".$row['lastname']."', '".$row['firstname']."', '".$row['middlename']."', '".$row['faculty_id']."', '".$row['age']."', '".$row['emailaddress']."', '".$row['prof_username']."', '".$row['prof_password']."')";
 
         if($conn->query($sql_restore)){
             // Delete from the archive_professor table after restoring
