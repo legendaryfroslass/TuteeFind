@@ -179,22 +179,6 @@ function checkInputs(form) {
                 $('.form2').addClass('d-none');
             }
         });
-    
-        // Move from Form 2 to Form 3
-        $('#nextButton-2').click(function(e){
-            e.preventDefault(); // Prevent default button behavior
-            var currentForm = $('.form2'); // Get current form
-    
-            if (!checkInputs(currentForm)) {
-                currentForm.addClass('d-none');
-                $('.form3').removeClass('d-none');
-            } else {
-                $('#modalMessage').text('Please fill in all the fields in the second form before proceeding.');
-                $('#resultModal').modal('show');
-                currentForm.removeClass('d-none');
-                $('.form3').addClass('d-none');
-            }
-        });
     });
     
 

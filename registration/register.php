@@ -87,9 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tutee_bday = $_POST['birthday'];
     $school = $_POST['school'];
     $grade = $_POST['grade'];
+    $bio = $_POST['bio'];
 
     // Insert data into the database
-    $reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade);
+    $reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio);
     // Redirect to the login page
     header("Location: ../tutee/login?registered=success");
 
@@ -429,6 +430,12 @@ include('../tutee/spinner.php');
                             <div class="contact-number form-floating mb-3">
                                 <input type="text" name="address" class="form-control form-control-lg bg-light fs-6" id="address" placeholder="Address">
                                 <label for="address">Address</label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="contact-number form-floating mb-3">
+                                <input type="hidden" name="bio" class="form-control form-control-lg bg-light fs-6" id="bio" placeholder="bio">
                             </div>
                         </div>
 
