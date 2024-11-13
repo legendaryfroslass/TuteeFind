@@ -88,22 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $school = $_POST['school'];
     $grade = $_POST['grade'];
 
-        // Insert data into the database
-        if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade)) {
-            // Redirect to the login page
-            header("Location: ../tutee/login?registered=success");
-            exit();
-        } else {
-            $message = "Registration failed!";
-            $messageType = 'error';
-        }
+    // Insert data into the database
+    $reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade);
+    // Redirect to the login page
+    header("Location: ../tutee/login?registered=success");
 
     // Store message in session for displaying on the same page
     $_SESSION['message'] = $message;
     $_SESSION['messageType'] = $messageType;
-
-    // Refresh the page to clear POST data
-    header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 
@@ -280,6 +272,8 @@ include('../tutee/spinner.php');
         </div>
     </div>
 
+
+<form id="registrationForm" class="form-floating" method="post">
     <div class="form1 transition bg-container">
         <div class="container d-flex justify-content-center align-items-center min-vh-100 transition">
             <div class="row border rounded-5 p-3 bg-white shadow box-area">
@@ -290,7 +284,7 @@ include('../tutee/spinner.php');
                 
                 <div class="col-md-6 right-box">
                     <div class="row justify-content-center">
-                    <form id="registrationForm" class="form-floating" method="post">
+                    
                         <div class="header-text text-center mb-4">
                         
                             <h2>Create Account</h2>
