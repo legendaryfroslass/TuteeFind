@@ -22,7 +22,7 @@ if (isset($_POST['archive'])) {
             $stmt_archive = $conn->prepare("INSERT INTO archive_professor (lastname, firstname, middlename, faculty_id, age, prof_username, prof_password) 
                                             VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt_archive->bind_param(
-                "ssssiisss",
+                "sssiiss",
                 $row['lastname'],
                 $row['firstname'],
                 $row['middlename'],

@@ -41,7 +41,7 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                     if ($stmt_check->num_rows === 0) {
                         // If faculty_id does not exist, proceed to archive
                         $stmt_archive->bind_param(
-                            "ssssiisss",
+                            "sssiiss",
                             $row['lastname'],
                             $row['firstname'],
                             $row['middlename'],
