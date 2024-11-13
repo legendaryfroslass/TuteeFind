@@ -482,7 +482,7 @@ include('../tutee/spinner.php');
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-3">Back</a>
                                 </div>
                                 <div class="col-md-8 text-center">
-                                    <button type="submit" class="btn btn-lg btn-primary fs-6 d-flex justify-content-center align-items-center" onclick="showSpinner(); setTimeout(hideSpinner, 5000);" id="nextButton-3" name="sendEmail">
+                                    <button class="btn btn-lg btn-primary fs-6 d-flex justify-content-center align-items-center" onclick="showSpinner(); setTimeout(hideSpinner, 5000);" id="nextButton-3" name="sendEmail">
                                         Send OTP <i class="bi bi-send ms-2"></i>
                                     </button>
                                 </div>
@@ -516,7 +516,7 @@ include('../tutee/spinner.php');
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-4">Back</a>
                                 </div>
                                 <div class="col-md-8">
-                                    <button type="submit" class="btn btn-lg btn-primary fs-6" id="nextButton-4" name="verifyOTP" onclick="showSpinner(); setTimeout(hideSpinner, 1000);">Verify OTP</button>
+                                    <button class="btn btn-lg btn-primary fs-6" id="nextButton-4" name="verifyOTP" onclick="showSpinner(); setTimeout(hideSpinner, 1000);">Verify OTP</button>
                                 </div>
                             </div>
                         </div>
