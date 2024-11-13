@@ -103,13 +103,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         echo "</ul>";
     } else {
-        // Proceed with registration if no errors
-        if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio, $address)) {
+        $registrationResult = $reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio, $address);
+
+        if ($registrationResult === true) {
+            // Successful registration
             header("Location: ../tutee/login?registered=success");
             exit();
         } else {
-            echo "Error in registration. Please try again.";
+            // Failed registration with a specific error
+            echo "Error in registration: " . htmlspecialchars($registrationResult);
         }
+
     }
     
     // Store message in session for displaying on the same page
