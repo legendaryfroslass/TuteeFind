@@ -10,7 +10,7 @@ if (isset($_POST['restoreAll']) && isset($_POST['selected_ids'])) {
 
         try {
             // Prepare the insert statement for the professor table
-            $stmt_restore = $conn->prepare("INSERT INTO professor (lastname, firstname, middlename, faculty_id, age, emailaddress. prof_username, prof_password) 
+            $stmt_restore = $conn->prepare("INSERT INTO professor (lastname, firstname, middlename, faculty_id, age, emailaddress, prof_username, prof_password) 
                                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Prepare a check for existing faculty_id in the professor table
