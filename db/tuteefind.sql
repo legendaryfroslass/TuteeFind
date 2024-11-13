@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 11, 2024 at 09:27 AM
--- Server version: 8.0.39-1
+-- Generation Time: Nov 13, 2024 at 02:37 PM
+-- Server version: 8.0.40-0ubuntu0.24.10.1
 -- PHP Version: 8.3.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -29,10 +29,10 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `activity_logs` (
   `id` int NOT NULL,
-  `professor_id` int NOT NULL,
-  `activity` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `datetime` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `professor_id` int DEFAULT NULL,
+  `activity` varchar(255) NOT NULL,
+  `datetime` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -71,7 +71,7 @@ CREATE TABLE `archive_professor` (
   `middlename` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `faculty_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `age` int DEFAULT NULL,
-  `emailaddress` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `emailaddress` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `prof_username` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `prof_password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `archived_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -89,15 +89,6 @@ CREATE TABLE `archive_requests` (
   `tutee_id` int DEFAULT NULL,
   `status` enum('pending','accepted','rejected') COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `archive_requests`
---
-
-INSERT INTO `archive_requests` (`request_id`, `tutor_id`, `tutee_id`, `status`) VALUES
-(94, 96, 58, ''),
-(106, 111, 60, 'accepted'),
-(109, 111, 58, 'accepted');
 
 -- --------------------------------------------------------
 
@@ -120,17 +111,11 @@ CREATE TABLE `archive_tutee` (
   `grade` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
   `emailaddress` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `bio` text COLLATE utf8mb4_general_ci,
+  `address` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `archive_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `archive_tutee`
---
-
-INSERT INTO `archive_tutee` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `guardianname`, `fblink`, `barangay`, `tutee_bday`, `school`, `grade`, `emailaddress`, `photo`, `password`, `archive_at`) VALUES
-(2, 'John Paul', 'Gracio', '21', 'Male', '09196332121', 'Eljohn', 'johnpaul.gracio.96', 'Pasolo', '2024-09-11', 'Valenzuela Elementary School', '2', 'ceit.monis@gmail.com', '', '245bc97ec8d9d70c0a8c2c6048e6afea53965f080a86e9bf1b4130bf3b7af432', '2024-09-08 13:27:10'),
-(3, 'Juan', 'Dela Cruz', '6', 'Male', '09771240013', 'eljohn cuaresma', 'https://www.facebook.com/eljohn.cuaresma.54/', 'Maysan', '0000-00-00', 'Maysan Elementary School', '1', 'eljohn.cuaresma6@gmail.com', '../uploads/Hi_Cuaresma.jpg', '$2y$10$29X1u01l3fGN8KRRcu8VkumSidiy3S.eC74jpHlUqcsxo8Auq1Tgi', '2024-11-06 10:33:38');
 
 -- --------------------------------------------------------
 
@@ -147,13 +132,6 @@ CREATE TABLE `archive_tutee_progress` (
   `description` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `archive_tutee_progress`
---
-
-INSERT INTO `archive_tutee_progress` (`id`, `tutee_id`, `tutor_id`, `week_number`, `uploaded_files`, `description`, `date`) VALUES
-(303, 58, 111, 1, '../uploads/kda.jpg', 'dwadawda', '2024-11-05 20:07:52');
 
 -- --------------------------------------------------------
 
@@ -178,15 +156,8 @@ CREATE TABLE `archive_tutor` (
   `emailaddress` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `archive_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `bio` text COLLATE utf8mb4_general_ci NOT NULL
+  `bio` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `archive_tutor`
---
-
-INSERT INTO `archive_tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `emailaddress`, `password`, `archive_at`, `bio`) VALUES
-(111, 'Eljohn', 'Fernandez', 21, 'Female', '09682226610', 'Dalandanan', '21-1251', 'BSIT', '2-2', NULL, '21-1261', 'jasmine/me.', 'eljohn.cuaresma6@gmail.com', '$2y$10$bgddRa1O7U2vfD/FM0p1vOkOP77Zehm2zCpFZ4H/vWQpsgLSrGCj.', '2024-11-06 10:33:31', '');
 
 -- --------------------------------------------------------
 
@@ -203,13 +174,6 @@ CREATE TABLE `archive_tutor_ratings` (
   `pdf_content` longblob NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `archive_tutor_ratings`
---
-
-INSERT INTO `archive_tutor_ratings` (`id`, `tutee_id`, `tutor_id`, `rating`, `comment`, `pdf_content`) VALUES
-(65, 58, 111, 0, 'test', '');
-
 -- --------------------------------------------------------
 
 --
@@ -221,13 +185,6 @@ CREATE TABLE `archive_tutor_sessions` (
   `tutor_id` int DEFAULT NULL,
   `tutee_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `archive_tutor_sessions`
---
-
-INSERT INTO `archive_tutor_sessions` (`id`, `tutor_id`, `tutee_id`) VALUES
-(45, 111, 58);
 
 -- --------------------------------------------------------
 
@@ -341,10 +298,10 @@ CREATE TABLE `professor` (
   `middlename` varchar(20) NOT NULL,
   `age` int NOT NULL,
   `faculty_id` varchar(20) NOT NULL,
-  `emailaddress` varchar(50) NOT NULL,
+  `emailaddress` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
   `prof_password` varchar(250) NOT NULL,
   `prof_username` varchar(250) NOT NULL,
-  `prof_photo` varchar(250) NOT NULL,
+  `prof_photo` varchar(250) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
   `last_login` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -353,9 +310,9 @@ CREATE TABLE `professor` (
 --
 
 INSERT INTO `professor` (`id`, `firstname`, `lastname`, `middlename`, `age`, `faculty_id`, `emailaddress`, `prof_password`, `prof_username`, `prof_photo`, `last_login`) VALUES
-(333, 'Jasmine', 'Fernandez', 'Meralles', 27, '21-1261', 'jasminefernandez031@gmail.com', '$2y$10$2eFaUB10.mTuWi99dbbF3eJVM.ZFsMHXWJtmRk4rqUsTDGYvOD1Oy', 'prof1', 'profile.jpg', NULL),
-(334, 'John Paul', 'Gracio', 'Meralles', 27, '21-1262', 'jasmine.elisolutions@gmail.com', '$2y$10$haetOD1F0s.MU7i38VCzhuB6veZGLv3BgPt4kwv4o2W5rbTflDP4O', 'prof2', 'profile.jpg', NULL),
-(335, 'Clarisse', 'Dizon', 'Claus', 27, '21-1263', 'fernandezjasmine095@gmail.com', '$2y$10$dLnTr9yHVj2IO0605fdPN.lvS1Hu1IdngHWrDRFCavqNyib.hR39S', 'prof3', 'profile.jpg', NULL);
+(365, 'Jasmine', 'Fernandez', 'Meralles', 27, '21-1261', 'jasminefernandez031@gmail.com', '$2y$10$rbiNn38XxJ6/hVEeEhnTYe1c.W2rpYfRTNa4fxcZKBlwuMECoF3JW', 'prof1', 'profile.jpg', '2024-11-13 14:15:52'),
+(366, 'John Paul', 'Gracio', 'Meralles', 27, '21-1262', 'jasmine.elisolutions@gmail.com', '$2y$10$09scFwiD.zM/zbq8T4NuF.M5KcMuOzhmZfUjyZ3axh0aCjBxmzFJq', 'prof2', 'profile.jpg', NULL),
+(367, 'Clarisse', 'Dizon', 'Claus', 27, '21-1263', 'fernandezjasmine095@gmail.com', '$2y$10$yGbsVRrf2mUgqXR.mNG8WecZI4Z8XTW3McnPEDsBdwSpNSJC/E9cm', 'prof3', 'profile.jpg', NULL);
 
 -- --------------------------------------------------------
 
@@ -387,22 +344,14 @@ CREATE TABLE `tutee` (
   `fblink` varchar(255) NOT NULL,
   `barangay` varchar(50) NOT NULL,
   `emailaddress` varchar(255) NOT NULL,
-  `photo` varchar(255) NOT NULL,
+  `photo` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `tutee_bday` varchar(255) NOT NULL,
   `school` varchar(255) NOT NULL,
   `grade` varchar(255) NOT NULL,
-  `bio` text NOT NULL
+  `bio` text NOT NULL,
+  `address` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `tutee`
---
-
-INSERT INTO `tutee` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `guardianname`, `fblink`, `barangay`, `emailaddress`, `photo`, `password`, `tutee_bday`, `school`, `grade`, `bio`) VALUES
-(60, 'Elmerson', 'Reyes', '8', 'Male', '09771240013', 'Elmerson Mirasol Cuaresma', 'https://www.facebook.com/eljohn.cuaresma.54/', 'Malinta', 'cuaresmaeljohn@gmail.com', '../uploads/John_Reyes.jpg', '$2y$10$O/M8Ffd9YdZB7yWOr5tCXu0mytdWl7YUqVZQAJoYKPwieqbOUDdsG', '2016-06-20', 'Maysan Elementary School', 'Grade 5', ''),
-(61, 'John Paul', 'Gracio', '9', 'Male', '09480921896', 'mamamo', 'jp.com', 'Bignay', 'johnpaul.gracio.27@gmail.com', '', '$2y$10$7u2VGqajREwlQXFpHtxlAeVGZ2txdOP4146xFsSn8PCB6kpPy1PoS', '2015-08-27', 'plv', 'Grade 3', ''),
-(62, 'Oreo', 'Dizon', '8', 'Male', '09499808419', 'Clarisse Dizon', 'https://www.facebook.com/clarisse.dizon.5264/', 'Coloong', 'itsoreodadoggo@gmail.com', '../uploads/Oreo_Dizon.jpg', '$2y$10$FqaAlTDZ3lvuJF/lJo7HW.CTTjKFTQMwhzf3LMJMk.KjzfsJlA3gC', '2015-01-01', 'San Diego Parochial School', 'Grade 3', '');
 
 -- --------------------------------------------------------
 
@@ -456,7 +405,7 @@ CREATE TABLE `tutor` (
   `photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `professor` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `fblink` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `bio` text COLLATE utf8mb4_general_ci NOT NULL,
+  `bio` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `emailaddress` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -466,11 +415,11 @@ CREATE TABLE `tutor` (
 --
 
 INSERT INTO `tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `bio`, `emailaddress`, `password`) VALUES
-(117, 'Jasmine', 'Fernandez', 21, 'Female', '9682226610', 'Dalandanan', '21-1251', 'BSIT', '2-2', NULL, '21-1261', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$/g5d8L0aBDGWU6TVBXRI7epWPKPIoJFVnahP9vy0Xyk7YHKDPYlIK'),
-(118, 'Lyka', 'Fernandez', 20, 'Female', '9682226610', 'Parada', '21-1252', 'BSED', '2-3', NULL, '21-1261', 'lyka/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$0ZAoqUCf1wyFgP3nDGO3DOCoW8ZKRsHgLI1qKr5xpzYvQEIUTioyK'),
-(119, 'Marbie', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1253', 'BSIT', '2-4', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$fi2ytEf7c4x9jDOyCNRNyeiUV764yIPrUkl7jyauNrIZ9mlj8Qcay'),
-(120, 'Clara', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1254', 'BSIT', '2-5', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$JwDJ5grUAEnKjG9P86pwQ.m2zRkkYz9YpAKdJsK2HZo6KGpKo83HG'),
-(121, 'Tiny', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1255', 'BSIT', '2-6', NULL, '21-1262', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$kQapw9dlhf/JIXXxVusw9OGWskXY52MPlZxSQOr2NKigYenbj4wHS');
+(146, 'Jasmine', 'Fernandez', 21, 'Female', '9682226610', 'Dalandanan', '21-1251', 'BSIT', '2-2', NULL, '21-1261', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$SVe6PzPoTESZNlwnJenoSujyRpCT5YAg37xaRJLSuhoT4vQp0GxAy'),
+(147, 'Lyka', 'Fernandez', 20, 'Female', '9682226610', 'Parada', '21-1252', 'BSED', '2-3', NULL, '21-1261', 'lyka/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$M4YQl1pnjWWDe1uknz0oE.41jWipnZIUaHI138FXsGrSmDFJOp4qS'),
+(148, 'Marbie', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1253', 'BSIT', '2-4', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$vu66wE0Em65szDQnDpNIUe8fpxeiI1M1Rlq//hPw3OqxtWaEmNfL.'),
+(149, 'Clara', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1254', 'BSIT', '2-5', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$VTWKqUNmuSCvbAqn.uqrN.3lEvozkmMX.7eeXqcdWq11YCbbV2s8q'),
+(150, 'Tiny', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1255', 'BSIT', '2-6', NULL, '21-1262', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$9Xe37CHN0yb4iZzDb52beeSdX2hrUHkYVAZM8gpczCYyXpTSHsyci');
 
 -- --------------------------------------------------------
 
@@ -508,8 +457,7 @@ CREATE TABLE `tutor_sessions` (
 -- Indexes for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `professor_id` (`professor_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `admin`
@@ -658,7 +606,7 @@ ALTER TABLE `tutor_sessions`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `admin`
@@ -670,31 +618,31 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `archive_professor`
 --
 ALTER TABLE `archive_professor`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
 
 --
 -- AUTO_INCREMENT for table `archive_requests`
 --
 ALTER TABLE `archive_requests`
-  MODIFY `request_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `request_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
 
 --
 -- AUTO_INCREMENT for table `archive_tutee`
 --
 ALTER TABLE `archive_tutee`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `archive_tutee_progress`
 --
 ALTER TABLE `archive_tutee_progress`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=304;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=346;
 
 --
 -- AUTO_INCREMENT for table `archive_tutor`
 --
 ALTER TABLE `archive_tutor`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=218;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=232;
 
 --
 -- AUTO_INCREMENT for table `archive_tutor_ratings`
@@ -718,49 +666,49 @@ ALTER TABLE `districts`
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=241;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=244;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- AUTO_INCREMENT for table `professor`
 --
 ALTER TABLE `professor`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=336;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=368;
 
 --
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `request_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
+  MODIFY `request_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
 
 --
 -- AUTO_INCREMENT for table `tutee`
 --
 ALTER TABLE `tutee`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `tutee_progress`
 --
 ALTER TABLE `tutee_progress`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=343;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=346;
 
 --
 -- AUTO_INCREMENT for table `tutor`
 --
 ALTER TABLE `tutor`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
 
 --
 -- AUTO_INCREMENT for table `tutor_ratings`
@@ -777,12 +725,6 @@ ALTER TABLE `tutor_sessions`
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `activity_logs`
---
-ALTER TABLE `activity_logs`
-  ADD CONSTRAINT `activity_logs_ibfk_1` FOREIGN KEY (`professor_id`) REFERENCES `professor` (`id`);
 
 --
 -- Constraints for table `requests`
