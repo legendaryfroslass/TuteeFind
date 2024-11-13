@@ -41,7 +41,7 @@ if (isset($_POST['restoreAll']) && isset($_POST['selected_ids'])) {
                     if ($stmt_check->num_rows === 0) {
                         // If faculty_id does not exist, proceed to restore
                         $stmt_restore->bind_param(
-                            "sssiisss",
+                            "ssssisss",
                             $row['lastname'],
                             $row['firstname'],
                             $row['middlename'],
