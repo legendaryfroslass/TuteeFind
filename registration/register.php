@@ -435,7 +435,7 @@ include('../tutee/spinner.php');
 
                         <div>
                             <div class="contact-number form-floating mb-3">
-                                <input type="hidden" name="bio" class="form-control form-control-lg bg-light fs-6" id="bio" placeholder="bio">
+                                <input type="hidden" name="bio" class="form-control form-control-lg bg-light fs-6" id="bio" placeholder="bio" value="<?php echo "Tell About yourself."; ?>">
                             </div>
                         </div>
 
