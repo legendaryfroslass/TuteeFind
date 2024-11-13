@@ -76,33 +76,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bio = $_POST['bio'];
     $address = $_POST['address'];
     
-    // Error messages array
-    $errors = [];
+    // // Error messages array
+    // $errors = [];
     
-    // Validation checks
-    if (empty($firstname)) $errors[] = "First name is required.";
-    if (empty($lastname)) $errors[] = "Last name is required.";
-    if (empty($age) || $age < 6 || $age > 11) $errors[] = "Age must be between 6 and 11.";
-    if (empty($sex)) $errors[] = "Sex is required.";
-    if (empty($guardianname)) $errors[] = "Guardian's name is required.";
-    if (!empty($fblink) && !filter_var($fblink, FILTER_VALIDATE_URL)) $errors[] = "Facebook link must be a valid URL.";
-    if (empty($barangay)) $errors[] = "Barangay is required.";
-    if (empty($number) || !preg_match('/^[0-9]{11}$/', $number)) $errors[] = "Contact number must be 11 digits.";
-    if (empty($emailaddress) || !filter_var($emailaddress, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email address is required.";
-    if (empty($password) || strlen($password) < 8 || !preg_match('/\d/', $password)) $errors[] = "Password must be at least 8 characters long and contain at least one number.";
-    if (empty($tutee_bday)) $errors[] = "Birthday is required.";
-    if (empty($school)) $errors[] = "School is required.";
-    if (empty($grade)) $errors[] = "Grade is required.";
-    if (empty($address)) $errors[] = "Address is required.";
+    // // Validation checks
+    // if (empty($firstname)) $errors[] = "First name is required.";
+    // if (empty($lastname)) $errors[] = "Last name is required.";
+    // if (empty($age) || $age < 6 || $age > 11) $errors[] = "Age must be between 6 and 11.";
+    // if (empty($sex)) $errors[] = "Sex is required.";
+    // if (empty($guardianname)) $errors[] = "Guardian's name is required.";
+    // if (!empty($fblink) && !filter_var($fblink, FILTER_VALIDATE_URL)) $errors[] = "Facebook link must be a valid URL.";
+    // if (empty($barangay)) $errors[] = "Barangay is required.";
+    // if (empty($number) || !preg_match('/^[0-9]{11}$/', $number)) $errors[] = "Contact number must be 11 digits.";
+    // if (empty($emailaddress) || !filter_var($emailaddress, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email address is required.";
+    // if (empty($password) || strlen($password) < 8 || !preg_match('/\d/', $password)) $errors[] = "Password must be at least 8 characters long and contain at least one number.";
+    // if (empty($tutee_bday)) $errors[] = "Birthday is required.";
+    // if (empty($school)) $errors[] = "School is required.";
+    // if (empty($grade)) $errors[] = "Grade is required.";
+    // if (empty($address)) $errors[] = "Address is required.";
 
-    // If there are errors, display them
-    if (!empty($errors)) {
-        echo "<ul class='error-messages'>";
-        foreach ($errors as $error) {
-            echo "<li>" . htmlspecialchars($error) . "</li>";
-        }
-        echo "</ul>";
-    } else {
+    // // If there are errors, display them
+    // if (!empty($errors)) {
+    //     echo "<ul class='error-messages'>";
+    //     foreach ($errors as $error) {
+    //         echo "<li>" . htmlspecialchars($error) . "</li>";
+    //     }
+    //     echo "</ul>";
+    // } else {
         $registrationResult = $reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio, $address);
 
         if ($registrationResult === true) {
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "Error in registration: " . htmlspecialchars($registrationResult);
         }
 
-    }
+    // }
     
     // Store message in session for displaying on the same page
     $_SESSION['message'] = $message;
