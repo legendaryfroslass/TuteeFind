@@ -291,33 +291,40 @@ $stmt->bind_param("issss", $professor_id, $search, $search, $search, $search);
 $stmt->execute();
 $result = $stmt->get_result();
 
-
-// Display results in HTML table
 while ($row = $result->fetch_assoc()) {
-    $name = htmlspecialchars($row['firstname'] . ' ' . $row['lastname']);
-    $student_id = isset($row['student_id']) ? htmlspecialchars($row['student_id']) : 'N/A';
-    $course_year_section = htmlspecialchars($row['course'] . ': ' . $row['year_section']);
-    $total_rendered_hours = htmlspecialchars($row['total_rendered_hours']);
-    $pdf_content = !empty($row['pdf_content']) ? nl2br(htmlspecialchars($row['pdf_content'])) : 'No Feedback Available';
+  $name = isset($row['firstname']) && isset($row['lastname']) 
+          ? htmlspecialchars($row['firstname'] . ' ' . $row['lastname']) 
+          : 'N/A';
+  $student_id = isset($row['student_id']) ? htmlspecialchars($row['student_id']) : 'N/A';
+  $course = isset($row['course']) ? htmlspecialchars($row['course']) : 'N/A';
+  $year_section = isset($row['year_section']) ? htmlspecialchars($row['year_section']) : 'N/A';
+  $course_year_section = $course . ': ' . $year_section;
+  $total_rendered_hours = isset($row['total_rendered_hours']) 
+                          ? htmlspecialchars($row['total_rendered_hours']) 
+                          : '0';
+  $pdf_content = isset($row['pdf_content']) && !empty($row['pdf_content']) 
+                 ? nl2br(htmlspecialchars($row['pdf_content'])) 
+                 : 'No Feedback Available';
 
-    echo "
-      <tr>
-         <td>{$name}</td>
-         <td>{$student_id}</td>
-         <td>{$course_year_section}</td>
-         <td>{$total_rendered_hours}</td>
-         <td>{$pdf_content}</td>
-         <td>
-             <button class='btn btn-primary btn-sm view btn-flat' 
-                     data-id='".htmlspecialchars($row['id'])."'
-                     data-tutor-id='".htmlspecialchars($row['tutor_id'])."'
-                     data-tutee-id='".htmlspecialchars($row['tutee_id'])."'>
-                 <i class='fa fa-eye'></i> View
-             </button>
-         </td>
-      </tr>
-    ";
+  echo "
+    <tr>
+       <td>{$name}</td>
+       <td>{$student_id}</td>
+       <td>{$course_year_section}</td>
+       <td>{$total_rendered_hours}</td>
+       <td>{$pdf_content}</td>
+       <td>
+           <button class='btn btn-primary btn-sm view btn-flat' 
+                   data-id='".htmlspecialchars($row['id'] ?? '')."'
+                   data-tutor-id='".htmlspecialchars($row['tutor_id'] ?? '')."'
+                   data-tutee-id='".htmlspecialchars($row['tutee_id'] ?? '')."' >
+               <i class='fa fa-eye'></i> View
+           </button>
+       </td>
+    </tr>
+  ";
 }
+
 ?>
     </tbody>
           </table>
