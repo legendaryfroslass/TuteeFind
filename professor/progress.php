@@ -261,14 +261,14 @@ $sql = "
         t.student_id, 
         t.course, 
         t.year_section, 
-        COALESCE(ts.completed_weeks, 0) AS completed_weeks,
-        COALESCE(rt.rating, 'No Rating') AS rating,
-        COALESCE(rt.comment, 'No Comment') AS comment,
-        r.tutor_id, 
-        r.tutee_id,
+        COALESCE(MAX(ts.completed_weeks), 0) AS completed_weeks,
+        COALESCE(MAX(rt.rating), 'No Rating') AS rating,
+        COALESCE(MAX(rt.comment), 'No Comment') AS comment,
+        MAX(r.tutor_id) AS tutor_id, 
+        MAX(r.tutee_id) AS tutee_id,
         COALESCE(SUM(tp.rendered_hours), 0) AS total_rendered_hours,  -- Summing rendered hours from tutee_progress
         COALESCE(SUM(e.rendered_hours), 0) AS event_rendered_hours,  -- Summing rendered hours from events
-        rt.pdf_content  -- Fetching PDF content from tutor_ratings
+        MAX(rt.pdf_content) AS pdf_content  -- Fetching PDF content from tutor_ratings
     FROM tutor t
     INNER JOIN professor p ON t.professor = p.faculty_id
     LEFT JOIN requests r ON t.id = r.tutor_id AND r.status = 'accepted'
@@ -290,6 +290,7 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("issss", $professor_id, $search, $search, $search, $search);
 $stmt->execute();
 $result = $stmt->get_result();
+
 
 // Display results in HTML table
 while ($row = $result->fetch_assoc()) {
