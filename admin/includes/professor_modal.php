@@ -183,12 +183,7 @@
               <p class="form-control-static view-text" id="view_age"><?php echo isset($row['age']) ? $row['age'] : ''; ?></p>
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Birthday</label>
-            <div class="col-sm-9">
-              <p class="form-control-static view-text" id="view_birthday"><?php echo isset($row['birthday']) ? $row['birthday'] : ''; ?></p>
-            </div>
-          </div>
+
           <div class="form-group">
             <label class="col-sm-3 control-label">Faculty ID</label>
             <div class="col-sm-9">
@@ -199,12 +194,6 @@
             <label class="col-sm-3 control-label">Email:</label>
             <div class="col-sm-9">
               <p class="form-control-static view-text" id="view_emailaddress"><?php echo isset($row['emailaddress']) ? $row['emailaddress'] : ''; ?></p>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Employment Status</label>
-            <div class="col-sm-9">
-              <p class="form-control-static view-text" id="view_employment_status"><?php echo isset($row['employment_status']) ? $row['employment_status'] : ''; ?></p>
             </div>
           </div>
         </form>
@@ -291,12 +280,6 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="edit_birthday" class="col-sm-3 control-label">Birthday</label>
-            <div class="col-sm-9">
-              <input type="text" class="form-control datepicker" id="edit_birthday" name="birthday">
-            </div>
-          </div>
-          <div class="form-group">
             <label for="edit_faculty_id" class="col-sm-3 control-label">Faculty ID</label>
             <div class="col-sm-9">
               <input type="text" class="form-control" id="edit_faculty_id" name="faculty_id" pattern="\d{2}-\d{4}" title="Please enter the format XX-XXXX" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)">
@@ -306,16 +289,6 @@
             <label for="edit_emailaddress" class="col-sm-3 control-label">Email</label>
             <div class="col-sm-9">
               <input type="text" class="form-control" id="edit_emailaddress" name="emailaddress">
-            </div>
-          </div>
-          <!-- Add Employment Status dropdown -->
-          <div class="form-group">
-            <label for="edit_employment_status" class="col-sm-3 control-label">Employment Status</label>
-            <div class="col-sm-9">
-              <select class="form-control" id="edit_employment_status" name="employment_status">
-                <option value="Part-time">Part-time</option>
-                <option value="Full-time">Full-time</option>
-              </select>
             </div>
           </div>
         <div class="modal-footer">
@@ -343,9 +316,7 @@ $(document).ready(function() {
                 $('#edit_lastname').val(response.lastname);
                 $('#edit_middlename').val(response.middlename);
                 $('#edit_age').val(response.age);
-                $('#edit_birthday').val(response.birthday);
                 $('#edit_faculty_id').val(response.faculty_id);
-                $('#edit_employment_status').val(response.employment_status);
                 $('#edit_prof_password').val(response.employment_status);
                 $('#edit_prof_username').val(response.employment_status);
 
@@ -364,9 +335,7 @@ $(document).ready(function() {
     var lastname = document.getElementById("edit_lastname").value;
     var middlename = document.getElementById("edit_middlename").value;
     var age = document.getElementById("edit_age").value;
-    var birthday = document.getElementById("edit_birthday").value;
     var facultyId = document.getElementById("edit_faculty_id").value;
-    var employmentStatus = document.getElementById("edit_employment_status").value;
     var prof_password = document.getElementById("edit_prof_password").value;
     var prof_username = document.getElementById("edit_prof_username").value;
 
@@ -385,14 +354,8 @@ $(document).ready(function() {
     if (age === "") {
       emptyFields.push("edit_age");
     }
-    if (birthday === "") {
-      emptyFields.push("edit_birthday");
-    }
     if (facultyId === "") {
       emptyFields.push("edit_faculty_id");
-    }
-    if (employmentStatus === "") {
-      emptyFields.push("edit_employment_status");
     }
     if (prof_password === "") {
       emptyFields.push("edit_prof_password");
