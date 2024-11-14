@@ -47,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendEmail'])) {
 // Verify OTP and proceed to password form
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verifyOTP'])) {
     $userOtp = $_POST['otp'];
-    
     if ($userOtp == $_SESSION['otp']) {
         error_log("OTP validation succeeded.");
         echo "success";  // Respond with success only for valid OTP
