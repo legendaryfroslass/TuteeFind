@@ -61,7 +61,7 @@ document.getElementById("submitAge").addEventListener("click", function () {
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
-          window.location.href = "../registration/register.php";
+          window.location.href = "../registration/register";
         } else {
           showErrorMessage("There was an issue setting the session data.");
         }

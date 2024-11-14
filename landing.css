@@ -72,10 +72,19 @@ body {
   color: #007bff;
 }
 .footer {
-  background-color: #343a40;
+  background-color: #06192b;
   color: white;
   padding: 10px 0;
   text-align: center;
+}
+/* Footer logo styles */
+.footer-logo {
+  margin-bottom: 10px; /* Space between the logo and text */
+}
+
+.footer-logo-img {
+  width: 100px; /* Adjust the size of the logo */
+  height: auto;
 }
 
 /* Styling for the fixed navbar */
@@ -86,7 +95,7 @@ body {
   z-index: 1000;
 }
 .navbar .navbar-nav {
-  margin-left: 20px; /* Space between the logo and links */
+  margin-left: 0; /* Space between the logo and links */
 }
 .navbar-nav .nav-item {
   margin-left: 20px; /* Space between each link */
@@ -228,4 +237,49 @@ body {
 
 .card-container a:hover {
   text-decoration: none; /* Ensures no underline on hover */
+}
+
+/* For the FAQ Cards - Add hover animation */
+.faq-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+.faq-card:hover {
+  transform: translateY(-10px); /* Move the card up slightly */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Overlay Fade-in */
+#overlay {
+  animation: overlayFadeIn 0.5s ease-out;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Navbar links animation */
+.nav-link {
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #1d0a6b; /* Change the color on hover */
 }

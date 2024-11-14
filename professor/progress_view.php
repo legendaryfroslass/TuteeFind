@@ -46,7 +46,7 @@ if (isset($_POST['tutor_id']) && isset($_POST['tutee_id'])) {
                             <ul class="list-group">';
             foreach ($uploadedFiles as $file) {
                 if (!empty($file)) {
-                    echo '<li class="list-group-item"><a href="../final/uploads/' . htmlspecialchars($file) . '" target="_blank">' . htmlspecialchars($file) . '</a></li>';
+                    echo '<li class="list-group-item"><a href="../uploads/' . htmlspecialchars($file) . '" target="_blank">' . htmlspecialchars($file) . '</a></li>';
                 }
             }
             echo '</ul>

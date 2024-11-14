@@ -37,8 +37,8 @@ if (isset($_POST['archiveTutor'])) {
         $conn->query($sql_delete4);
 
         // Archive and delete from tutor table
-        $sql5 = "INSERT INTO archive_tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password)
-                 SELECT id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password 
+        $sql5 = "INSERT INTO archive_tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio)
+                 SELECT id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio
                  FROM tutor WHERE id = '$id'";
         $conn->query($sql5);
         $sql_delete5 = "DELETE FROM tutor WHERE id = '$id'";

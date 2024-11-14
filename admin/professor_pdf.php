@@ -64,13 +64,12 @@ $html = '
             <th>Middle Name</th>
             <th>Age</th>
             <th>Faculty ID</th>
-            <th>Employment Status</th>
         </tr>
     </thead>
     <tbody>';
 
 // Fetch data from the database based on the search term
-$sql = "SELECT lastname, firstname, middlename, age, faculty_id, employment_status FROM professor 
+$sql = "SELECT lastname, firstname, middlename, age, faculty_id FROM professor 
         WHERE lastname LIKE '%$search%' 
         OR firstname LIKE '%$search%' 
         OR middlename LIKE '%$search%' 
@@ -88,7 +87,6 @@ while ($row = $query->fetch_assoc()) {
                 <td>' . $row['middlename'] . '</td>
                 <td>' . $row['age'] . '</td>
                 <td>' . $row['faculty_id'] . '</td>
-                <td>' . $row['employment_status'] . '</td>
               </tr>';
 }
 

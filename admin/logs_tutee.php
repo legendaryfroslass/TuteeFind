@@ -167,6 +167,7 @@ $total_pages = ceil($total_rows / $limit);
           unset($_SESSION['success']);
         }
       ?>
+
   <div class="box-body">
              <!-- Search Form --> 
 <form method="GET" action="logs_professor.php" class="form-inline d-flex justify-content-between align-items-center">
@@ -215,6 +216,33 @@ $sql = "
         faculty_id, 
         last_login 
     FROM professor";
+=======
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header with-border">
+            <a href="#deleteAllTutee" data-toggle="modal" class="btn btn-danger btn-sm btn-flat"><i class="fa fa-trash"></i> Delete All</a>
+            <a href="#restoreAllTutee" data-toggle="modal" class="btn btn-warning btn-sm restoreAllTutee btn-flat"><i class="fa fa-refresh"></i> Restore All</a>
+            <a href="archive_tutee_pdf.php" class="btn btn-primary btn-sm btn-flat" target="_blank"><i class="fa fa-file-pdf-o"></i> Export to PDF</a>
+            </div>
+            <div class="box-body">
+
+              <table id="example1" class="table table-bordered">
+                <thead>
+                <th>Firstname</th>
+                  <th>Lastname</th>
+                  <th>Barangay</th>
+                  <th>Contact No.</th>
+                  <th>Age</th>
+                  <th>Birthday</th>
+                  <th>School</th>
+                  <th>Grade</th>
+                  <th>Tools</th>
+                </thead>
+                <tbody>
+                <?php
+$sql = "SELECT id, firstname, lastname, barangay, number, age, tutee_bday, school, grade FROM archive_tutee";
+
 $query = $conn->query($sql);
 
 // Temporary array to store filtered results

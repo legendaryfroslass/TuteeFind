@@ -10,8 +10,8 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
 
         try {
             // Prepare the insert statement for the archive
-            $stmt_archive = $conn->prepare("INSERT INTO archive_tutor (lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt_archive = $conn->prepare("INSERT INTO archive_tutor (lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Prepare a check for existing student_id in the archive_tutor table
             $stmt_check = $conn->prepare("SELECT student_id FROM archive_tutor WHERE student_id = ?");
@@ -41,7 +41,7 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                     if ($stmt_check->num_rows === 0) {
                         // If student_id does not exist, proceed to archive
                         $stmt_archive->bind_param(
-                            "ssissssssssss",
+                            "ssisssssssssss",
                             $row['lastname'],
                             $row['firstname'],
                             $row['age'],
@@ -54,7 +54,8 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                             $row['professor'],
                             $row['fblink'],
                             $row['emailaddress'],
-                            $row['password']
+                            $row['password'],
+                            $row['bio']
                         );
 
                         if ($stmt_archive->execute()) {

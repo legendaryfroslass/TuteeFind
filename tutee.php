@@ -108,13 +108,13 @@ public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, 
     }
 	
 	// Registration Code
-    public function register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade)
+    public function register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio, $address)
     {
         try {
             $password = password_hash($password, PASSWORD_DEFAULT);
 
-            $stmt = $this->conn->prepare("INSERT INTO tutee (firstname, lastname, age, sex, guardianname, fblink, barangay, number, emailaddress, password, tutee_bday, school, grade) 
-                VALUES (:firstname, :lastname, :age, :sex, :guardianname, :fblink, :barangay, :number, :emailaddress, :password, :tutee_bday, :school, :grade)");
+            $stmt = $this->conn->prepare("INSERT INTO tutee (firstname, lastname, age, sex, guardianname, fblink, barangay, number, emailaddress, password, tutee_bday, school, grade, bio, address) 
+                VALUES (:firstname, :lastname, :age, :sex, :guardianname, :fblink, :barangay, :number, :emailaddress, :password, :tutee_bday, :school, :grade, :bio, :address)");
 
             $stmt->bindParam(":firstname", $firstname, PDO::PARAM_STR);
             $stmt->bindParam(":lastname", $lastname, PDO::PARAM_STR);
@@ -129,6 +129,8 @@ public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, 
             $stmt->bindParam(":tutee_bday", $tutee_bday, PDO::PARAM_STR);
             $stmt->bindParam(":school", $school, PDO::PARAM_STR);
             $stmt->bindParam(":grade", $grade, PDO::PARAM_STR);
+            $stmt->bindParam(":bio", $bio, PDO::PARAM_STR);
+            $stmt->bindParam(":address", $address, PDO::PARAM_STR);
 
             if ($stmt->execute()) {
                 return true; // Return true on success
@@ -136,8 +138,8 @@ public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, 
                 return false; // Return false on failure
             }
         } catch (PDOException $ex) {
-            return false; // Return false on exception
-        }
+            return $ex->getMessage(); // Return the actual error message
+        }        
     }
 
 	//Login Code

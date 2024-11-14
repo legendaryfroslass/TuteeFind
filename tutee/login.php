@@ -7,6 +7,7 @@ $user_login = new TUTEE();
 // Check if there's a message in the session
 $message = '';
 $messageType = '';
+
 if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];
     $messageType = $_SESSION['messageType'];
@@ -218,7 +219,7 @@ if (isset($_GET['error']) || isset($_GET['notAvail'])) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="register.php" id="askBday" method="POST">
+                        <form action="register" id="askBday" method="POST">
                             <label for="userBirthday" class="m-3">Please enter your child's birthday before proceeding:</label>
                             <input type="date" id="userBirthday" name="birthday" class="form-control ageTextbox" placeholder="Enter your birthday" required>
                             <div class="invalid-feedback text-center" id="bdayInvalid">Sorry! You must be between <b>6</b> and <b>11</b> years old to register.</div>
