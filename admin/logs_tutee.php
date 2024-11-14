@@ -202,12 +202,12 @@ $total_pages = ceil($total_rows / $limit);
               </tr>
             </thead>
             <tbody>  
-            <?php
+<?php
 // Get search term from the request, default to an empty string if none provided
 $search = isset($_GET['search']) ? strtolower($_GET['search']) : '';
 
 // Query to retrieve all professors
-$sql = "
+$sql_professors = "
     SELECT 
         id, 
         lastname, 
@@ -216,32 +216,72 @@ $sql = "
         faculty_id, 
         last_login 
     FROM professor";
-=======
-      <div class="row">
-        <div class="col-xs-12">
-          <div class="box">
+
+// Query to retrieve archive tutees
+$sql_tutees = "
+    SELECT 
+        id, 
+        firstname, 
+        lastname, 
+        barangay, 
+        number AS contact_no, 
+        age, 
+        tutee_bday AS birthday, 
+        school, 
+        grade 
+    FROM archive_tutee";
+?>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
             <div class="box-header with-border">
-            <a href="#deleteAllTutee" data-toggle="modal" class="btn btn-danger btn-sm btn-flat"><i class="fa fa-trash"></i> Delete All</a>
-            <a href="#restoreAllTutee" data-toggle="modal" class="btn btn-warning btn-sm restoreAllTutee btn-flat"><i class="fa fa-refresh"></i> Restore All</a>
-            <a href="archive_tutee_pdf.php" class="btn btn-primary btn-sm btn-flat" target="_blank"><i class="fa fa-file-pdf-o"></i> Export to PDF</a>
+                <a href="#deleteAllTutee" data-toggle="modal" class="btn btn-danger btn-sm btn-flat"><i class="fa fa-trash"></i> Delete All</a>
+                <a href="#restoreAllTutee" data-toggle="modal" class="btn btn-warning btn-sm restoreAllTutee btn-flat"><i class="fa fa-refresh"></i> Restore All</a>
+                <a href="archive_tutee_pdf.php" class="btn btn-primary btn-sm btn-flat" target="_blank"><i class="fa fa-file-pdf-o"></i> Export to PDF</a>
             </div>
             <div class="box-body">
+                <table id="example1" class="table table-bordered">
+                    <thead>
+                        <th>Firstname</th>
+                        <th>Lastname</th>
+                        <th>Barangay</th>
+                        <th>Contact No.</th>
+                        <th>Age</th>
+                        <th>Birthday</th>
+                        <th>School</th>
+                        <th>Grade</th>
+                        <th>Tools</th>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Execute query to fetch tutee records
+                        // Assuming database connection is already established as $conn
+                        $result = $conn->query($sql_tutees);
 
-              <table id="example1" class="table table-bordered">
-                <thead>
-                <th>Firstname</th>
-                  <th>Lastname</th>
-                  <th>Barangay</th>
-                  <th>Contact No.</th>
-                  <th>Age</th>
-                  <th>Birthday</th>
-                  <th>School</th>
-                  <th>Grade</th>
-                  <th>Tools</th>
-                </thead>
-                <tbody>
-                <?php
-$sql = "SELECT id, firstname, lastname, barangay, number, age, tutee_bday, school, grade FROM archive_tutee";
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<tr>
+                                    <td>{$row['firstname']}</td>
+                                    <td>{$row['lastname']}</td>
+                                    <td>{$row['barangay']}</td>
+                                    <td>{$row['contact_no']}</td>
+                                    <td>{$row['age']}</td>
+                                    <td>{$row['birthday']}</td>
+                                    <td>{$row['school']}</td>
+                                    <td>{$row['grade']}</td>
+                                    <td><!-- Tools go here --></td>
+                                </tr>";
+                            }
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
 
 $query = $conn->query($sql);
 
@@ -251,7 +291,7 @@ $results = [];
 while ($row = $query->fetch_assoc()) {
     $name = $row['firstname'] . " " . $row['middlename'] . " " . $row['lastname'];
     $faculty_id = $row['faculty_id'];
-    $status = "Inactive"; // Set default status to Inactive
+    $status = "Inactive";
 
     // Check for activity logs for the current professor
     $activitySql = "SELECT * FROM activity_logs WHERE professor_id = ?";
