@@ -13,7 +13,7 @@ if (isset($_POST['btn-login'])) {
 
     if ($login_result === true) {
         $_SESSION['role'] = 'tutor'; // Store role in session
-        $user_login->redirect("suggestedtutee"); // Redirect to tutee dashboard
+        $user_login->redirect("tutee"); // Redirect to tutee dashboard
     } elseif ($login_result === 'email_not_found') {
         $error_message = "Student ID doesn't exist.";
     } elseif ($login_result === 'password_incorrect') {

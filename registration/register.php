@@ -2,33 +2,26 @@
 require_once '../tutee.php';
 session_start();
 $reg_user = new TUTEE();
-
 $message = '';
 $messageType = '';
-
 require '../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
-
 require '../vendor/phpmailer/phpmailer/src/Exception.php';
 require '../vendor/phpmailer/phpmailer/src/SMTP.php';
 require '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
-
 // Handle OTP generation and email sending
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendEmail'])) {
     $emailaddress = $_POST['emailaddress'];
-    
     // Check for duplicate email
     if ($reg_user->isDuplicate($emailaddress)) {
         echo "duplicate";
         exit;  // Stop further execution to avoid additional output
     }
-
     // Generate OTP and attempt to send email
     $otp = random_int(100000, 999999);
     $_SESSION['otp'] = $otp;
-
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
@@ -38,12 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendEmail'])) {
         $mail->Password = 'tzbb qafz fhar ryzf';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
-        
         $mail->setFrom('findtutee@gmail.com', 'TUTEEFIND');
         $mail->addAddress($emailaddress);
         $mail->Subject = 'Your Verification Code';
         $mail->Body = "Your Verification code is: $otp";
-
         if ($mail->send()) {
             echo "success";
             exit;  // Exit to ensure no additional output
@@ -53,11 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendEmail'])) {
         exit;  // Exit to ensure no additional output
     }
 }
-
 // Verify OTP and proceed to password form
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verifyOTP'])) {
     $userOtp = $_POST['otp'];
-    
     if ($userOtp == $_SESSION['otp']) {
         error_log("OTP validation succeeded.");
         echo "success";  // Respond with success only for valid OTP
@@ -68,8 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verifyOTP'])) {
         exit;
     }
 }
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signUp'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve form data
     $firstname = $_POST['firstname'];
     $lastname = $_POST['lastname'];
@@ -80,31 +68,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signUp'])) {
     $barangay = $_POST['barangay'];
     $number = $_POST['number'];
     $emailaddress = $_POST['emailaddress'];
-    // $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
     $password = $_POST['password'];
     $tutee_bday = $_POST['birthday'];
     $school = $_POST['school'];
     $grade = $_POST['grade'];
+    $bio = $_POST['bio'];
+    $address = $_POST['address'];
+    
+    // // Error messages array
+    // $errors = [];
+    
+    // // Validation checks
+    // if (empty($firstname)) $errors[] = "First name is required.";
+    // if (empty($lastname)) $errors[] = "Last name is required.";
+    // if (empty($age) || $age < 6 || $age > 11) $errors[] = "Age must be between 6 and 11.";
+    // if (empty($sex)) $errors[] = "Sex is required.";
+    // if (empty($guardianname)) $errors[] = "Guardian's name is required.";
+    // if (!empty($fblink) && !filter_var($fblink, FILTER_VALIDATE_URL)) $errors[] = "Facebook link must be a valid URL.";
+    // if (empty($barangay)) $errors[] = "Barangay is required.";
+    // if (empty($number) || !preg_match('/^[0-9]{11}$/', $number)) $errors[] = "Contact number must be 11 digits.";
+    // if (empty($emailaddress) || !filter_var($emailaddress, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email address is required.";
+    // if (empty($password) || strlen($password) < 8 || !preg_match('/\d/', $password)) $errors[] = "Password must be at least 8 characters long and contain at least one number.";
+    // if (empty($tutee_bday)) $errors[] = "Birthday is required.";
+    // if (empty($school)) $errors[] = "School is required.";
+    // if (empty($grade)) $errors[] = "Grade is required.";
+    // if (empty($address)) $errors[] = "Address is required.";
 
-        // Insert data into the database
-        if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade)) {
-            $message = "Registration successful!";
-            $messageType = 'success';
+    // // If there are errors, display them
+    // if (!empty($errors)) {
+    //     echo "<ul class='error-messages'>";
+    //     foreach ($errors as $error) {
+    //         echo "<li>" . htmlspecialchars($error) . "</li>";
+    //     }
+    //     echo "</ul>";
+    // } else {
+        $registrationResult = $reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade, $bio, $address);
 
-            // Redirect to the login page
-            header("Location: ../tutee/login.php?registered=success");
+        if ($registrationResult === true) {
+            // Successful registration
+            header("Location: ../tutee/login?registered=success");
             exit();
         } else {
-            $message = "Registration failed!";
-            $messageType = 'error';
+            // Failed registration with a specific error
+            echo "Error in registration: " . htmlspecialchars($registrationResult);
         }
-
+    // }
     // Store message in session for displaying on the same page
     $_SESSION['message'] = $message;
     $_SESSION['messageType'] = $messageType;
-
-    // Refresh the page to clear POST data
-    header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 
@@ -127,9 +138,7 @@ if (isset($_SESSION['message'])) {
 // Get birthday and age from session (if previously set)
 $tutee_bday = isset($_SESSION['birthday']) ? $_SESSION['birthday'] : '';
 $age = isset($_SESSION['age']) ? $_SESSION['age'] : '';
-
 include('../tutee/spinner.php');
-
 ?>
 
 <!DOCTYPE html>
@@ -281,6 +290,8 @@ include('../tutee/spinner.php');
         </div>
     </div>
 
+
+<form id="registrationForm" class="form-floating" method="post">
     <div class="form1 transition bg-container">
         <div class="container d-flex justify-content-center align-items-center min-vh-100 transition">
             <div class="row border rounded-5 p-3 bg-white shadow box-area">
@@ -291,7 +302,7 @@ include('../tutee/spinner.php');
                 
                 <div class="col-md-6 right-box">
                     <div class="row justify-content-center">
-                    <form id="registrationForm" class="form-floating" action="register.php" method="post">
+                    
                         <div class="header-text text-center mb-4">
                         
                             <h2>Create Account</h2>
@@ -439,6 +450,12 @@ include('../tutee/spinner.php');
                             </div>
                         </div>
 
+                        <div>
+                            <div class="contact-number form-floating mb-3">
+                                <input type="hidden" name="bio" class="form-control form-control-lg bg-light fs-6" id="bio" placeholder="bio" value="<?php echo "Tell About yourself."; ?>">
+                            </div>
+                        </div>
+
                         <div class="row btnClass">
                                 <div class="col-md-6">
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-2">Back</a>
@@ -482,7 +499,7 @@ include('../tutee/spinner.php');
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-3">Back</a>
                                 </div>
                                 <div class="col-md-8 text-center">
-                                    <button type="submit" class="btn btn-lg btn-primary fs-6 d-flex justify-content-center align-items-center" onclick="showSpinner(); setTimeout(hideSpinner, 5000);" id="nextButton-3" name="sendEmail">
+                                    <button class="btn btn-lg btn-primary fs-6 d-flex justify-content-center align-items-center" onclick="showSpinner(); setTimeout(hideSpinner, 5000);" id="nextButton-3" name="sendEmail">
                                         Send OTP <i class="bi bi-send ms-2"></i>
                                     </button>
                                 </div>
@@ -516,7 +533,7 @@ include('../tutee/spinner.php');
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-4">Back</a>
                                 </div>
                                 <div class="col-md-8">
-                                    <button type="submit" class="btn btn-lg btn-primary fs-6" id="nextButton-4" name="verifyOTP" onclick="showSpinner(); setTimeout(hideSpinner, 1000);">Verify OTP</button>
+                                    <button class="btn btn-lg btn-primary fs-6" id="nextButton-4" name="verifyOTP" onclick="showSpinner(); setTimeout(hideSpinner, 1000);">Verify OTP</button>
                                 </div>
                             </div>
                         </div>
@@ -569,7 +586,7 @@ include('../tutee/spinner.php');
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-5">Back</a>
                                 </div>
                                 <div class="col-md-6">
-                                    <button type="submit" class="btn btn-lg btn-primary fs-6" id="signUp" name="signUp">Register</button>
+                                    <button type="submit" class="btn btn-lg btn-primary fs-6" >Register</button>
                                 </div>
                             </div>
                         </div>

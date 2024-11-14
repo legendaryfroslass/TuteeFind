@@ -10,8 +10,8 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
 
         try {
             // Prepare the insert statement for the archive
-            $stmt_archive = $conn->prepare("INSERT INTO archive_professor (lastname, firstname, middlename, faculty_id, age, birthday, employment_status, prof_username, prof_password) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt_archive = $conn->prepare("INSERT INTO archive_professor (lastname, firstname, middlename, faculty_id, age, emailaddress, prof_username, prof_password) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Prepare a check for existing faculty_id in the archive_professor table
             $stmt_check = $conn->prepare("SELECT faculty_id FROM archive_professor WHERE faculty_id = ?");
@@ -41,14 +41,13 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                     if ($stmt_check->num_rows === 0) {
                         // If faculty_id does not exist, proceed to archive
                         $stmt_archive->bind_param(
-                            "ssssiisss",
+                            "ssssisss",
                             $row['lastname'],
                             $row['firstname'],
                             $row['middlename'],
                             $row['faculty_id'],
                             $row['age'],
-                            $row['birthday'],
-                            $row['employment_status'],
+                            $row['emailaddress'],
                             $row['prof_username'],
                             $row['prof_password']
                         );

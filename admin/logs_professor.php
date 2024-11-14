@@ -226,7 +226,7 @@ while ($row = $query->fetch_assoc()) {
     $status = "Inactive"; // Set default status to Inactive
 
     // Check for activity logs for the current professor
-    $activitySql = "SELECT * FROM activity_logs WHERE professor_id = ?";
+    $activitySql = "SELECT * FROM professor_logs WHERE professor_id = ?";
     $activityStmt = $conn->prepare($activitySql);
     $activityStmt->bind_param("i", $row['id']);
     $activityStmt->execute();
@@ -336,7 +336,7 @@ foreach ($results as $row) {
 
                         // Fetch activity logs using AJAX
                         $.ajax({
-                            url: 'fetch_logs.php', // Create this file to fetch logs based on the professor ID
+                            url: 'professorfetch_logs.php', // Create this file to fetch logs based on the professor ID
                             type: 'POST',
                             data: { id: id },
                             success: function(data){
@@ -357,7 +357,7 @@ $('.view').click(function() {
     $('#professorName').text(professorName);
 
     $.ajax({
-        url: 'fetch_logs.php',
+        url: 'professorfetch_logs.php',
         type: 'POST',
         data: { id: id },
         success: function(data) {
