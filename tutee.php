@@ -131,7 +131,6 @@ public function updateDetails($firstname, $lastname, $age, $sex, $guardianname, 
             $stmt->bindParam(":grade", $grade, PDO::PARAM_STR);
             $stmt->bindParam(":bio", $bio, PDO::PARAM_STR);
             $stmt->bindParam(":address", $address, PDO::PARAM_STR);
-
             if ($stmt->execute()) {
                 return true; // Return true on success
             } else {

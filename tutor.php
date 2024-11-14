@@ -111,7 +111,6 @@ class TUTOR
 			if (!empty($photo) && $photo['error'] == 0) {
 				$stmt->bindParam(":photo", $photoPath);
 			}
-	
 			$stmt->execute();
 			return true;
 		} catch (PDOException $e) {
