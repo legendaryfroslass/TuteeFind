@@ -1,2 +1,8 @@
-
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    # Remove .php extension
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^([^\.]+)$ $1.php [NC,L]
+</IfModule>
 
