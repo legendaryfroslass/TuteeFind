@@ -1,7 +1,4 @@
 <?php
-// Set the time zone to Asia/Manila
-date_default_timezone_set('Asia/Manila');
-
 session_start();
 require_once '../tutor.php';
 $user_login = new TUTOR();
@@ -11,30 +8,12 @@ if (isset($_POST['btn-login'])) {
     $student_id = trim($_POST['txtemail']);
     $password = trim($_POST['txtupass']);
 
-    // Attempt login
+    // Modify the login function to return error codes if needed
     $login_result = $user_login->login($student_id, $password);
 
     if ($login_result === true) {
         $_SESSION['role'] = 'tutor'; // Store role in session
-        $_SESSION['tutor_id'] = $user_login->getTutorId($student_id); // Assuming a method to fetch the tutor ID
-
-        // Log the login activity
-        $activity = "Log-in";
-        $formatted_datetime = date('F j, Y h:i:s A'); // Example: October 6, 2024 11:14:33 PM
-        $logSql = "INSERT INTO tutor_logs (student_id, activity, datetime) 
-                   VALUES (?, ?, ?)";
-        $logStmt = $conn->prepare($logSql);
-        $logStmt->bind_param("iss", $_SESSION['student_id'], $activity, $formatted_datetime);
-        $logStmt->execute();
-
-        // Update the last_login field in the tutor table
-        $updateLoginSql = "UPDATE tutor SET last_login = NOW() WHERE id = ?";
-        $updateLoginStmt = $conn->prepare($updateLoginSql);
-        $updateLoginStmt->bind_param("i", $_SESSION['tutor_id']);
-        $updateLoginStmt->execute();
-
-        // Redirect to the tutor dashboard
-        $user_login->redirect("suggestedtutee");
+        $user_login->redirect("tutee"); // Redirect to tutee dashboard
     } elseif ($login_result === 'email_not_found') {
         $error_message = "Student ID doesn't exist.";
     } elseif ($login_result === 'password_incorrect') {
