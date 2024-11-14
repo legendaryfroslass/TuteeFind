@@ -22,8 +22,8 @@
             </span>
         </a>
         <ul class="treeview-menu">
-            <li><a href="home.php"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
-            <li><a href="matches.php"><i class="fa fa-code-fork"></i> <span>Matches</span></a></li>
+            <li><a href="home"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+            <li><a href="matches"><i class="fa fa-code-fork"></i> <span>Matches</span></a></li>
         </ul>
     </li>
 
@@ -36,9 +36,9 @@
             </span>
         </a>
         <ul class="treeview-menu">
-            <li><a href="professor.php"><i class="fa fa-user"></i> <span>Professor</span></a></li>
-            <li><a href="tutor.php"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
-            <li><a href="tutee.php"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
+            <li><a href="professor"><i class="fa fa-user"></i> <span>Professor</span></a></li>
+            <li><a href="tutor"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
+            <li><a href="tutee"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
         </ul>
     </li>
 
@@ -53,9 +53,9 @@
             </span>
         </a>
         <ul class="treeview-menu">
-            <li><a href="archive_professor.php"><i class="fa fa-user"></i> <span>Professor</span></a></li>
-            <li><a href="archive_tutor.php"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
-            <li><a href="archive_tutee.php"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
+            <li><a href="archive_professor"><i class="fa fa-user"></i> <span>Professor</span></a></li>
+            <li><a href="archive_tutor"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
+            <li><a href="archive_tutee"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
         </ul>
     </li>
 
@@ -68,9 +68,9 @@
             </span>
         </a>
         <ul class="treeview-menu">
-            <li><a href="logs_professor.php"><i class="fa fa-user"></i> <span>Professor</span></a></li>
-            <li><a href="logs_tutor.php"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
-            <li><a href="logs_tutee.php"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
+            <li><a href="logs_professor"><i class="fa fa-user"></i> <span>Professor</span></a></li>
+            <li><a href="logs_tutor"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
+            <li><a href="logs_tutee"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
         </ul>
     </li>
 </ul>

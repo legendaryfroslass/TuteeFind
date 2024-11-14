@@ -5,10 +5,6 @@ class Database {
     private $username = "tuteefind";
     private $password = "tutee_1234Find";
 
-    // private $host = "localhost";
-    // private $db_name = "tuteefind";
-    // private $username = "root";
-    // private $password = "";
     public $conn;
 
     public function dbConnection() {
