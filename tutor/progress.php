@@ -739,10 +739,12 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                                 <input type="checkbox" class="form-check-input checkbox" id="checkbox<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>" <?php echo $checkboxChecked ? 'checked' : ''; ?> disabled>
                                                 Week <?php echo htmlspecialchars($progress['week_number']); ?>
                                             </td>
-                                            <td>
-                                                <span id="file-name<?php echo $tutee['id'] . '-' . $progress['week_number']; ?>" class="file-name">
-                                                    <?php echo htmlspecialchars(basename($progress['uploaded_files'])); ?>
-                                                </span>
+                                            <td class="file-name-cell">
+                                                <?php if ($progress['uploaded_files']): ?>
+                                                    <a href="../uploads/<?php echo htmlspecialchars($progress['uploaded_files']); ?>" target="_blank" class="btn btn-primary">View File</a>
+                                                <?php else: ?>
+                                                    <span>No file uploaded</span>
+                                                <?php endif; ?>
                                             </td>
                                             <td><?php echo htmlspecialchars($progress['description'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($progress['rendered_hours'] ?? ''); ?></td>
@@ -855,7 +857,8 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                     </div>
                     <div class="mb-3">
                         <label for="edit-rendered-hours" class="form-label">Rendered Hours</label>
-                        <input type="number" class="form-control" id="edit-rendered-hours" name="rendered_hours" required>
+                        <input type="number" class="form-control" id="edit-rendered-hours" name="rendered_hours" 
+                            required min="0" max="4" oninput="this.value = Math.min(this.value, 4)">
                     </div>
                     <div class="mb-3">
                         <label for="edit-location" class="form-label">Location</label>
@@ -895,8 +898,9 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
               <input type="number" class="form-control" id="week-number-<?php echo $tutee['id']; ?>" placeholder="Enter week number" required>
             </div>
             <div class="col-md-6">
-              <label for="rendered-hours-<?php echo $tutee['id']; ?>" class="form-label">Rendered Hours</label>
-              <input type="number" class="form-control" id="rendered-hours-<?php echo $tutee['id']; ?>" placeholder="Enter rendered hours" required>
+                <label for="rendered-hours-<?php echo $tutee['id']; ?>" class="form-label">Rendered Hours</label>
+                <input type="number" class="form-control" id="rendered-hours-<?php echo $tutee['id']; ?>" 
+                    placeholder="Enter rendered hours" required min="0" max="4" oninput="this.value = Math.min(this.value, 4)">
             </div>
           </div>
           <div class="row mb-3">
@@ -972,8 +976,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                             <div class="col-md-6">
                                 <label for="renderedHoursOther" class="form-label">Rendered Hours</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" value="90" disabled>
-                                    <input type="number" class="form-control" id="renderedHoursOther" name="rendered_hours" placeholder="hours" min="0" max="100" step="1" required>
+                                    <input type="number" class="form-control" id="renderedHoursOther" name="rendered_hours" placeholder="hours" min="0" max="90" step="1" required oninput="this.value = Math.min(this.value, 90)">
                                 </div>
                             </div>
                         </div>
@@ -1035,7 +1038,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                     </div>
                     <div class="mb-3">
                         <label for="editRenderedHours" class="form-label">Rendered Hours</label>
-                        <input type="number" class="form-control" id="editRenderedHours" name="rendered_hours" min="0" max="100" required>
+                        <input type="number" class="form-control" id="editRenderedHours" name="rendered_hours" min="0" max="90" required oninput="this.value = Math.min(this.value, 90)">
                     </div>
                     <div class="mb-3">
                         <label for="editDescription" class="form-label">Description</label>
