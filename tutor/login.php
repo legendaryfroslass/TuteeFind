@@ -8,12 +8,25 @@ if (isset($_POST['btn-login'])) {
     $student_id = trim($_POST['txtemail']);
     $password = trim($_POST['txtupass']);
 
-    // Modify the login function to return error codes if needed
+    // Set the time zone to Asia/Manila
+date_default_timezone_set('Asia/Manila');
+
+// Log the activity (e.g., tutor logs in)
+$activity = "Log-in";
+$formatted_datetime = date('F j, Y h:i:s A'); // Example: October 6, 2024 11:14:33 PM
+
+// Insert the log into the activity_logs table for the tutor
+$logSql = "INSERT INTO tutor_logs (student_id, activity, datetime) 
+           VALUES (?, ?, ?)";
+$logStmt = $conn->prepare($logSql);
+$logStmt->bind_param("iss", $_SESSION['student_id'], $activity, $formatted_datetime);
+$logStmt->execute();
+
     $login_result = $user_login->login($student_id, $password);
 
     if ($login_result === true) {
-        $_SESSION['role'] = 'tutor'; // Store role in session
-        $user_login->redirect("suggestedtutee"); // Redirect to tutee dashboard
+        $_SESSION['role'] = 'tutor';
+        $user_login->redirect("suggestedtutee");
     } elseif ($login_result === 'email_not_found') {
         $error_message = "Student ID doesn't exist.";
     } elseif ($login_result === 'password_incorrect') {
@@ -23,6 +36,7 @@ if (isset($_POST['btn-login'])) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

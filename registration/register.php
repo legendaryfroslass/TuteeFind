@@ -73,6 +73,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tutee_bday = $_POST['birthday'];
     $school = $_POST['school'];
     $grade = $_POST['grade'];
+
+
+        // Insert data into the database
+        // if (
+            $reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade);
+            $message = "Registration successful!";
+            $messageType = 'success';
+
+            // Redirect to the login page
+            header("Location: ../tutee/login?registered=success");
+            exit();
+        // } else {
+        //     $message = "Registration failed!";
+        //     $messageType = 'error';
+        // }
+=======
     $bio = $_POST['bio'];
     $address = $_POST['address'];
     
@@ -114,12 +130,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "Error in registration: " . htmlspecialchars($registrationResult);
         }
 
+
     // }
     
     // Store message in session for displaying on the same page
     $_SESSION['message'] = $message;
     $_SESSION['messageType'] = $messageType;
+=======
     exit();
+
 }
 
 // Check for a message in the session to display it in the modal
