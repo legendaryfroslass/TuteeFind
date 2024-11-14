@@ -33,3 +33,10 @@
   .info-header {
     font-weight: 400;
   }
+
+  .unsaved-changes {
+    display: none;
+    color: red;
+    font-size: 0.9em;
+}
+

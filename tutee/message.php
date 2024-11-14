@@ -220,68 +220,60 @@ if (isset($_POST['send_message'])) {
         </nav>
 
         <div class="home">
-            <div class="container-lg p-3">
-                <div class="career-form headings d-flex justify-content-center mt-3">
-                    <div class="row">
-                        <div class="card1" style="color:white;">Messages</div>
+    <div class="container-lg p-3">
+        <div class="career-form headings d-flex justify-content-center mt-3">
+            <div class="row">
+                <div class="card1" style="color:white;">Messages</div>
+            </div>
+        </div>
+    </div>
+    <div class="container-lg p-3">
+        <div class="row">
+            <!-- Sidebar for conversation list -->
+            <div class="col-12 col-md-3 mb-3 mb-md-0">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5>Inbox</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group">
+                            <?php foreach ($messages as $message): ?>
+                                <li class="list-group-item d-flex align-items-center" onclick="showMessages('<?php echo $message['tutor_id']; ?>')">
+                                    <img src="<?php echo $message['tutor_photo'] ?: '../assets/TutorFindLogoName.jpg'; ?>" class="rounded-circle me-3" alt="Profile Picture" style="width: 50px; height: 50px;">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex flex-column">
+                                            <strong><?php echo $message['tutor_firstname'] . ' ' . $message['tutor_lastname']; ?></strong>
+                                            <small class="text-muted"><?php echo date('M d, Y', strtotime($message['created_at'])); ?></small>
+                                        </div>
+                                        <p class="mb-0">
+                                            <?php echo $message['sender_type'] == 'tutee' ? 'You: ' : ''; ?>
+                                            <?php echo htmlspecialchars($message['message']); ?>
+                                        </p>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
                 </div>
             </div>
-        
 
-            <div class="container-lg p-10 table table-container">
-                <div class="row custom-row p-3">
-                    <!-- First column for conversation list -->
-                    <div class="col-md-4 message-table">
-                        <table class="table">
-                            <tbody>
-                                <?php foreach ($messages as $message): ?>
-                                    <?php
-                                        // Use the tutee's profile picture if available; otherwise, use a default image
-                                        $tutorImage = !empty($message['tutor_photo']) ? $message['tutor_photo'] : '../assets/profile-user.png';
-                                        // Determine the message display style
-                                        $messageClass = $message['sender_type'] == 'tutor' ? 'font-weight-bold' : '';
-                                    ?>
-                                    <tr onclick="showMessages('<?php echo $message['tutor_id']; ?>')">
-                                        <td class="d-flex align-items-center">
-                                            <img src="<?php echo $tutorImage; ?>" class="rounded-circle me-3" alt="Profile Picture" style="width: 50px; height: 50px;">
-                                            <div>
-                                                <div class="mb-1">
-                                                    <strong><?php echo $message['tutor_firstname'] . ' ' . $message['tutor_lastname']; ?></strong>
-                                                    <small class="text-muted"><?php echo date('M d, Y', strtotime($message['created_at'])); ?></small>
-                                                </div>
-                                                <!-- Display the most recent message with styling based on sender -->
-                                                <p class="mb-0 truncateMessage <?php echo $messageClass; ?>">
-                                                    <?php echo $message['sender_type'] == 'tutee' ? 'You: ' : ''; ?>
-                                                    <?php echo htmlspecialchars($message['message']); ?>
-                                                </p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+            <!-- Main content area for message details -->
+            <div class="col-12 col-md-9">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5>Messages</h5>
                     </div>
-
-                    <!-- Second column for message content -->
-                    <div class="chat-card col-md-8 message-content" id="messageContent">
-                        <div class="chat-header">
-                            <!-- Chat header content will be updated dynamically -->
-                        </div>
-                        <div class="chat-body" id="chatBody">
-                            <div class="notification">
-                                <h3>Select a Message</h3>
-                                <p>Choose from your existing conversations</p>
-                            </div>
-                        </div>
-                        <!-- Message Input Form -->
-                        <form id="sendMessageForm" class="mt-2" onsubmit="sendMessage(event, currentTuteeId)" style="display: none;">
-                            <div class="chat-footer">
-                                <input id="messageInput" placeholder="Type your message" type="text" class="form-control" required>
-                                <button id="sendButton" class="btn btn-primary" onclick="sendMessage(event, {$tutor_id})">Send</button>
-                            </div>
-                        </form>
+                    <div class="card-body d-flex flex-column" id="messageContent" style="height: 70vh;">
+                        <h3>Select a Conversation</h3>
+                        <p>Choose from your existing conversations to view or respond to messages.</p>
                     </div>
+                    <!-- Message Input Form (outside the message content area) -->
+                    <form id="sendMessageForm" class="mt-2" onsubmit="sendMessage(event, currentTutorId)" style="display: none;">
+                        <div class="input-group p-3">
+                            <input type="text" id="messageInput" name="message" class="form-control" placeholder="Type your message here..." required>
+                            <button class="btn btn-primary" type="submit">Send</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

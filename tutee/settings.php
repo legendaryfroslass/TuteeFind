@@ -96,7 +96,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
             <header>
                 <div class="image-text">
                     <span class="image">
-                        <img src="<?php echo $imagePath;?>" alt="logo">
+                        <img src="<?php echo $imagePath;?>" alt="logo" style="width: 50px; height: 50px;">
                     </span>
 
                     <div class="div text header-text">
@@ -176,7 +176,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
             </div>
         </nav>
         <div class="home">
-    <form method="post" class="container-lg" style="padding-right: 4px; padding-left: 4px" enctype="multipart/form-data">
+    <form id="settingsForm" method="post" class="container-lg" style="padding-right: 4px; padding-left: 4px" enctype="multipart/form-data">
         <div class="container-lg p-3">
             <div class="career-form headings d-flex justify-content-center mt-3">
                 <div class="row">
@@ -205,9 +205,11 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                 </div>
                 <div class="d-flex align-items-start p-3 flex-wrap">
                     <!-- Image on the left side -->
-                    <div class="col-12 col-md-3 text-center">
-                        <img id="profile-image" class="rounded-circle my-3 img-fluid" style="max-width: 30%;" width="200" src="<?php echo $imagePath; ?>">
-                        <label for="file-upload" class="blue p-2 mb-2 rounded-3 w-50">
+                    <div class="col-12 text-center">
+                        <img id="profile-image" class="rounded-circle my-3 img-fluid"  src="<?php echo $imagePath; ?>">
+                    </div>
+                    <div class="col-12 text-center">
+                        <label for="file-upload" class="blue p-2 m-3 rounded-3 w-50">
                             Upload File
                             <input id="file-upload" type="file" name="photo" style="display:none;" onchange="previewImage(event)" accept="image/*">
                         </label>
@@ -216,10 +218,10 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                         </div>
                     </div>
                     <!-- Bio on the right side, occupying more space, and centered -->
-                    <div class="col-12 col-md-9 d-flex align-items-center justify-content-center">
-                        <div class="form-group my-4  w-100">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="form-groupw-100">
                             <label class="nav-text info-header">Tutee Bio</label>
-                            <textarea class="form-control" name="bio" id="bio" rows="3" style="min-height: 100px; resize: none;" placeholder="<?php echo htmlspecialchars($bio); ?>"><?php echo htmlspecialchars($bio); ?></textarea>
+                            <textarea class="form-control w-100" name="bio" id="bio" rows="3" style="min-height: 100px; resize: none;" placeholder="<?php echo htmlspecialchars($bio); ?>"><?php echo htmlspecialchars($bio); ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -357,7 +359,8 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
 
                 <!-- Save Button -->
                 <div class="align-content-center d-flex justify-content-center">
-                    <button type="submit" id="saveButton" class="btn btn-primary mb-5" style="width: 50vh;">Save</button>
+                    <button type="submit" id="saveButton" class="btnCustom mb-5" style="width: 50vh;" onlick="saveChanges()">Save</button>
+                    <!-- <div class="unsaved-changes" id="unsaved-changes">You have unsaved changes.</div> -->
                 </div>
             </div>
         </div>
@@ -438,7 +441,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
             };
 
             reader.readAsDataURL(input.files[0]);
-        }
+        };
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="notif.js"></script>

@@ -761,3 +761,18 @@ td {
       stroke-dashoffset: 0;
   }
 }
+
+.btnCustom {
+  color: white;
+  background-color: var(--side-bar);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: large;
+}
+
+.btnCustom:hover {
+  background-color: white;
+  color: var(--side-bar);
+  border: 2px solid var(--side-bar);
+}
