@@ -87,25 +87,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signUp'])) {
     $grade = $_POST['grade'];
 
         // Insert data into the database
-        if ($reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade)) {
+        // if (
+            $reg_user->register($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $password, $tutee_bday, $school, $grade);
             $message = "Registration successful!";
             $messageType = 'success';
 
             // Redirect to the login page
-            header("Location: ../tutee/login.php?registered=success");
+            header("Location: ../tutee/login?registered=success");
             exit();
-        } else {
-            $message = "Registration failed!";
-            $messageType = 'error';
-        }
+        // } else {
+        //     $message = "Registration failed!";
+        //     $messageType = 'error';
+        // }
 
     // Store message in session for displaying on the same page
     $_SESSION['message'] = $message;
     $_SESSION['messageType'] = $messageType;
-
-    // Refresh the page to clear POST data
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
 }
 
 // Check for a message in the session to display it in the modal
