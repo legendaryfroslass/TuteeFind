@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 14, 2024 at 02:32 PM
+-- Generation Time: Nov 15, 2024 at 02:39 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,19 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `tuteefind`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `activity_logs`
---
-
-CREATE TABLE `activity_logs` (
-  `id` int(11) NOT NULL,
-  `professor_id` int(11) DEFAULT NULL,
-  `activity` varchar(255) NOT NULL,
-  `datetime` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -87,7 +74,7 @@ CREATE TABLE `archive_requests` (
   `request_id` int(11) NOT NULL,
   `tutor_id` int(11) DEFAULT NULL,
   `tutee_id` int(11) DEFAULT NULL,
-  `status` enum('pending','accepted','rejected') DEFAULT NULL
+  `status` enum('pending','accepted','rejected','removed') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -98,17 +85,17 @@ CREATE TABLE `archive_requests` (
 
 CREATE TABLE `archive_tutee` (
   `id` int(11) NOT NULL,
-  `firstname` varchar(30) NOT NULL,
-  `lastname` varchar(30) NOT NULL,
-  `age` varchar(255) NOT NULL,
-  `sex` varchar(255) NOT NULL,
-  `number` varchar(255) NOT NULL,
-  `guardianname` varchar(255) NOT NULL,
+  `firstname` varchar(30) DEFAULT NULL,
+  `lastname` varchar(30) DEFAULT NULL,
+  `age` varchar(255) DEFAULT NULL,
+  `sex` varchar(255) DEFAULT NULL,
+  `number` varchar(255) DEFAULT NULL,
+  `guardianname` varchar(255) DEFAULT NULL,
   `fblink` varchar(255) DEFAULT NULL,
-  `barangay` varchar(50) NOT NULL,
-  `tutee_bday` date NOT NULL,
-  `school` varchar(50) NOT NULL,
-  `grade` varchar(20) NOT NULL,
+  `barangay` varchar(50) DEFAULT NULL,
+  `tutee_bday` date DEFAULT NULL,
+  `school` varchar(50) DEFAULT NULL,
+  `grade` varchar(20) DEFAULT NULL,
   `emailaddress` varchar(255) NOT NULL,
   `photo` varchar(255) DEFAULT NULL,
   `bio` text DEFAULT NULL,
@@ -141,19 +128,19 @@ CREATE TABLE `archive_tutee_progress` (
 
 CREATE TABLE `archive_tutor` (
   `id` int(11) NOT NULL,
-  `firstname` varchar(255) NOT NULL,
-  `lastname` varchar(255) NOT NULL,
-  `age` int(11) NOT NULL,
-  `sex` varchar(10) NOT NULL,
-  `number` varchar(20) NOT NULL,
-  `barangay` varchar(255) NOT NULL,
+  `firstname` varchar(255) DEFAULT NULL,
+  `lastname` varchar(255) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
+  `sex` varchar(10) DEFAULT NULL,
+  `number` varchar(20) DEFAULT NULL,
+  `barangay` varchar(255) DEFAULT NULL,
   `student_id` varchar(50) NOT NULL,
-  `course` varchar(100) NOT NULL,
-  `year_section` varchar(255) NOT NULL,
+  `course` varchar(100) DEFAULT NULL,
+  `year_section` varchar(255) DEFAULT NULL,
   `photo` varchar(255) DEFAULT NULL,
   `professor` varchar(50) DEFAULT NULL,
   `fblink` varchar(255) DEFAULT NULL,
-  `emailaddress` varchar(255) NOT NULL,
+  `emailaddress` varchar(255) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `archive_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `bio` text DEFAULT NULL
@@ -305,6 +292,28 @@ CREATE TABLE `professor` (
   `last_login` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
+--
+-- Dumping data for table `professor`
+--
+
+INSERT INTO `professor` (`id`, `firstname`, `lastname`, `middlename`, `age`, `faculty_id`, `emailaddress`, `prof_password`, `prof_username`, `prof_photo`, `last_login`) VALUES
+(1, 'Jasmine', 'Fernandez', 'Meralles', 27, '21-1261', 'jasminefernandez031@gmail.com', '$2y$10$tBHaytdxK5Y/NYISs6IgJesJipSX4Mh7T/2PP9uhx7Sr/MFA6IhXC', 'prof1', NULL, NULL),
+(2, 'John Paul', 'Gracio', 'Meralles', 27, '21-1262', 'jasmine.elisolutions@gmail.com', '$2y$10$z.c0oT.hD9pssSA3A8cNleTLWfy95/wQtiv1FeIbzOn6ivhDLvJ1O', 'prof2', NULL, NULL),
+(3, 'Clarisse', 'Dizon', 'Claus', 27, '21-1263', 'fernandezjasmine095@gmail.com', '$2y$10$3f8vlnnEmwmafR/dWoCKeOky6qpTJSL5vIljuIaeDdgQpplh5oej.', 'prof3', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `professor_logs`
+--
+
+CREATE TABLE `professor_logs` (
+  `id` int(11) NOT NULL,
+  `professor_id` int(11) DEFAULT NULL,
+  `activity` varchar(255) NOT NULL,
+  `datetime` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -343,6 +352,13 @@ CREATE TABLE `tutee` (
   `bio` text NOT NULL,
   `address` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `tutee`
+--
+
+INSERT INTO `tutee` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `guardianname`, `fblink`, `barangay`, `emailaddress`, `photo`, `password`, `tutee_bday`, `school`, `grade`, `bio`, `address`) VALUES
+(1, 'Steve', 'Thunder', '6', 'Male', '1234', 'Steve Thunder', 'fawadawd', 'Mapulang Lupa', 'mularwarren@gmail.com', NULL, '$2y$10$4VAGquJsh3XBW5AanLgrpesohzlbeAihHuPiRR/83iXQYCMlTjJt2', '2018-06-06', 'PLV', 'Grade 1', 'Tell About yourself.', 'dwadawda');
 
 -- --------------------------------------------------------
 
@@ -401,6 +417,17 @@ CREATE TABLE `tutor` (
   `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `tutor`
+--
+
+INSERT INTO `tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `bio`, `emailaddress`, `password`) VALUES
+(11, 'Jasmine', 'Fernandez', 21, 'Female', '9682226610', 'Dalandanan', '21-1251', 'BSIT', '2-2', NULL, '21-1261', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$ZjqsBry3Ob.1YHorQyS6leC/.jxAkNU6oRt86GNXj6GohHVQTZ3Fu'),
+(12, 'Lyka', 'Fernandez', 20, 'Female', '9682226610', 'Parada', '21-1252', 'BSED', '2-3', NULL, '21-1261', 'lyka/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$PK40wBpiJDUmNa35OTW5cOqrmXqJbHq1vU1BmLVqypcCXMY7X4JUm'),
+(13, 'Marbie', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1253', 'BSIT', '2-4', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$cMhvzr7n9Z9KMqfgwqiCTuAaoiaJ6NUNgj9W.yOYd54MV4LOhLJa.'),
+(14, 'Clara', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1254', 'BSIT', '2-5', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$JTrpeqGXT0mEJBVFutiAd.qsWGRJA8K72HkjxIz7DfrfS5k52L/Ia'),
+(15, 'Tiny', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1255', 'BSIT', '2-6', NULL, '21-1262', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$qgVfab7KKbRsAdPCcqgA4eYFhN2L9kikkV/hB7VEXN/EsrBQO/cP2');
+
 -- --------------------------------------------------------
 
 --
@@ -432,12 +459,6 @@ CREATE TABLE `tutor_sessions` (
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `activity_logs`
---
-ALTER TABLE `activity_logs`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `admin`
@@ -529,6 +550,12 @@ ALTER TABLE `professor`
   ADD UNIQUE KEY `uc_faculty_id` (`faculty_id`);
 
 --
+-- Indexes for table `professor_logs`
+--
+ALTER TABLE `professor_logs`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `requests`
 --
 ALTER TABLE `requests`
@@ -546,14 +573,7 @@ ALTER TABLE `tutee`
 -- Indexes for table `tutee_progress`
 --
 ALTER TABLE `tutee_progress`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `tutee_id` (`tutee_id`);
-
---
--- Indexes for table `tutee_summary`
---
-ALTER TABLE `tutee_summary`
-  ADD PRIMARY KEY (`tutee_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `tutor`
@@ -571,13 +591,91 @@ ALTER TABLE `tutor_ratings`
   ADD KEY `tutor_id` (`tutor_id`);
 
 --
+-- Indexes for table `tutor_sessions`
+--
+ALTER TABLE `tutor_sessions`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `activity_logs`
+-- AUTO_INCREMENT for table `admin`
 --
-ALTER TABLE `activity_logs`
+ALTER TABLE `admin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `districts`
+--
+ALTER TABLE `districts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+
+--
+-- AUTO_INCREMENT for table `events`
+--
+ALTER TABLE `events`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `messages`
+--
+ALTER TABLE `messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `professor`
+--
+ALTER TABLE `professor`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `professor_logs`
+--
+ALTER TABLE `professor_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `requests`
+--
+ALTER TABLE `requests`
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tutee`
+--
+ALTER TABLE `tutee`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `tutee_progress`
+--
+ALTER TABLE `tutee_progress`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tutor`
+--
+ALTER TABLE `tutor`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `tutor_ratings`
+--
+ALTER TABLE `tutor_ratings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tutor_sessions`
+--
+ALTER TABLE `tutor_sessions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
