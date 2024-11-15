@@ -35,7 +35,7 @@ if (isset($_POST['archive'])) {
 
             if ($stmt_archive->execute()) {
                 // Delete from the activity_logs table first
-                $sql_delete_logs = "DELETE FROM activity_logs WHERE professor_id = '$id'";
+                $sql_delete_logs = "DELETE FROM professor_logs WHERE professor_id = '$id'";
                 if ($conn->query($sql_delete_logs)) {
                     // Now delete from the professor table
                     $sql_delete = "DELETE FROM professor WHERE id = '$id'";
