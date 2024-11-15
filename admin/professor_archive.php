@@ -19,10 +19,11 @@ if (isset($_POST['archive'])) {
 
         if ($stmt_check->num_rows === 0) {
             // If faculty_id does not exist, proceed to archive
-            $stmt_archive = $conn->prepare("INSERT INTO archive_professor (lastname, firstname, middlename, faculty_id, age, emailaddress, prof_username, prof_password) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt_archive = $conn->prepare("INSERT INTO archive_professor (id, lastname, firstname, middlename, faculty_id, age, emailaddress, prof_username, prof_password) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt_archive->bind_param(
-                "ssssisss",
+                "issssisss",
+                $row['id'],
                 $row['lastname'],
                 $row['firstname'],
                 $row['middlename'],

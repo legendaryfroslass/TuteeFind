@@ -129,7 +129,7 @@ if (isset($_GET['error']) || isset($_GET['notAvail'])) {
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="resultModalLabel">Registration Result</h5>
+                        <h5 class="modal-title" id="resultModalLabel">TuteeFind Says...</h5>
                     </div>
                     <div class="modal-body">
                         <p id="modalMessage"></p>

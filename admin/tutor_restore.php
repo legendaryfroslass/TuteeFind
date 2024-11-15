@@ -11,8 +11,8 @@ if (isset($_POST['restoreTutor'])) {
 
     if ($row) {
         // Insert into tutor table
-        $sql_restoreTutor = "INSERT INTO tutor (lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio) 
-                        VALUES ('".$row['lastname']."', '".$row['firstname']."', '".$row['age']."', '".$row['sex']."', '".$row['number']."', '".$row['barangay']."', '".$row['student_id']."', '".$row['course']."', '".$row['year_section']."', '".$row['professor']."', '".$row['fblink']."', '".$row['emailaddress']."', '".$row['password']."', '".$row['bio']."')";
+        $sql_restoreTutor = "INSERT INTO tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio) 
+                        VALUES ('".$row['lastname']."','".$row['lastname']."', '".$row['firstname']."', '".$row['age']."', '".$row['sex']."', '".$row['number']."', '".$row['barangay']."', '".$row['student_id']."', '".$row['course']."', '".$row['year_section']."', '".$row['professor']."', '".$row['fblink']."', '".$row['emailaddress']."', '".$row['password']."', '".$row['bio']."')";
 
         if ($conn->query($sql_restoreTutor)) {
             // Delete from the archive_tutor table after restoring

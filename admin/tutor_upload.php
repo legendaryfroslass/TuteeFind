@@ -69,10 +69,10 @@ if (isset($_POST['upload'])) {
             // Execute the statement
             if ($stmt->execute()) {
                 $_SESSION['success'] = 'Data imported successfully';
-                header('location: tutor.php');
+                header('location: tutor');
             } else {
                 $_SESSION['error'] = 'Error inserting data: ' . $stmt->error;
-                header('location: tutor.php');
+                header('location: tutor');
             }
         }
     } else {
