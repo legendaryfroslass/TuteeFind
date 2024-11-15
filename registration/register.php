@@ -601,7 +601,7 @@ include('../tutee/spinner.php');
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.js"></script>
         <script src="../tutee/spinner.js"></script>
-        <script src="registerjs.js"></script>
+        <script src="register.js"></script>
         <script>
             
             window.onload = function() {
