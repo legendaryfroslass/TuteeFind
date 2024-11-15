@@ -3,4 +3,9 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME}.php -f
     RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+    # Disable directory listing
+    Options -Indexes
+
+    RewriteRule ^includes$ /landingpage [L,R=301]
 </IfModule>

@@ -3,3 +3,19 @@ RewriteBase /
 # Remove .php extension
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^([^/]+)$ $1.php [L]
+
+# Disable directory listing
+Options -Indexes
+
+# Redirect /admin to /admin/landingpage
+RewriteEngine On
+RewriteRule ^admin$ /admin/landingpage [L,R=301]
+
+# Redirect /registration to /registration/register
+RewriteRule ^registration$ /registration/register [L,R=301]
+
+# Redirect /tutee to /tutee/login
+RewriteRule ^tutee$ /tutee/login [L,R=301]
+
+# Redirect /tutor to /tutor/login
+RewriteRule ^tutor$ /tutor/login [L,R=301]
