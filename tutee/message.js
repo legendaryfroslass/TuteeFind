@@ -32,6 +32,8 @@ function showMessages(tutorId) {
         clearInterval(messageInterval);
     }
 
+    selectChat(tutorId);
+
     // Start fetching messages for the selected tutor
     fetchNewMessages(tutorId);
 
@@ -70,3 +72,16 @@ document.getElementById("messageInput").addEventListener("keypress", function (e
         sendMessage(event, currentTutorId);
     }
 });
+
+// Function to handle showing the message form
+function selectChat(tuteeId) {
+    if (tuteeId) {
+      // Show the message form when a chat is selected
+    document.getElementById("sendMessageForm").style.display = "block";
+      currentTutorId = tuteeId; // Set the current tutee ID to send messages
+    } else {
+      // Hide the message form when no chat is selected
+    document.getElementById("sendMessageForm").style.display = "none";
+      currentTutorId = null; // Reset the current tutee ID
+    }
+}

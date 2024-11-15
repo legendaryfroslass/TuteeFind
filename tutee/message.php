@@ -28,6 +28,32 @@ $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
 $unreadNotifCount = $unreadNotifData['unread_count'];
 
+// Fetch count of unique tutors who have unread messages for a specific tutee
+$unreadMessagesQuery = $user_login->runQuery("
+    SELECT COUNT(DISTINCT tutee_id) AS unread_tutee_count 
+    FROM messages 
+    WHERE tutor_id = :tutor_id 
+    AND sender_type = 'tutor' 
+    AND is_read = 0
+");
+$unreadMessagesQuery->bindParam(":tutor_id", $tutor_id);  // Bind the tutee_id
+$unreadMessagesQuery->execute();
+$unreadMessagesData = $unreadMessagesQuery->fetch(PDO::FETCH_ASSOC);
+$unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
+
+// Mark all unread messages as read from the tutee's point of view
+$markAsReadQuery = $user_login->runQuery("
+UPDATE messages
+SET is_read = 1
+WHERE tutor_id = :tutor_id 
+AND tutee_id = :tutee_id 
+AND sender_type = 'tutee'
+AND is_read = 0
+");
+$markAsReadQuery->bindParam(":tutor_id", $tutor_id);  // Tutor's ID
+$markAsReadQuery->bindParam(":tutee_id", $tutee_id);  // Tutee's ID
+$markAsReadQuery->execute();
+
 $messagesQuery = $user_login->runQuery("
     SELECT m.tutor_id, t.firstname AS tutor_firstname, t.lastname AS tutor_lastname,
             t.photo AS tutor_photo, m.message, m.created_at, m.sender_type
@@ -90,12 +116,6 @@ if (isset($_POST['fetch_messages'])) {
 
     echo "</div>"; // Close chat-body
     echo "</div>"; // Close messageContent
-
-    // Output the chat footer (message input) separately
-    echo "<div class='chat-footer'>";
-    echo "<input id='messageInput' placeholder='Type your message' type='text' class='form-control' required>";
-    echo "<button id='sendButton' class='btn btn-primary' onclick='sendMessage(event, {$tutor_id})'>Send</button>";
-    echo "</div>";
 
     exit();
 }
@@ -160,8 +180,12 @@ if (isset($_POST['send_message'])) {
                         </li>
                         <li class="nav-link navbar-active" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                             <a href="../tutee/message">
-                                <i class='bx bxs-inbox icon' ></i>
-                                <span class="text nav-text">Messages</span>
+                                <div style="position: relative;">
+                                    <i class='bx bxs-inbox icon'></i>
+                                    <span id="message-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
+                                        <?php echo $unreadMessageCount; ?>
+                                    </span> <!-- Notification counter -->
+                                </div>
                             </a>
                         </li>
                         <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Notification">
@@ -220,64 +244,68 @@ if (isset($_POST['send_message'])) {
         </nav>
 
         <div class="home">
-    <div class="container-lg p-3">
-        <div class="career-form headings d-flex justify-content-center mt-3">
-            <div class="row">
-                <div class="card1" style="color:white;">Messages</div>
-            </div>
-        </div>
-    </div>
-    <div class="container-lg p-3">
-        <div class="row">
-            <!-- Sidebar for conversation list -->
-            <div class="col-12 col-md-3 mb-3 mb-md-0">
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h5>Inbox</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <ul class="list-group">
-                            <?php foreach ($messages as $message): ?>
-                                <li class="list-group-item d-flex align-items-center" onclick="showMessages('<?php echo $message['tutor_id']; ?>')">
-                                    <img src="<?php echo $message['tutor_photo'] ?: '../assets/TutorFindLogoName.jpg'; ?>" class="rounded-circle me-3" alt="Profile Picture" style="width: 50px; height: 50px;">
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex flex-column">
-                                            <strong><?php echo $message['tutor_firstname'] . ' ' . $message['tutor_lastname']; ?></strong>
-                                            <small class="text-muted"><?php echo date('M d, Y', strtotime($message['created_at'])); ?></small>
-                                        </div>
-                                        <p class="mb-0">
-                                            <?php echo $message['sender_type'] == 'tutee' ? 'You: ' : ''; ?>
-                                            <?php echo htmlspecialchars($message['message']); ?>
-                                        </p>
-                                    </div>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
+            <div class="container-lg p-3">
+                <div class="career-form headings d-flex justify-content-center mt-3">
+                    <div class="row">
+                        <div class="card1" style="color:white;">Messages</div>
                     </div>
                 </div>
             </div>
-
-            <!-- Main content area for message details -->
-            <div class="col-12 col-md-9">
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h5>Messages</h5>
-                    </div>
-                    <div class="card-body d-flex flex-column" id="messageContent" style="height: 70vh;">
-                        <h3>Select a Conversation</h3>
-                        <p>Choose from your existing conversations to view or respond to messages.</p>
-                    </div>
-                    <!-- Message Input Form (outside the message content area) -->
-                    <form id="sendMessageForm" class="mt-2" onsubmit="sendMessage(event, currentTutorId)" style="display: none;">
-                        <div class="input-group p-3">
-                            <input type="text" id="messageInput" name="message" class="form-control" placeholder="Type your message here..." required>
-                            <button class="btn btn-primary" type="submit">Send</button>
+            <div class="container-lg p-3">
+                <div class="row">
+                    <!-- Sidebar for conversation list -->
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h5>Inbox</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <ul class="list-group">
+                                    <?php foreach ($messages as $message): ?>
+                                        <li class="list-group-item d-flex align-items-center" onclick="showMessages('<?php echo $message['tutor_id']; ?>')">
+                                            <img src="<?php echo $message['tutor_photo'] ?: '../assets/TuteeFindLogoName.jpg'; ?>" class="rounded-circle me-3" alt="Profile Picture" style="width: 50px; height: 50px;">
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex flex-column">
+                                                    <strong><?php echo $message['tutor_firstname'] . ' ' . $message['tutor_lastname']; ?></strong>
+                                                    <small class="text-muted"><?php echo date('M d, Y', strtotime($message['created_at'])); ?></small>
+                                                </div>
+                                                <p class="mb-0">
+                                                    <?php echo $message['sender_type'] == 'tutee' ? 'You: ' : ''; ?>
+                                                    <?php echo htmlspecialchars($message['message']); ?>
+                                                </p>
+                                            </div>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
                         </div>
-                    </form>
+                    </div>
+
+                    <!-- Main content area for message details -->
+                    <div class="col-12 col-md-9">
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h5>Messages</h5>
+                            </div>
+                            <div class="card-body d-flex flex-column" id="messageContent" style="height: 60vh; position: relative;">
+                                <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                                    <h3>Select a Conversation</h3>
+                                    <p>Choose from your existing conversations to view or respond to messages.</p>
+                                </div>
+                            </div>
+                            <!-- Message Input Form (outside the message content area) -->
+                            <form id="sendMessageForm" class="mt-2 message-form" onsubmit="sendMessage(event, currentTutorId)">
+                                <div class="input-group p-3">
+                                    <input type="text" id="messageInput" name="message" class="form-control" placeholder="Type your message here..." required>
+                                    <button class="btn btn-primary" type="submit">Send</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
-    </div>
 
         <!-- Logout Confirmation Modal -->
         <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">

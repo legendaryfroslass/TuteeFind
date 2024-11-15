@@ -33,6 +33,32 @@ $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
 $unreadNotifCount = $unreadNotifData['unread_count'];
 
+// Fetch count of unique tutors who have unread messages for a specific tutee
+$unreadMessagesQuery = $user_login->runQuery("
+    SELECT COUNT(DISTINCT tutor_id) AS unread_tutor_count 
+    FROM messages 
+    WHERE tutee_id = :tutee_id 
+    AND sender_type = 'tutee' 
+    AND is_read = 0
+");
+$unreadMessagesQuery->bindParam(":tutee_id", $tutee_id);  // Bind the tutee_id
+$unreadMessagesQuery->execute();
+$unreadMessagesData = $unreadMessagesQuery->fetch(PDO::FETCH_ASSOC);
+$unreadMessageCount = $unreadMessagesData['unread_tutor_count'];
+
+// Mark all unread messages as read from the tutee's point of view
+$markAsReadQuery = $user_login->runQuery("
+UPDATE messages
+SET is_read = 1
+WHERE tutor_id = :tutor_id 
+AND tutee_id = :tutee_id 
+AND sender_type = 'tutee'
+AND is_read = 0
+");
+$markAsReadQuery->bindParam(":tutor_id", $tutor_id);  // Tutor's ID
+$markAsReadQuery->bindParam(":tutee_id", $tutee_id);  // Tutee's ID
+$markAsReadQuery->execute();
+
     // Check if $userData['photo'] is empty
     $imagePath = !empty($userData['photo']) ? $userData['photo'] : '../assets/TuteeFindLogoName.jpg';
 
@@ -143,8 +169,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </li>
                             <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                                 <a href="../tutee/message">
-                                    <i class='bx bxs-inbox icon' ></i>
-                                    <span class="text nav-text">Messages</span>
+                                    <div style="position: relative;">
+                                        <i class='bx bxs-inbox icon'></i>
+                                        <span id="message-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
+                                            <?php echo $unreadMessageCount; ?>
+                                        </span> <!-- Notification counter -->
+                                    </div>
                                 </a>
                             </li>
                             <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Notification">

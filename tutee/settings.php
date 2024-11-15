@@ -61,6 +61,32 @@ $unreadNotifQuery->bindParam(":tutee_id", $tutee_id);
 $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
 $unreadNotifCount = $unreadNotifData['unread_count'];
+
+// Fetch count of unique tutors who have unread messages for a specific tutee
+$unreadMessagesQuery = $user_login->runQuery("
+    SELECT COUNT(DISTINCT tutor_id) AS unread_tutor_count 
+    FROM messages 
+    WHERE tutee_id = :tutee_id 
+    AND sender_type = 'tutee' 
+    AND is_read = 0
+");
+$unreadMessagesQuery->bindParam(":tutee_id", $tutee_id);  // Bind the tutee_id
+$unreadMessagesQuery->execute();
+$unreadMessagesData = $unreadMessagesQuery->fetch(PDO::FETCH_ASSOC);
+$unreadMessageCount = $unreadMessagesData['unread_tutor_count'];
+
+// Mark all unread messages as read from the tutee's point of view
+$markAsReadQuery = $user_login->runQuery("
+UPDATE messages
+SET is_read = 1
+WHERE tutor_id = :tutor_id 
+AND tutee_id = :tutee_id 
+AND sender_type = 'tutee'
+AND is_read = 0
+");
+$markAsReadQuery->bindParam(":tutor_id", $tutor_id);  // Tutor's ID
+$markAsReadQuery->bindParam(":tutee_id", $tutee_id);  // Tutee's ID
+$markAsReadQuery->execute();
 ?>
 
 <!-- HTML and Toast Code -->
@@ -96,7 +122,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
             <header>
                 <div class="image-text">
                     <span class="image">
-                        <img src="<?php echo $imagePath;?>" alt="logo" style="width: 50px; height: 50px;">
+                        <img src="<?php echo $imagePath;?>" alt="logo">
                     </span>
 
                     <div class="div text header-text">
@@ -115,10 +141,14 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                                 <span class="text nav-text">Home</span>
                             </a>
                         </li>
-                        <li class="nav-link">
+                        <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                             <a href="../tutee/message">
-                                <i class='bx bxs-inbox icon' ></i>
-                                <span class="text nav-text">Messages</span>
+                                <div style="position: relative;">
+                                    <i class='bx bxs-inbox icon'></i>
+                                    <span id="message-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
+                                        <?php echo $unreadMessageCount; ?>
+                                    </span> <!-- Notification counter -->
+                                </div>
                             </a>
                         </li>
                         <li class="nav-link">
@@ -206,7 +236,7 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                 <div class="d-flex align-items-start p-3 flex-wrap">
                     <!-- Image on the left side -->
                     <div class="col-12 text-center">
-                        <img id="profile-image" class="rounded-circle my-3 img-fluid"  src="<?php echo $imagePath; ?>">
+                        <img id="profile-image" class="rounded-circle my-3 img-fluid" style="max-width: 25%;"  src="<?php echo $imagePath; ?>">
                     </div>
                     <div class="col-12 text-center">
                         <label for="file-upload" class="blue p-2 m-3 rounded-3 w-50">
@@ -214,11 +244,11 @@ $unreadNotifCount = $unreadNotifData['unread_count'];
                             <input id="file-upload" type="file" name="photo" style="display:none;" onchange="previewImage(event)" accept="image/*">
                         </label>
                         <div class="mb-3">
-                            <div class="labels">- at least 256 x 256 px recommended JPG or PNG.</div>
+                            <div class="labels" style="font-size: 14px;">- at least 256 x 256 px recommended JPG or PNG.</div>
                         </div>
                     </div>
                     <!-- Bio on the right side, occupying more space, and centered -->
-                    <div class="col-12 d-flex align-items-center justify-content-center">
+                    <div class="col-12">
                         <div class="form-groupw-100">
                             <label class="nav-text info-header">Tutee Bio</label>
                             <textarea class="form-control w-100" name="bio" id="bio" rows="3" style="min-height: 100px; resize: none;" placeholder="<?php echo htmlspecialchars($bio); ?>"><?php echo htmlspecialchars($bio); ?></textarea>

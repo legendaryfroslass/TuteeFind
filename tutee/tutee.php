@@ -225,6 +225,32 @@ $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
 $unreadNotifCount = $unreadNotifData['unread_count'];
 
+// Fetch count of unique tutors who have unread messages for a specific tutee
+$unreadMessagesQuery = $user_login->runQuery("
+    SELECT COUNT(DISTINCT tutee_id) AS unread_tutee_count 
+    FROM messages 
+    WHERE tutor_id = :tutor_id 
+    AND sender_type = 'tutor' 
+    AND is_read = 0
+");
+$unreadMessagesQuery->bindParam(":tutor_id", $tutor_id);  // Bind the tutee_id
+$unreadMessagesQuery->execute();
+$unreadMessagesData = $unreadMessagesQuery->fetch(PDO::FETCH_ASSOC);
+$unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
+
+// Mark all unread messages as read from the tutee's point of view
+    $markAsReadQuery = $user_login->runQuery("
+    UPDATE messages
+    SET is_read = 1
+    WHERE tutor_id = :tutor_id 
+    AND tutee_id = :tutee_id 
+    AND sender_type = 'tutee'
+    AND is_read = 0
+    ");
+    $markAsReadQuery->bindParam(":tutor_id", $tutor_id);  // Tutor's ID
+    $markAsReadQuery->bindParam(":tutee_id", $tutee_id);  // Tutee's ID
+    $markAsReadQuery->execute();
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tutee_id = $_POST['tutee_id'] ?? null;
     $tutor_id = $_POST['tutor_id'] ?? null;
@@ -293,8 +319,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </li>
                         <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                             <a href="../tutee/message">
-                                <i class='bx bxs-inbox icon'></i>
-                                <span class="text nav-text">Messages</span>
+                                <div style="position: relative;">
+                                    <i class='bx bxs-inbox icon'></i>
+                                    <span id="message-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
+                                        <?php echo $unreadMessageCount; ?>
+                                    </span> <!-- Notification counter -->
+                                </div>
                             </a>
                         </li>
                         <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Notification">
@@ -410,11 +440,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="container-lg pt-3">
                 <div class="row">
                     <div class="col">
-                            <div class="filter-result">
-                                <div class="table-container">
+                        <div class="filter-result">
+                            <div class="table-container">
+                                <?php if (!empty($requests)): ?>
                                     <div class="table-responsive">
                                         <table class="table table-striped tutee-thead">
-                                            <thead class="">
+                                            <thead>
                                                 <tr class="tutee-trow">
                                                     <th class="text-center">Photo</th>
                                                     <th class="text-center">Name</th>
@@ -440,33 +471,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                         </td>
                                                         <td class="text-center justify-content-center">
                                                             <form method="post" class="text-center">
-                                                            <button type="button" 
-                                                                    style="height: 6vh"
-                                                                    id="SendMessage" 
-                                                                    class="btn btn-outline-primary bx" 
-                                                                    data-bs-toggle="modal" 
-                                                                    data-bs-target="#messageModal" 
-                                                                    data-tutor-id="<?php echo $request['tutor_id']; ?>"
-                                                                    data-tutor-name="<?php echo $request['tutor_firstname'] . ' ' . $request['tutor_lastname']; ?>">
-                                                                <i class='bx bx-message-square-dots'></i>
-                                                            </button>
+                                                                <button type="button" style="height: 6vh" id="SendMessage" class="btn btn-outline-primary bx" data-bs-toggle="tooltip" data-bs-placement="top" title="Message tutor" data-bs-toggle="modal" data-bs-target="#messageModal" data-tutor-id="<?php echo $request['tutor_id']; ?>" data-tutor-name="<?php echo $request['tutor_firstname'] . ' ' . $request['tutor_lastname']; ?>">
+                                                                    <i class='bx bx-message-square-dots'></i>
+                                                                </button>
                                                                 <?php if ($request['status'] != 'accepted'): ?>
-                                                                <button type="button" style="height: 6vh" class="btn btn-outline-success bx bx-check" data-bs-toggle="modal" data-bs-target="#acceptRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('accept', this)"></button>
-                                                                <button type="button" style="height: 6vh" class="btn btn-outline-danger bx bx-x" data-bs-toggle="modal" data-bs-target="#rejectRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('reject', this)"></button>
-                                                            <?php else: ?>
-                                                                <button class="btn btn-success" disabled>Already Accepted</button>
-                                                            <?php endif; ?>
+                                                                    <button type="button" style="height: 6vh" class="btn btn-outline-success bx bx-check" data-bs-toggle="tooltip" data-bs-placement="top" title="Accept tutor request" data-bs-toggle="modal" data-bs-target="#acceptRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('accept', this)"></button>
+                                                                    <button type="button" style="height: 6vh" class="btn btn-outline-danger bx bx-x" data-bs-toggle="tooltip" data-bs-placement="top" title="Reject tutor request" data-bs-toggle="modal" data-bs-target="#rejectRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('reject', this)"></button>
+                                                                <?php else: ?>
+                                                                    <button class="btn btn-success" disabled>Already Accepted</button>
+                                                                <?php endif; ?>
                                                             </form>
-                                                            
-                                                        </td> 
+                                                        </td>
                                                     </tr>
                                                 <?php endforeach; ?>
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
+                                <?php else: ?>
+                                    <div class="container d-flex flex-column justify-content-center align-items-center update rounded shadow-lg">
+                                        <img src="../assets/tutee-blankplaceholder-white.png" alt="Nothing to see here" style="width: 300px; height: 300px;">
+                                        <h5 class="opacity">No current requests</h5><br>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Profile Modal -->
+        <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="profileModalLabel">Profile Details</h5>
+                    </div>
+                    <div class="modal-body d-flex flex-column align-items-center">
+                        <img id="profileModalPhoto" 
+                            class="img-fluid" 
+                            style="border-radius: 50%; border: 3px solid #007bff; height: 120px; width: 120px;" 
+                            alt="Profile Photo">
+                        <h5 id="profileModalName" class="mt-3 mb-1" style="font-weight: bold; color: #333;"></h5>
+                        <p id="profileModalBrgy" class="mb-1" style="color: #555;">
+                            Barangay: <span class="font-weight-bold" id="brgyValue"></span>
+                        </p>
+                        <p id="profileModalBio" style="font-style: italic; color: #666;"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -474,35 +526,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <!-- Message Modal -->
         <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="emailModalLabel">Send Message</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-start d-block">
-            <form id="sendMessageForm" method="POST">
-                <input type="hidden" name="tutor_id" id="tutor_id">
-                <input type="hidden" name="tutee_id" value="<?php echo $tutee_id; ?>">
-                <div class="mb-3">
-                    <label for="recipient" class="form-label">To: </label>
-                    <span id="recipient"></span>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="emailModalLabel">Send Message</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-start d-block">
+                    <form id="sendMessageForm" method="POST">
+                        <input type="hidden" name="tutor_id" id="tutor_id">
+                        <input type="hidden" name="tutee_id" value="<?php echo $tutee_id; ?>">
+                        <div class="mb-3">
+                            <label for="recipient" class="form-label">To: </label>
+                            <span id="recipient"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" name="message" id="message" rows="4" placeholder="Enter your message"></textarea>
+                        </div>
+                    </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="msg-sendBtn">
+                            <i class='bx bx-send'></i> Send
+                        </button>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="message" class="form-label">Message</label>
-                    <textarea class="form-control" name="message" id="message" rows="4" placeholder="Enter your message"></textarea>
-                </div>
-            </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="msg-sendBtn">
-                    <i class='bx bx-send'></i> Send
-                </button>
             </div>
         </div>
-    </div>
-</div>
 
         <!-- Notification Modal for Tutee's Side -->
         <div class="modal fade" id="tuteeNotificationModal" tabindex="-1" role="dialog" aria-labelledby="tuteeModalLabel" aria-hidden="true">

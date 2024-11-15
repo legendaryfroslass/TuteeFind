@@ -32,6 +32,19 @@ $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
 $unreadNotifCount = $unreadNotifData['unread_count'];
 
+// Fetch count of unique tutors who have unread messages for a specific tutee
+$unreadMessagesQuery = $user_login->runQuery("
+    SELECT COUNT(DISTINCT tutee_id) AS unread_tutee_count 
+    FROM messages 
+    WHERE tutor_id = :tutor_id 
+    AND sender_type = 'tutor' 
+    AND is_read = 0
+");
+$unreadMessagesQuery->bindParam(":tutor_id", $tutor_id);  // Bind the tutee_id
+$unreadMessagesQuery->execute();
+$unreadMessagesData = $unreadMessagesQuery->fetch(PDO::FETCH_ASSOC);
+$unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
+
 if ($userData) {
     $firstname = $userData['firstname'];
     $lastname = $userData['lastname'];
@@ -199,12 +212,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
             // Add the legend
             $pdf->SetFont('helvetica', '', 12);
-            $legend = "Tutor will be assessed through the following scale:\n\n" .
-                      "5 = Excellent. Far above and beyond the expected performance\n" .
-                      "4 = Very Good. Above the expected performance\n" .
-                      "3 = Good. Satisfactory expected level of performance\n" .
-                      "2 = Fair. Slightly below expected level of performance\n" .
-                      "1 = Poor. Below expected level of performance\n\n";
+                $legend = "Tutor will be assessed through the following scale:\n\n" .
+                        "5 = Excellent. Far above and beyond the expected performance\n" .
+                        "4 = Very Good. Above the expected performance\n" .
+                        "3 = Good. Satisfactory expected level of performance\n" .
+                        "2 = Fair. Slightly below expected level of performance\n" .
+                        "1 = Poor. Below expected level of performance\n\n";
             $pdf->MultiCell(0, 10, $legend, 0, 'L', 0, 1);
         
             // Add names of the Tutee and Tutor
@@ -351,8 +364,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </li>
                     <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                         <a href="../tutee/message">
-                            <i class='bx bxs-inbox icon' ></i>
-                            <span class="text nav-text">Messages</span>
+                            <div style="position: relative;">
+                                <i class='bx bxs-inbox icon'></i>
+                                <span id="message-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
+                                    <?php echo $unreadMessageCount; ?>
+                                </span> <!-- Notification counter -->
+                            </div>
                         </a>
                     </li>
                     <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Notification">

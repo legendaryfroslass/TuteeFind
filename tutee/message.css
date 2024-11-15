@@ -213,3 +213,21 @@ body {
   background-color: #f8e3cd;
   border-radius: 1vh;
 }
+
+/* Adjust for responsive chat */
+#messageContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;  /* Start the content from the top */
+  overflow-y: auto;  /* Allow scrolling */
+  height: calc(100vh - 150px);  /* Adjust for screen size and ensure space for form */
+}
+
+.message-form {
+  display: none;
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 10;
+}
