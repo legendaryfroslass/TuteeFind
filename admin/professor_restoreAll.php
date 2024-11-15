@@ -10,8 +10,8 @@ if (isset($_POST['restoreAll']) && isset($_POST['selected_ids'])) {
 
         try {
             // Prepare the insert statement for the professor table
-            $stmt_restore = $conn->prepare("INSERT INTO professor (lastname, firstname, middlename, faculty_id, age, emailaddress, prof_username, prof_password) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt_restore = $conn->prepare("INSERT INTO professor (id, lastname, firstname, middlename, faculty_id, age, emailaddress, prof_username, prof_password) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Prepare a check for existing faculty_id in the professor table
             $stmt_check = $conn->prepare("SELECT faculty_id FROM professor WHERE faculty_id = ?");
@@ -41,7 +41,8 @@ if (isset($_POST['restoreAll']) && isset($_POST['selected_ids'])) {
                     if ($stmt_check->num_rows === 0) {
                         // If faculty_id does not exist, proceed to restore
                         $stmt_restore->bind_param(
-                            "ssssisss",
+                            "issssisss",
+                            $row['id'],
                             $row['lastname'],
                             $row['firstname'],
                             $row['middlename'],

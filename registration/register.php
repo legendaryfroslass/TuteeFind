@@ -109,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: ../tutee/login?registered=success");
             exit();
         } else {
+            header("Location: ../registration/register?registration=error");
             // Failed registration with a specific error
             echo "Error in registration: " . htmlspecialchars($registrationResult);
         }
@@ -452,7 +453,7 @@ include('../tutee/spinner.php');
 
                         <div>
                             <div class="contact-number form-floating mb-3">
-                                <input type="hidden" name="bio" class="form-control form-control-lg bg-light fs-6" id="bio" placeholder="bio" value="<?php echo "Tell About yourself."; ?>">
+                                <input type="hidden" name="bio" class="form-control form-control-lg bg-light fs-6" id="bio" placeholder="bio" value="<?php echo "Tell something about you, or your Child. Have a nice day."; ?>">
                             </div>
                         </div>
 

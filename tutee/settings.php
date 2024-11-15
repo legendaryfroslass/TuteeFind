@@ -2,11 +2,27 @@
 session_start();
 require_once '../tutee.php';
 $user_login = new TUTEE();
-
+$message = '';
+$messageType = '';
 if (!$user_login->is_logged_in()) {
     $user_login->redirect('login');
 }
+// Check for a message in the session to display it in the modal
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    $messageType = $_SESSION['messageType'];
 
+    // Clear message from session
+    unset($_SESSION['message']);
+    unset($_SESSION['messageType']);
+    // Output a script to show the modal with the message
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                $('#modalMessage').text('$message');
+                $('#resultModal').modal('show');
+            });
+            </script>";
+}
 $userSession = $_SESSION['userSession'];
 $stmt = $user_login->runQuery("SELECT * FROM tutee WHERE emailaddress = :emailaddress");
 $stmt->bindParam(":emailaddress", $userSession);
@@ -47,13 +63,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newPassword = $_POST['password'];
     $photo = $_FILES['photo'];
 
-    // Call the update method regardless of the specific changes
-    $user_login->updateDetails($firstname, $lastname, $age, $sex, $guardianname, $fblink, $barangay, $number, $emailaddress, $bio, $newPassword, $photo, $userData);
+    // Check if the email address was updated
+    $oldEmail = $userData['emailaddress']; // Assuming $userData contains current user data
+    $isEmailUpdated = ($oldEmail !== $emailaddress);
+
+    // Call the update method
+    $user_login->updateDetails(
+        $firstname, 
+        $lastname, 
+        $age, 
+        $sex, 
+        $guardianname, 
+        $fblink, 
+        $barangay, 
+        $number, 
+        $emailaddress, 
+        $bio, 
+        $newPassword, 
+        $photo, 
+        $userData
+    );
 
     // Set the success toast message
     $toastMessage = "Your details have been successfully updated.";
     $toastClass = "bg-success";
+
+    // Redirect to login.php if the email address was updated
+    if ($isEmailUpdated) {
+        // Store message in session for displaying on the same page
+        $message = "You updated your emailaddress, please log-in again.";
+        $messageType = "Success";
+        $_SESSION['message'] = $message;
+        $_SESSION['messageType'] = $messageType;
+        header("Location: login");
+        exit;
+    }
 }
+
 
 // Fetch unread notifications count for the current tutor
 $unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND status = 'unread'");
