@@ -1,3 +1,3 @@
 <?php
-header("Location: register");
+header("Location: ../tutee/login");
 exit();
