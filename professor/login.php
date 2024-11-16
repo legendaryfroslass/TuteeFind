@@ -37,7 +37,7 @@ if (isset($_POST['login'])) {
             // Log the activity
             $activity = "Log-in";
             $formatted_datetime = date('F j, Y h:i:s A'); // Example: October 6, 2024 11:14:33 PM
-            $logSql = "INSERT INTO activity_logs (professor_id, activity, datetime) 
+            $logSql = "INSERT INTO professor_logs (professor_id, activity, datetime) 
                        VALUES (?, ?, ?)";
             $logStmt = $conn->prepare($logSql);
             $logStmt->bind_param("iss", $_SESSION['professor_id'], $activity, $formatted_datetime);
