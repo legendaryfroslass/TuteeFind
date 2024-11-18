@@ -41,6 +41,16 @@ body {
   padding-top: 100px;
 }
 
+.hero-section1 {
+  background-color: #f8f9fa;
+  background-size: cover;
+  height: 100v;
+  color: black;
+  text-align: center;
+  padding-top: 50px;
+  padding-bottom: 100px;
+}
+
 .Start {
   background-color: #f8f9fa;
 }
@@ -240,9 +250,16 @@ body {
 }
 
 /* For the FAQ Cards - Add hover animation */
+
+.faq-card .card-body {
+  flex-grow: 1;
+}
 .faq-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   will-change: transform, box-shadow;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .faq-card:hover {

@@ -76,30 +76,49 @@
     <div class="container text-center">
         <h2 class="mb-4 head1">Our Features</h2>
         <div class="row">
+            <!-- Feature 1: Free Learning -->
             <div class="col-md-4 mb-4">
                 <div class="feature-icon" style="font-size: 50px; color: #1d0a6b;">
-                    <i class="bi bi-person-check"></i>
+                    <i class="bi bi-wallet2"></i>
                 </div>
-                <h4 style="color: #1d0a6b;">Skilled Tutors</h4>
-                <p>Learn from the best with highly skilled tutors who are dedicated to your success.</p>
+                <h4 style="color: #1d0a6b;">Free Learning Access</h4>
+                <p>Access quality learning resources and support at no cost. We believe in education for everyone, regardless of financial background.</p>
             </div>
+            <!-- Feature 2: Collaborative Learning -->
             <div class="col-md-4 mb-4">
                 <div class="feature-icon" style="font-size: 50px; color: #1d0a6b;">
-                    <i class="bi bi-clock"></i>
+                    <i class="bi bi-person-lines-fill"></i>
                 </div>
-                <h4 style="color: #1d0a6b;">Flexible Scheduling</h4>
-                <p>Schedule your sessions at a time that works best for you. We offer flexible timing for every learner.</p>
+                <h4 style="color: #1d0a6b;">Collaborative Learning</h4>
+                <p>Engage with peers and tutors in a community-driven environment to enhance your numeracy and literacy skills.</p>
             </div>
+            <!-- Feature 3: Literacy & Numeracy Focus -->
             <div class="col-md-4 mb-4">
                 <div class="feature-icon" style="font-size: 50px; color: #1d0a6b;">
-                    <i class="bi bi-file-earmark-check"></i>
+                    <i class="bi bi-book"></i>
                 </div>
-                <h4 style="color: #1d0a6b;">Personalized Learning</h4>
-                <p>Each lesson is tailored to meet your specific learning needs and goals, ensuring effective results.</p>
+                <h4 style="color: #1d0a6b;">Literacy & Numeracy Focus</h4>
+                <p>Our primary focus is on building essential literacy and numeracy skills, helping students succeed academically and personally.</p>
             </div>
         </div>
     </div>
 </section>
+
+<section id="video-section" style="text-align: center; padding: 20px;">
+    <h2 class="mb-4 head1">Watch what's new on PLV</h2>
+    <div style="max-width: 60%; margin: 0 auto;">
+        <iframe 
+            style="width: 100%; height: 70vh;" 
+            src="https://www.youtube-nocookie.com/embed/Pm24Qaq10mM" 
+            title="YouTube video player" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
+</section>
+
+
 
 <!-- FAQ Section -->
 <section class="text-center py-5" id="faq">
@@ -107,40 +126,41 @@
         <h2 class="head1 mb-4">Frequently Asked Questions</h2>
         <div class="row">
             <div class="col-md-6 mb-4">
-                <div class="card faq-card" style="cursor: pointer;">
+                <div class="card faq-card d-flex flex-column" style="cursor: pointer; height: 100%;">
                     <div class="card-body">
-                        <h4 class="card-title">How do I get started?</h4>
-                        <p class="card-text">Simply choose your role and sign up as a tutor or tutee. You’ll then be able to connect with others and start learning or teaching.</p>
+                        <h4 class="card-title">What is TuteeFind?</h4>
+                        <p class="card-text">TuteeFind is a platform designed to connect learners and tutors, offering free, personalized learning opportunities in numeracy and literacy to help students meet the criteria for Literacy Training Services (LTS).</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 mb-4">
-                <div class="card faq-card" style="cursor: pointer;">
+                <div class="card faq-card d-flex flex-column" style="cursor: pointer; height: 100%;">
                     <div class="card-body">
-                        <h4 class="card-title">What makes TuteeFind different?</h4>
-                        <p class="card-text">Our platform provides personalized tutoring based on your individual needs, ensuring a custom-tailored experience for every learner.</p>
+                        <h4 class="card-title">How can I access free learning?</h4>
+                        <p class="card-text">To access free learning, simply sign up as a learner and choose your preferred topics in numeracy or literacy. You can then connect with tutors who will help guide your learning journey.</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 mb-4">
-                <div class="card faq-card" style="cursor: pointer;">
+                <div class="card faq-card d-flex flex-column" style="cursor: pointer; height: 100%;">
                     <div class="card-body">
-                        <h4 class="card-title">Can I change my role later?</h4>
-                        <p class="card-text">Yes! You can update your profile and role at any time to suit your needs and interests.</p>
+                        <h4 class="card-title">What grade levels are eligible to be a tutee?</h4>
+                        <p class="card-text">"TuteeFind supports learners from grades 3 to 6 aiming to improve their literacy and numeracy skills, connecting them with tutors for personalized support."</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 mb-4">
-                <div class="card faq-card" style="cursor: pointer;">
+                <div class="card faq-card d-flex flex-column" style="cursor: pointer; height: 100%;">
                     <div class="card-body">
-                        <h4 class="card-title">How do I contact support?</h4>
-                        <p class="card-text">If you have any questions or issues, you can reach out to our support team by emailing support@tuteefind.com.</p>
+                        <h4 class="card-title">How do I track my progress?</h4>
+                        <p class="card-text">TuteeFind offers progress tracking tools to help you monitor your learning journey. As a learner, you can track the topics you've covered and see how you're advancing with the support of your tutor.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 
 
 <!-- Footer Section -->
