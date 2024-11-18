@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] === UPLOAD_ERR_OK) {
                         $file = $_FILES['file-upload'];
                         $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
-                        $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . '.' . $fileExtension;
+                        $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . $random_number = random_int(100000, 999999) . '.' . $fileExtension;
                         $file_path = $uploadDir;
                         move_uploaded_file($_FILES['file-upload']['tmp_name'], $file_path);
                     }
@@ -687,7 +687,9 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                     </td>
                                     <td><?php echo htmlspecialchars($event['status']); ?></td>
                                     <td class="d-flex justify-content-center">
-                                        <button class="btn btn-primary me-2 editEventBtn" 
+                                        <button 
+                                        <?php if ($event['status'] === 'verified'): ?> disabled <?php endif; ?>
+                                        class="btn btn-primary me-2 editEventBtn" 
                                         data-id="<?php echo $event['id']; ?>" 
                                         data-name="<?php echo htmlspecialchars($event['event_name']); ?>" 
                                         data-hours="<?php echo htmlspecialchars($event['rendered_hours']); ?>" 
@@ -697,6 +699,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 
                                         <!-- Delete Event Button -->
                                         <button class="btn btn-danger deleteEventBtn" 
+                                                <?php if ($event['status'] === 'verified'): ?> disabled <?php endif; ?>
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#deleteEventModal">
                                             <i class='bx bx-trash' data-id="<?php echo $event['id']; ?>"></i>
@@ -768,7 +771,9 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                             <td><?php echo htmlspecialchars($progress['date'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($progress['status'] ?? ''); ?></td>
                                             <td class="text-center">
-                                                <button class="btn btn-primary me-2 edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
+                                                <button 
+                                                    <?php if ($progress['status'] === 'verified'): ?> disabled <?php endif; ?>
+                                                    class="btn btn-primary me-2 edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
                                                     data-tutee-id="<?php echo $tutee['id']; ?>" 
                                                     data-week-number="<?php echo $progress['week_number']; ?>"
                                                     data-description="<?php echo htmlspecialchars($progress['description']); ?>"
@@ -778,7 +783,9 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                                     data-file="<?php echo htmlspecialchars($progress['uploaded_files']); ?>">
                                                     <i class='bx bx-edit'></i>
                                                 </button>
-                                                <button class="btn btn-danger delete-btn" 
+                                                <button 
+                                                    <?php if ($progress['status'] === 'verified'): ?> disabled <?php endif; ?>
+                                                    class="btn btn-danger delete-btn" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#deleteModal"
                                                     data-tutee-id="<?php echo $tutee['id']; ?>" 
@@ -825,12 +832,13 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                 $stmt->execute();
                                 $sessionStatus = $stmt->fetchColumn();
 
-                                // Disable the button if status is 'requested' or 'completed'
-                                if ($sessionStatus === 'requested' || $sessionStatus === 'completed') {
+                                // Disable button if hours are less than 90 or session status is 'requested' or 'completed'
+                                if ($total_rendered_hours < 90 || $sessionStatus === 'requested' || $sessionStatus === 'completed') {
                                     echo 'disabled';
                                 }
+                                
                             ?>>
-                            Request Finish
+                            Request Finish Tutoring
                         </button>
                     </div>
                 </div>
@@ -1172,7 +1180,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                     </div>
                     <div class="modal-footer d-flex justify-content-center border-0">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="confirmFinish">Finish Session</button>
+                        <button type="button" class="btn btn-primary" id="confirmFinish">Finish Tutoring Session</button>
                     </div>
                 </div>
             </div>
@@ -1499,7 +1507,7 @@ $('#deleteEventForm').on('submit', function(e) {
     e.preventDefault();  // Prevent the default form submission
 
     var eventId = $('#event_id').val();  // Get the event ID from the hidden input field
-
+    
     $.ajax({
         url: '',  
         method: 'POST',
