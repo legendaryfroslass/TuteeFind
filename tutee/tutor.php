@@ -269,7 +269,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                         <i class='bx bx-message-square-dots'></i>
                                                     </button>
                                                     <input type="hidden" name="tutor_id" value="<?php echo htmlspecialchars($tutor['id']); ?>">
-                                                    <button type="button" name="remove_tutor" id="removeTutorBtn" class="btn btn-outline-danger bx bx-user-x" data-bs-toggle="modal" data-bs-target="#removeTuteeModal" 
+                                                    <button type="button" name="remove_tutor" id="removeTutorBtn" class="btn btn-outline-danger bx bx-user-x" 
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#removeTuteeModal"
                                                             data-tutor-id="<?php echo htmlspecialchars($tutor['id']); ?>"> <!-- Ensure data attributes are set --> 
@@ -353,7 +353,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     </div>
 
-        <!-- Remove Tutee Modal -->
+        <!-- Remove Tutor Modal -->
         <div class="modal fade modal-shake" id="removeTuteeModal" tabindex="-1" role="dialog" aria-labelledby="removeTuteeModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -364,12 +364,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
                         <p>Are you sure you want to remove this tutor?</p>
                     </div>
-                    <div class="modal-footer d-flex justify-content-center border-0">
+                    <div class="modal-footer">
                     <form id="removeTuteeForm" method="POST">
                         <input type="hidden" name="tutor_id" id="modalTutorId" value=""> <!-- Added hidden input for tutor_id -->
                         <input type="hidden" name="tutee_id" id="tutee_id" value=""> <!-- Ensure tutee_id is here -->
+                        <button type="submit" id="confirmTutorRemove" name="remove_tutor" class="btn btn-outline-danger">Remove</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" id="confirmTutorRemove" name="remove_tutor" class="btn btn-danger">Remove</button>
                     </form>
                     </div>
                 </div>
@@ -450,19 +450,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <script src="tutee.js"></script>
         <script>
         document.addEventListener('DOMContentLoaded', function() {
-                // Handling message modal logic
-    const messageModal = document.getElementById('messageModal');
-    messageModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const tutorId = button.getAttribute('data-tutor-id');
-        const tutorName = button.getAttribute('data-tutor-name');
+            // Handling message modal logic
+            const messageModal = document.getElementById('messageModal');
+            messageModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const tutorId = button.getAttribute('data-tutor-id');
+                const tutorName = button.getAttribute('data-tutor-name');
 
-        // Set tutor_id in the hidden input field
-        document.querySelector('#sendMessageForm input[name="tutor_id"]').value = tutorId;
+                // Set tutor_id in the hidden input field
+                document.querySelector('#sendMessageForm input[name="tutor_id"]').value = tutorId;
 
-        // Update the recipient name display in the modal
-        document.getElementById('recipient').textContent = tutorName;
-    });
+                // Update the recipient name display in the modal
+                document.getElementById('recipient').textContent = tutorName;
+            });
 
     // Send message functionality
     document.getElementById('msg-sendBtn').addEventListener('click', function() {

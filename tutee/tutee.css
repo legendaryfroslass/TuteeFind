@@ -782,5 +782,7 @@ td {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-height: 230%;
+  min-height: 130%; /* Adjust as needed */
+  max-height: 130%;
+  margin: 0 auto; /* Center align */
 }

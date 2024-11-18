@@ -238,18 +238,6 @@ $unreadMessagesQuery->execute();
 $unreadMessagesData = $unreadMessagesQuery->fetch(PDO::FETCH_ASSOC);
 $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
 
-// Mark all unread messages as read from the tutee's point of view
-    $markAsReadQuery = $user_login->runQuery("
-    UPDATE messages
-    SET is_read = 1
-    WHERE tutor_id = :tutor_id 
-    AND tutee_id = :tutee_id 
-    AND sender_type = 'tutee'
-    AND is_read = 0
-    ");
-    $markAsReadQuery->bindParam(":tutor_id", $tutor_id);  // Tutor's ID
-    $markAsReadQuery->bindParam(":tutee_id", $tutee_id);  // Tutee's ID
-    $markAsReadQuery->execute();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tutee_id = $_POST['tutee_id'] ?? null;
@@ -271,24 +259,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Missing required fields.";
     }
 }
-
 ?>
 
 <!DOCTYPE html>
-    <lang="en">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="../assets/TuteeFindLogo.png" type="image/png">
         <link rel="stylesheet" href="notif.css">
         <link rel="stylesheet" href="tutee.css">
         <link rel="stylesheet" href="spinner.css">
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <link rel="icon" href="../assets/TuteeFindLogo.png" type="image/png">
         <title>Tutee Home</title>
         <style>
             :root {
                 --sub-text: #915f37;
+            }
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                overflow-x: hidden; /* Prevent horizontal scrolling */
             }
         </style>
     </head> 
@@ -440,89 +435,143 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="container-lg pt-3">
                 <div class="row">
                     <div class="col">
-                        <div class="filter-result">
-                            <div class="table-container">
+                            <div class="filter-result">
                                 <?php if (!empty($requests)): ?>
+                                <div class="table-container">
                                     <div class="table-responsive">
                                         <table class="table table-striped tutee-thead">
-                                            <thead>
-                                                <tr class="tutee-trow">
-                                                    <th class="text-center">Photo</th>
-                                                    <th class="text-center">Name</th>
-                                                    <th class="text-center">Barangay</th>
-                                                    <th class="text-center">Actions</th>
-                                                </tr>
-                                            </thead>
+                                                <thead>
+                                                    <tr class="tutee-trow">
+                                                        <th class="text-center">Photo</th>
+                                                        <th class="text-center">Name</th>
+                                                        <th class="text-center">Barangay</th>
+                                                        <th class="text-center">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                            <?php endif; ?>
                                             <tbody>
-                                                <?php foreach ($requests as $request): ?>
+                                                <?php if (!empty($requests)): ?>
+                                                    <?php foreach ($requests as $request): ?>
+                                                        <tr>
+                                                            <td class="text-center justify-content-center">
+                                                                <div class="img-holder">
+                                                                    <img style="height: 65px; width: 65px; border-radius: 65px;" 
+                                                                        src="<?php echo !empty($request['photo']) ? $request['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>" 
+                                                                        alt="Tutor Photo" 
+                                                                        class="img-fluid">
+                                                                </div>
+                                                            </td>
+                                                            <td class="text-center justify-content-center">
+                                                                <div class="tutor-name fw-bold m-2">
+                                                                    <?php echo $request['tutor_firstname'] . ' ' . $request['tutor_lastname']; ?>
+                                                                </div>
+                                                            </td>
+                                                            <td class="text-center justify-content-center">
+                                                                <?php echo $request['barangay']; ?>
+                                                            </td>
+                                                            <td class="text-center justify-content-center">
+                                                                <form method="post" class="text-center">
+                                                                    <button type="button" 
+                                                                            style="height: 6vh" 
+                                                                            class="btn btn-outline-primary bi bi-person-vcard" 
+                                                                            data-bs-toggle="modal" 
+                                                                            data-bs-target="#profileModal" 
+                                                                            data-request-id="<?php echo $request['request_id']; ?>"
+                                                                            data-name="<?php echo $request['tutor_firstname'] . ' ' . $request['tutor_lastname']; ?>"
+                                                                            data-photo="<?php echo !empty($request['photo']) ? $request['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>"
+                                                                            data-brgy="<?php echo $request['barangay']; ?>"
+                                                                            data-bio="<?php echo !empty($request['bio']) ? htmlspecialchars(substr($request['bio'], 0, 50)) . (strlen($request['bio']) > 50 ? '...' : '') : 'No additional information available.'; ?>"
+                                                                            onclick="event.stopPropagation();"
+                                                                            data-bs-toggle="tooltip" 
+                                                                            title="View Tutor's Profile">
+                                                                    </button>
+                                                                    <button type="button" 
+                                                                            style="height: 6vh"
+                                                                            class="btn btn-outline-primary bx" 
+                                                                            data-bs-toggle="modal" 
+                                                                            data-bs-target="#messageModal" 
+                                                                            data-tutor-id="<?php echo $request['tutor_id']; ?>"
+                                                                            data-tutor-name="<?php echo $request['tutor_firstname'] . ' ' . $request['tutor_lastname']; ?>"
+                                                                            onclick="event.stopPropagation();" 
+                                                                            data-bs-toggle="tooltip" 
+                                                                            title="Send a message to the tutor">
+                                                                        <i class='bx bx-message-square-dots'></i>
+                                                                    </button>
+                                                                    <?php if ($request['status'] != 'accepted'): ?>
+                                                                        <button type="button" 
+                                                                                style="height: 6vh" 
+                                                                                class="btn btn-outline-success bx bx-check" 
+                                                                                data-bs-toggle="modal" 
+                                                                                data-bs-target="#acceptRequestModal" 
+                                                                                data-request-id="<?php echo $request['request_id']; ?>" 
+                                                                                onclick="setRequestId('accept', this);"
+                                                                                data-bs-toggle="tooltip" 
+                                                                                title="Accept this request">
+                                                                        </button>
+                                                                        <button type="button" 
+                                                                                style="height: 6vh" 
+                                                                                name="reject_request"
+                                                                                class="btn btn-outline-danger bx bx-x" 
+                                                                                data-bs-toggle="modal" 
+                                                                                data-bs-target="#removeTuteeModal" 
+                                                                                data-request-id="<?php echo $request['request_id']; ?>" 
+                                                                                data-tutee-id="<?php echo $userData['id']; ?>" 
+                                                                                onclick="setRequestId('reject', this);"
+                                                                                data-bs-toggle="tooltip" 
+                                                                                title="Reject this request">
+                                                                        </button>
+                                                                    <?php else: ?>
+                                                                        <button class="btn btn-success" disabled>Already Accepted</button>
+                                                                    <?php endif; ?>
+                                                                </form>
+                                                            </td> 
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
                                                     <tr>
-                                                        <td class="text-center justify-content-center">
-                                                            <div class="img-holder">
-                                                                <img style="height: 65px; width: 65px; border-radius: 65px;" src="<?php echo !empty($request['photo']) ? $request['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>" alt="Tutor Photo" class="img-fluid">
+                                                        <td colspan="4" class="text-center">
+                                                            <div class="container d-flex flex-column justify-content-center align-items-center update rounded shadow-lg">
+                                                                <img src="../assets/tutee-blankplaceholder-white.png" alt="Nothing to see here" style="width: 300px; height: 300px;">
+                                                                <h5 class="opacity">No current tutor request</h5><br>
                                                             </div>
-                                                        </td>
-                                                        <td class="text-center justify-content-center">
-                                                            <div class="tutor-name fw-bold m-2">
-                                                                <?php echo $request['tutor_firstname'] . ' ' . $request['tutor_lastname']; ?>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-center justify-content-center">
-                                                            <?php echo $request['barangay']; ?>
-                                                        </td>
-                                                        <td class="text-center justify-content-center">
-                                                            <form method="post" class="text-center">
-                                                                <button type="button" style="height: 6vh" id="SendMessage" class="btn btn-outline-primary bx" data-bs-toggle="tooltip" data-bs-placement="top" title="Message tutor" data-bs-toggle="modal" data-bs-target="#messageModal" data-tutor-id="<?php echo $request['tutor_id']; ?>" data-tutor-name="<?php echo $request['tutor_firstname'] . ' ' . $request['tutor_lastname']; ?>">
-                                                                    <i class='bx bx-message-square-dots'></i>
-                                                                </button>
-                                                                <?php if ($request['status'] != 'accepted'): ?>
-                                                                    <button type="button" style="height: 6vh" class="btn btn-outline-success bx bx-check" data-bs-toggle="tooltip" data-bs-placement="top" title="Accept tutor request" data-bs-toggle="modal" data-bs-target="#acceptRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('accept', this)"></button>
-                                                                    <button type="button" style="height: 6vh" class="btn btn-outline-danger bx bx-x" data-bs-toggle="tooltip" data-bs-placement="top" title="Reject tutor request" data-bs-toggle="modal" data-bs-target="#rejectRequestModal" data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('reject', this)"></button>
-                                                                <?php else: ?>
-                                                                    <button class="btn btn-success" disabled>Already Accepted</button>
-                                                                <?php endif; ?>
-                                                            </form>
                                                         </td>
                                                     </tr>
-                                                <?php endforeach; ?>
+                                                <?php endif; ?>
                                             </tbody>
                                         </table>
                                     </div>
-                                <?php else: ?>
-                                    <div class="container d-flex flex-column justify-content-center align-items-center update rounded shadow-lg">
-                                        <img src="../assets/tutee-blankplaceholder-white.png" alt="Nothing to see here" style="width: 300px; height: 300px;">
-                                        <h5 class="opacity">No current requests</h5><br>
-                                    </div>
-                                <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-        <!-- Profile Modal -->
-        <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="profileModalLabel">Profile Details</h5>
-                    </div>
-                    <div class="modal-body d-flex flex-column align-items-center">
-                        <img id="profileModalPhoto" 
-                            class="img-fluid" 
-                            style="border-radius: 50%; border: 3px solid #007bff; height: 120px; width: 120px;" 
-                            alt="Profile Photo">
-                        <h5 id="profileModalName" class="mt-3 mb-1" style="font-weight: bold; color: #333;"></h5>
-                        <p id="profileModalBrgy" class="mb-1" style="color: #555;">
-                            Barangay: <span class="font-weight-bold" id="brgyValue"></span>
-                        </p>
-                        <p id="profileModalBio" style="font-style: italic; color: #666;"></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
+<!-- Profile Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="profileModalLabel">Profile Details</h5>
+            </div>
+            <div class="modal-body d-flex flex-column align-items-center">
+                <img id="profileModalPhoto" 
+                    class="img-fluid" 
+                    style="border-radius: 50%; border: 3px solid #007bff; height: 120px; width: 120px;" 
+                    alt="Profile Photo">
+                <h5 id="profileModalName" class="mt-3 mb-1" style="font-weight: bold; color: #333;"></h5>
+                <p id="profileModalBrgy" class="mb-1" style="color: #555;">
+                    Barangay: <span class="font-weight-bold" id="brgyValue"></span>
+                </p>
+                <p id="profileModalBio" style="font-style: italic; color: #666;"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- Message Modal -->
         <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
@@ -547,10 +596,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="msg-sendBtn">
+                        <button type="button" class="btn btn-outline-primary" id="msg-sendBtn">
                             <i class='bx bx-send'></i> Send
                         </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -613,11 +662,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="modal fade" id="acceptRequestModal" tabindex="-1" aria-labelledby="acceptRequestModalLabel" aria-hidden="true" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="acceptRequestModalLabel">Accept Request</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
+                        <img src="../assets/check.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body d-flex justify-content-center align-items-center">
                         Are you sure you want to accept this request?
                     </div>
                     <div class="modal-footer">
@@ -631,24 +679,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
 
-        <!-- Reject Request Modal -->
-        <div class="modal fade" id="rejectRequestModal" tabindex="-1" aria-labelledby="rejectRequestModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
+        <!-- Remove Tutor Modal -->
+        <div class="modal fade" id="removeTuteeModal" tabindex="-1" role="dialog" aria-labelledby="removeTuteeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rejectRequestModalLabel">Reject Request</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to reject this request?
-                </div>
-                <div class="modal-footer">
-                    <form method="post" id="rejectForm">
-                    <input type="hidden" name="request_id" id="rejectRequestId">
-                    <button type="submit" name="reject_request" onclick="showSpinner(); setTimeout(hideSpinner, 4000);" class="btn btn-outline-danger" id="reqReject" data-bs-toggle="modal" data-bs-target="#rejectModal">Reject</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
+                        <!-- Centered header content -->
+                        <img src="../assets/remove.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        <p>Are you sure you want to remove this tutor?</p>
+                    </div>
+                    <div class="modal-footer">
+                    <form id="removeTuteeForm" method="POST">
+                        <input type="hidden" name="request_id" id="modalTutorId" value=""> <!-- Added hidden input for tutor_id -->
+                        <input type="hidden" name="tutee_id" id="tutee_id" value=""> <!-- Ensure tutee_id is here -->
+                        <button type="submit" id="confirmTutorRemove" name="reject_request" class="btn btn-outline-danger">Remove</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     </form>
-                </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -672,8 +721,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
 
-        <!-- Reject Modal -->
-        <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <!-- Reject Success Modal -->
+        <div class="modal fade" id="rejectSuccModal" tabindex="-1" aria-labelledby="rejectSuccModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                 <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
@@ -686,7 +735,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center" id="rejectModalBody">
-                    Tutor request accepted successfully.
+                    Tutor request rejected successfully.
                 </div>
                 <div class="modal-footer border-0">
                     <!-- Footer left empty as per original design -->
@@ -719,27 +768,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
 
-        <!-- Confirmation Modal -->
-        <div class="modal fade" id="rejectRequestModal" tabindex="-1" aria-labelledby="rejectRequestModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rejectRequestModalLabel">Reject Request</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to reject this request?
-                </div>
-                <div class="modal-footer">
-                    <form method="post" id="rejectForm">
-                    <input type="hidden" name="request_id" id="rejectRequestId">
-                    <button type="submit" name="reject_request" class="btn btn-outline-danger">Reject</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </form>
-                </div>
-                </div>
-            </div>
-        </div>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -800,14 +828,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php endif; ?>
             });
 
-            function setRequestId(action, button) {
-                var requestId = button.getAttribute('data-request-id');
-                if (action === 'accept') {
-                document.getElementById('acceptRequestId').value = requestId;
-                } else if (action === 'reject') {
-                document.getElementById('rejectRequestId').value = requestId;
-                }
-            }
+            // This script will dynamically populate the profile modal
+            document.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget; // Button that triggered the modal
+                var name = button.getAttribute('data-name');
+                var photo = button.getAttribute('data-photo');
+                var brgy = button.getAttribute('data-brgy');
+                var bio = button.getAttribute('data-bio');
+
+                // Update the modal's content
+                var modal = document.getElementById('profileModal');
+                modal.querySelector('#profileModalName').textContent = name;
+                modal.querySelector('#profileModalPhoto').src = photo;
+                modal.querySelector('#brgyValue').textContent = brgy;
+                modal.querySelector('#profileModalBio').textContent = bio;
+            });
         </script>
     </body>
 </html>
