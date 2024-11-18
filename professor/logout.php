@@ -11,7 +11,7 @@ if (isset($_SESSION['professor_id'])) {
     // Format the current date and time in the desired format
     $formatted_datetime = date('F j, Y h:i:s A'); // Example: October 6, 2024 11:14:33 PM
 
-    $logSql = "INSERT INTO activity_logs (professor_id, activity, datetime) VALUES (?, ?, ?)";
+    $logSql = "INSERT INTO professor_logs (professor_id, activity, datetime) VALUES (?, ?, ?)";
     $logStmt = $conn->prepare($logSql);
     $logStmt->bind_param("iss", $_SESSION['professor_id'], $activity, $formatted_datetime);
     $logStmt->execute();

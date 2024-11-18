@@ -93,34 +93,26 @@ $offset = ($page - 1) * $limit;
 $active_threshold = strtotime("-30 minutes");
 
 // Query to retrieve professor logs with pagination and search
-$sql = "
-    SELECT 
-        id, 
-        lastname, 
-        firstname, 
-        student_id, 
-        last_login 
-    FROM tutor
-    WHERE 
-        CONCAT(LOWER(firstname), ' ', LOWER(lastname)) LIKE LOWER('%$search%')
-        OR LOWER(student_id) LIKE LOWER('%$search%')
-    LIMIT $limit OFFSET $offset";
-
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$result = $stmt->get_result();
+$sql = "SELECT id, lastname, firstname, student_id, course, year_section FROM tutor 
+         WHERE LOWER(lastname) LIKE LOWER('%$search%') 
+        OR LOWER(firstname) LIKE LOWER('%$search%') 
+        OR LOWER(student_id) LIKE LOWER('%$search%') 
+        OR LOWER(course) LIKE LOWER('%$search%') 
+        OR LOWER(year_section) LIKE LOWER('%$search%') 
+        OR LOWER(CONCAT(course, ' ', year_section)) LIKE LOWER('%$search%')
+        LIMIT $limit OFFSET $offset";
+$query = $conn->query($sql);
 
 // Query to get the total count for pagination
-$total_sql = "
-    SELECT COUNT(*) as total 
-    FROM tutor
-    WHERE 
-        CONCAT(LOWER(firstname), ' ', LOWER(lastname)) LIKE LOWER('%$search%')
-        OR LOWER(student_id) LIKE LOWER('%$search%')";
+$total_sql = "SELECT COUNT(*) as total FROM tutor 
+                WHERE LOWER(lastname) LIKE LOWER('%$search%') 
+                OR LOWER(firstname) LIKE LOWER('%$search%') 
+                OR LOWER(student_id) LIKE LOWER('%$search%') 
+                OR LOWER(course) LIKE LOWER('%$search%') 
+                OR LOWER(year_section) LIKE LOWER('%$search%') 
+                OR LOWER(CONCAT(course, ' ', year_section)) LIKE LOWER('%$search%')";
 
-$stmt_total = $conn->prepare($total_sql);
-$stmt_total->execute();
-$total_result = $stmt_total->get_result();
+$total_result = $conn->query($total_sql);
 $total_rows = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_rows / $limit);
 ?>
@@ -193,10 +185,12 @@ $total_pages = ceil($total_rows / $limit);
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
           <thead>
             <tr role="row">
-                <th onclick="sortTable(0)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(1)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(2)">Status <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th>Actions</th>
+              <th onclick="sortTable(0)">Last Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(1)">First Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(2)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(3)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(4)">Status <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th>Action</th>
               </tr>
             </thead>
             <tbody>  
@@ -204,27 +198,31 @@ $total_pages = ceil($total_rows / $limit);
 // Get search term from the request, default to an empty string if none provided
 $search = isset($_GET['search']) ? strtolower($_GET['search']) : '';
 
-// Query to retrieve all professors
+// Query to retrieve all tutors
 $sql = "
     SELECT 
         id, 
         lastname, 
         firstname, 
         student_id, 
-        last_login 
+        course, 
+        year_section
     FROM tutor";
 $query = $conn->query($sql);
+
 
 // Temporary array to store filtered results
 $results = [];
 
 while ($row = $query->fetch_assoc()) {
-    $name = $row['firstname'] . " ". $row['lastname'];
-    $student_id = $row['student_id'];
-    $status = "Inactive"; // Set default status to Inactive
+    $name = htmlspecialchars($row['firstname'] . " " . $row['lastname'], ENT_QUOTES);
+    $student_id = htmlspecialchars($row['student_id'], ENT_QUOTES);
+    $course = htmlspecialchars($row['course'], ENT_QUOTES);
+    $year_section = htmlspecialchars($row['year_section'], ENT_QUOTES);
+    $status = "Inactive"; // Default status to Inactive
 
-    // Check for activity logs for the current professor
-    $activitySql = "SELECT * FROM tutor_logs WHERE student_id = ?";
+    // Check for activity logs for the current tutor
+    $activitySql = "SELECT * FROM tutor_logs WHERE tutor_id = ?";
     $activityStmt = $conn->prepare($activitySql);
     $activityStmt->bind_param("i", $row['id']);
     $activityStmt->execute();
@@ -234,25 +232,31 @@ while ($row = $query->fetch_assoc()) {
     if (!empty($row['last_login']) && $activityResult->num_rows > 0) {
         $lastLoginDate = strtotime($row['last_login']);
         if ($lastLoginDate >= strtotime('-2 weeks')) {
-            $status = "Active"; 
+            $status = "Active";
         }
     }
 
-    // Check if the search term matches the name, faculty_id, or status
-    if (
-        strpos(strtolower($name), $search) !== false || 
-        strpos(strtolower($student_id), $search) !== false || 
-        ($search === 'active' && $status === 'Active') || 
-        ($search === 'inactive' && $status === 'Inactive')
-    ) {
-        // Add matching row to results array, including id
-        $results[] = [
-            'id' => $row['id'],
-            'name' => $name,
-            'student_id' => $student_id,
-            'status' => $status
-        ];
-    }
+    // Check if the search term matches the name, student_id, or status
+// Check if the search term matches the name, student_id, status, or combined course and year_section
+if (
+  strpos(strtolower($name), $search) !== false || 
+  strpos(strtolower($student_id), $search) !== false || 
+  strpos(strtolower($course . " " . $year_section), $search) !== false || 
+  ($search === 'active' && $status === 'Active') || 
+  ($search === 'inactive' && $status === 'Inactive')
+) {
+  // Add matching row to results array, including id
+  $results[] = [
+      'id' => $row['id'],
+      'lastname' => $row['lastname'],
+      'firstname' => $row['firstname'],
+      'student_id' => $row['student_id'],
+      'course' => $row['course'],
+      'year_section' => $row['year_section'],
+      'status' => $status,
+      'name' => $name
+  ];
+}
 }
 
 // Output the filtered results
@@ -262,20 +266,23 @@ foreach ($results as $row) {
     $statusText = $row['status'];
 
     echo "<tr>
-            <td>{$row['name']}</td>
-            <td>{$row['student_id']}</td>
+            <td>" . htmlspecialchars($row['lastname'], ENT_QUOTES) . "</td>
+            <td>" . htmlspecialchars($row['firstname'], ENT_QUOTES) . "</td>
+            <td>" . htmlspecialchars($row['student_id'], ENT_QUOTES) . "</td>
+            <td>" . htmlspecialchars($row['course'], ENT_QUOTES) . " " . htmlspecialchars($row['year_section'], ENT_QUOTES) . "</td>
             <td style='text-align: center;'>
                 <button class='btn $statusClass btn-sm' style='border-radius: 10px; padding: 1px 10px; width: 100px;'>
                     $statusText
                 </button>
             </td>
             <td>
-                <button class='btn btn-primary btn-sm btn-flat view' data-id='".$row['id']."' data-tutor-name='".htmlspecialchars($row['name'], ENT_QUOTES)."'>
+                <button class='btn btn-primary btn-sm btn-flat view' data-id='" . htmlspecialchars($row['id'], ENT_QUOTES) . "' data-professor-name='" . htmlspecialchars($row['name'], ENT_QUOTES) . "'>
                     <i class='fa fa-eye'></i> View
                 </button>
             </td>
           </tr>";
 }
+
 ?>
 
    </tbody>
@@ -318,7 +325,7 @@ foreach ($results as $row) {
 </section>
 </div>
 <?php include 'includes/footer.php'; ?>
-<?php include 'includes/tutor_modal.php'; ?>
+<?php include 'includes/professor_modal.php'; ?>
 
 </div>
 <?php include 'includes/scripts.php'; ?>
@@ -327,14 +334,14 @@ foreach ($results as $row) {
                 $(document).ready(function(){
                     $('.view').click(function(){
                         var id = $(this).data('id'); // Get the professor ID
-                        var tutorName = $(this).data('tutor-name'); // Get the professor name
+                        var professorName = $(this).data('professor-name'); // Get the professor name
 
-                        // Set the tutor's name in the modal title
-                        $('#tutorName').text(tutorName);
+                        // Set the professor's name in the modal title
+                        $('#professorName').text(professorName);
 
                         // Fetch activity logs using AJAX
                         $.ajax({
-                            url: 'tutorfetch_logs.php', // Create this file to fetch logs based on the professor ID
+                            url: 'professorfetch_logs.php', // Create this file to fetch logs based on the professor ID
                             type: 'POST',
                             data: { id: id },
                             success: function(data){
@@ -348,27 +355,14 @@ foreach ($results as $row) {
                     });
                 });
 
-                // Open the modal and fetch logs for the tutor
-$('#activityLogModal').on('show.bs.modal', function () {
-    $.ajax({
-        url: 'tutorfetch_logs.php',  // The PHP file to fetch the logs
-        method: 'GET',  // Use GET or POST based on your preference
-        success: function(response) {
-            // Inject the logs into the modal table
-            $('#activityLogsTableBody').html(response);
-        }
-    });
-});
-
-
                 // Your existing code for viewing logs
 $('.view').click(function() {
     var id = $(this).data('id');
-    var tutorName = $(this).data('tutor-name');
-    $('#tutorName').text(tutorName);
+    var professorName = $(this).data('professor-name');
+    $('#professorName').text(professorName);
 
     $.ajax({
-        url: 'tutorfetch_logs.php',
+        url: 'professorfetch_logs.php',
         type: 'POST',
         data: { id: id },
         success: function(data) {

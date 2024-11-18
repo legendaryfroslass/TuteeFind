@@ -93,35 +93,18 @@ $offset = ($page - 1) * $limit;
 $active_threshold = strtotime("-30 minutes");
 
 // Query to retrieve professor logs with pagination and search
-$sql = "
-    SELECT 
-        id, 
-        lastname, 
-        firstname, 
-        middlename, 
-        faculty_id, 
-        last_login 
-    FROM professor
-    WHERE 
-        CONCAT(LOWER(firstname), ' ', LOWER(middlename), ' ', LOWER(lastname)) LIKE LOWER('%$search%')
-        OR LOWER(faculty_id) LIKE LOWER('%$search%')
-    LIMIT $limit OFFSET $offset";
+$sql = "SELECT id, firstname, lastname, barangay FROM tutee
+        WHERE firstname LIKE '%$search%' 
+        OR lastname LIKE '%$search%' 
+        LIMIT $limit OFFSET $offset";
+$query = $conn->query($sql);
 
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$result = $stmt->get_result();
+// Get total records for pagination
+$total_sql = "SELECT COUNT(*) as total FROM tutee 
+              WHERE firstname LIKE '%$search%' 
+              OR lastname LIKE '%$search%' ";
 
-// Query to get the total count for pagination
-$total_sql = "
-    SELECT COUNT(*) as total 
-    FROM professor
-    WHERE 
-        CONCAT(LOWER(firstname), ' ', LOWER(middlename), ' ', LOWER(lastname)) LIKE LOWER('%$search%')
-        OR LOWER(faculty_id) LIKE LOWER('%$search%')";
-
-$stmt_total = $conn->prepare($total_sql);
-$stmt_total->execute();
-$total_result = $stmt_total->get_result();
+$total_result = $conn->query($total_sql);
 $total_rows = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_rows / $limit);
 ?>
@@ -133,10 +116,10 @@ $total_pages = ceil($total_rows / $limit);
   
     <div class="content-wrapper">
         <section class="content-header">
-            <h1>Professors' Logs</h1>
+            <h1>Tutees' Logs</h1>
             <ol class="breadcrumb">
                 <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                <li class="active">Professors' Logs</li>
+                <li class="active">Tutees' Logs</li>
             </ol>
         </section>
 
@@ -167,10 +150,9 @@ $total_pages = ceil($total_rows / $limit);
           unset($_SESSION['success']);
         }
       ?>
-
   <div class="box-body">
              <!-- Search Form --> 
-<form method="GET" action="logs_professor.php" class="form-inline d-flex justify-content-between align-items-center">
+<form method="GET" action="logs_tutee.php" class="form-inline d-flex justify-content-between align-items-center">
     <div class="form-group me-4"> 
         <label>Show 
             <select name="limit" class="form-control" onchange="this.form.submit()">
@@ -195,132 +177,68 @@ $total_pages = ceil($total_rows / $limit);
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
           <thead>
             <tr role="row">
-                <th onclick="sortTable(0)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(1)">Faculty ID <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(2)">Status <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th>Actions</th>
+              <th onclick="sortTable(0)">Last Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(1)">First Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(2)">Barangay <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th>Actions</th>
               </tr>
             </thead>
             <tbody>  
-<?php
+            <?php
 // Get search term from the request, default to an empty string if none provided
 $search = isset($_GET['search']) ? strtolower($_GET['search']) : '';
 
-// Query to retrieve all professors
-$sql_professors = "
+// Query to retrieve all tutors
+$sql = "
     SELECT 
         id, 
         lastname, 
         firstname, 
-        middlename, 
-        faculty_id, 
-        last_login 
-    FROM professor";
-
-// Query to retrieve archive tutees
-$sql_tutees = "
-    SELECT 
-        id, 
-        firstname, 
-        lastname, 
-        barangay, 
-        number AS contact_no, 
-        age, 
-        tutee_bday AS birthday, 
-        school, 
-        grade 
-    FROM archive_tutee";
-?>
-
-<div class="row">
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-header with-border">
-                <a href="#deleteAllTutee" data-toggle="modal" class="btn btn-danger btn-sm btn-flat"><i class="fa fa-trash"></i> Delete All</a>
-                <a href="#restoreAllTutee" data-toggle="modal" class="btn btn-warning btn-sm restoreAllTutee btn-flat"><i class="fa fa-refresh"></i> Restore All</a>
-                <a href="archive_tutee_pdf.php" class="btn btn-primary btn-sm btn-flat" target="_blank"><i class="fa fa-file-pdf-o"></i> Export to PDF</a>
-            </div>
-            <div class="box-body">
-                <table id="example1" class="table table-bordered">
-                    <thead>
-                        <th>Firstname</th>
-                        <th>Lastname</th>
-                        <th>Barangay</th>
-                        <th>Contact No.</th>
-                        <th>Age</th>
-                        <th>Birthday</th>
-                        <th>School</th>
-                        <th>Grade</th>
-                        <th>Tools</th>
-                    </thead>
-                    <tbody>
-                        <?php
-                        // Execute query to fetch tutee records
-                        // Assuming database connection is already established as $conn
-                        $result = $conn->query($sql_tutees);
-
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-                                echo "<tr>
-                                    <td>{$row['firstname']}</td>
-                                    <td>{$row['lastname']}</td>
-                                    <td>{$row['barangay']}</td>
-                                    <td>{$row['contact_no']}</td>
-                                    <td>{$row['age']}</td>
-                                    <td>{$row['birthday']}</td>
-                                    <td>{$row['school']}</td>
-                                    <td>{$row['grade']}</td>
-                                    <td><!-- Tools go here --></td>
-                                </tr>";
-                            }
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-<?php
-
+        barangay
+    FROM tutee";
 $query = $conn->query($sql);
 
 // Temporary array to store filtered results
 $results = [];
 
+// Loop through the query result
 while ($row = $query->fetch_assoc()) {
-    $name = $row['firstname'] . " " . $row['middlename'] . " " . $row['lastname'];
-    $faculty_id = $row['faculty_id'];
-    $status = "Inactive";
+    // Sanitize fields from the query
+    $firstname = htmlspecialchars($row['firstname'], ENT_QUOTES);
+    $lastname = htmlspecialchars($row['lastname'], ENT_QUOTES);
+    $barangay = htmlspecialchars($row['barangay'], ENT_QUOTES);
+    $status = "Inactive"; // Default status to Inactive
 
-    // Check for activity logs for the current professor
-    $activitySql = "SELECT * FROM activity_logs WHERE professor_id = ?";
+    // Check for activity logs for the current tutee
+    $activitySql = "SELECT * FROM tutee_logs WHERE tutee_id = ?"; // Changed tutor_id to tutee_id for correctness
     $activityStmt = $conn->prepare($activitySql);
     $activityStmt->bind_param("i", $row['id']);
     $activityStmt->execute();
     $activityResult = $activityStmt->get_result();
 
-    // Update status if last login is recent
+    // Update status if the last login is recent
     if (!empty($row['last_login']) && $activityResult->num_rows > 0) {
         $lastLoginDate = strtotime($row['last_login']);
         if ($lastLoginDate >= strtotime('-2 weeks')) {
-            $status = "Active"; 
+            $status = "Active";
         }
     }
 
-    // Check if the search term matches the name, faculty_id, or status
+    // Check if the search term matches any of the relevant fields
     if (
-        strpos(strtolower($name), $search) !== false || 
-        strpos(strtolower($faculty_id), $search) !== false || 
+        strpos(strtolower($firstname . ' ' . $lastname), $search) !== false || 
+        strpos(strtolower($barangay), $search) !== false || 
         ($search === 'active' && $status === 'Active') || 
         ($search === 'inactive' && $status === 'Inactive')
     ) {
-        // Add matching row to results array, including id
+        // Add matching row to results array, including a concatenated 'name'
         $results[] = [
             'id' => $row['id'],
-            'name' => $name,
-            'faculty_id' => $faculty_id,
-            'status' => $status
+            'lastname' => $lastname,
+            'firstname' => $firstname,
+            'barangay' => $barangay,
+            'status' => $status,
+            'name' => $firstname . ' ' . $lastname // Construct the name here
         ];
     }
 }
@@ -332,20 +250,22 @@ foreach ($results as $row) {
     $statusText = $row['status'];
 
     echo "<tr>
-            <td>{$row['name']}</td>
-            <td>{$row['faculty_id']}</td>
+            <td>" . htmlspecialchars($row['lastname'], ENT_QUOTES) . "</td>
+            <td>" . htmlspecialchars($row['firstname'], ENT_QUOTES) . "</td>
+            <td>" . htmlspecialchars($row['barangay'], ENT_QUOTES) . "</td>
             <td style='text-align: center;'>
                 <button class='btn $statusClass btn-sm' style='border-radius: 10px; padding: 1px 10px; width: 100px;'>
                     $statusText
                 </button>
             </td>
             <td>
-                <button class='btn btn-primary btn-sm btn-flat view' data-id='".$row['id']."' data-professor-name='".htmlspecialchars($row['name'], ENT_QUOTES)."'>
+                <button class='btn btn-primary btn-sm btn-flat view' data-id='" . htmlspecialchars($row['id'], ENT_QUOTES) . "' data-professor-name='" . htmlspecialchars($row['name'], ENT_QUOTES) . "'>
                     <i class='fa fa-eye'></i> View
                 </button>
             </td>
           </tr>";
 }
+
 ?>
 
    </tbody>
