@@ -207,14 +207,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['success' => true]);
             }
         }
- elseif($_POST['action'] === 'get_session_status') {
+             elseif ($_POST['action'] === 'get_session_status') {
                 $checkStmt = $user_login->runQuery("SELECT status FROM tutor_sessions WHERE tutor_id = :tutor_id AND tutee_id = :tutee_id");
                 $checkStmt->bindParam(':tutor_id', $tutor_id); // Add appropriate tutor ID if necessary
                 $checkStmt->bindParam(':tutee_id', $_POST['tutee_id']);
                 $checkStmt->execute();
                 $sessionStatus = $checkStmt->fetch(PDO::FETCH_ASSOC);
-
-                echo json_encode(['status' => $sessionStatus['status']]);
+            
+                if ($sessionStatus !== false) {
+                    echo json_encode(['status' => $sessionStatus['status']]);
+                } else {
+                    // Handle the case where no session is found
+                    echo json_encode(['status' => 'not_found']); // or any other appropriate message
+                }
             }
             elseif ($_POST['action'] === 'add_event') {
 
