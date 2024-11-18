@@ -22,12 +22,13 @@ if ($userData) {
 
     // Modified query to include tutees with completed weeks
     $tuteeStmt = $user_login->runQuery("
-        SELECT tutee.id, tutee.firstname, tutee.lastname, summary.completed_weeks, summary.registered_weeks
+        SELECT DISTINCT tutee.id, tutee.firstname, tutee.lastname, summary.completed_weeks, summary.registered_weeks
         FROM tutee
         INNER JOIN requests ON tutee.id = requests.tutee_id
         LEFT JOIN tutee_summary AS summary ON tutee.id = summary.tutee_id
         WHERE (requests.tutor_id = :tutor_id AND requests.status = 'accepted')
         OR summary.completed_weeks > 0
+
     ");
     $tuteeStmt->bindParam(":tutor_id", $tutor_id);
     $tuteeStmt->execute();
@@ -53,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($_POST['action'] === 'add_week') {
             // Add a new week if description is saved successfully
             $stmt = $user_login->runQuery("
-                INSERT INTO tutee_progress (tutee_id, week_number, uploaded_files, tutor_id, description, rendered_hours, location, subject) 
-                VALUES (:tutee_id, :week_number, '', :tutor_id, :description, :rendered_hours, :location, :subject)
+                INSERT INTO tutee_progress (tutee_id, week_number, uploaded_files, tutor_id, description, rendered_hours, location, subject, status) 
+                VALUES (:tutee_id, :week_number, '', :tutor_id, :description, :rendered_hours, :location, :subject, 'unverified')
             ");
             $stmt->bindParam(':tutee_id', $_POST['tutee_id']);
             $stmt->bindParam(':week_number', $_POST['week_number']);
@@ -77,9 +78,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Handle file upload if a file is uploaded
             if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
                 $file = $_FILES['file'];
-                $uploadDir = '../uploads/';
-                $filename = basename($file['name']);
-                $targetPath = $uploadDir . $filename;
+                $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . '.' . $fileExtension;
+                $targetPath = $uploadDir;
 
                 if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                     // Update the tutee_progress table with the file path
@@ -131,9 +132,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Handle file upload if provided
                     if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] === UPLOAD_ERR_OK) {
-                        $uploadDir = '../uploads/';
-                        $filename = basename($_FILES['file-upload']['name']);
-                        $file_path = $uploadDir . $filename;
+                        $file = $_FILES['file-upload'];
+                        $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+                        $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . '.' . $fileExtension;
+                        $file_path = $uploadDir;
                         move_uploaded_file($_FILES['file-upload']['tmp_name'], $file_path);
                     }
 
@@ -233,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($file_size <= 10485760) {
                             // Move the file to your upload directory
                             $upload_dir = '../uploads/events/';
-                            $upload_file = $upload_dir . basename($file_name);
+                            $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
 
                             if (move_uploaded_file($file_tmp, $upload_file)) {
                                 // Insert into database
@@ -243,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $stmt->bindParam(':event_name', $event_name);
                                 $stmt->bindParam(':rendered_hours', $rendered_hours);
                                 $stmt->bindParam(':description', $description);
-                                $stmt->bindParam(':attached_file', $file_name);
+                                $stmt->bindParam(':attached_file', $upload_file);
 
                                 if ($stmt->execute()) {
                                     echo json_encode(['success' => true]);
@@ -350,21 +352,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                 // Validate the event belongs to the tutor (replace $tutor_id with the current tutor's ID)
                 $stmt = $user_login->runQuery("
-                    SELECT id FROM events WHERE id = :event_id AND tutor_id = :tutor_id
+                    SELECT id, attached_file FROM events WHERE id = :event_id AND tutor_id = :tutor_id
                 ");
                 $stmt->bindParam(':event_id', $event_id);
                 $stmt->bindParam(':tutor_id', $tutor_id);
                 $stmt->execute();
             
                 if ($stmt->rowCount() > 0) {
-                    // Delete the event
+                    $event = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $image_path = $event['attached_file']; // Assume the image path is stored in the `image_path` column
+            
+                    // Delete the image file if it exists
+                    if ($image_path && file_exists($image_path)) {
+                        unlink($image_path);
+                    }
+            
+                    // Delete the event from the database
                     $deleteStmt = $user_login->runQuery("
                         DELETE FROM events WHERE id = :event_id
                     ");
                     $deleteStmt->bindParam(':event_id', $event_id);
             
                     if ($deleteStmt->execute()) {
-                        echo json_encode(['success' => true, 'message' => 'Event deleted successfully.']);
+                        echo json_encode(['success' => true, 'message' => 'Event and associated image deleted successfully.']);
                     } else {
                         echo json_encode(['success' => false, 'message' => 'Failed to delete event.']);
                     }
@@ -415,17 +425,22 @@ $target_hours = 90;
 // Initialize total rendered hours
 $total_rendered_hours = 0;
 
-// Fetch rendered hours from `events` table
-$query = "SELECT COALESCE(SUM(rendered_hours), 0) as total_rendered_hours FROM events WHERE tutor_id = :tutor_id";
+// Fetch rendered hours from `events` table where status is 'verified'
+$query = "SELECT COALESCE(SUM(rendered_hours), 0) as total_rendered_hours 
+          FROM events 
+          WHERE tutor_id = :tutor_id AND status = 'verified'";
 $stmt = $user_login->runQuery($query);
 $stmt->bindParam(":tutor_id", $tutor_id);
 $stmt->execute();
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 $events_rendered_hours = $row['total_rendered_hours'];
 
-// Fetch rendered hours from `tutee_progress` table
+// Fetch rendered hours from `tutee_progress` table where status is 'verified'
 $tutee_rendered_hours = [];
-$query = "SELECT tutee_id, COALESCE(SUM(rendered_hours), 0) as tutee_rendered_hours FROM tutee_progress WHERE tutor_id = :tutor_id GROUP BY tutee_id";
+$query = "SELECT tutee_id, COALESCE(SUM(rendered_hours), 0) as tutee_rendered_hours 
+          FROM tutee_progress 
+          WHERE tutor_id = :tutor_id AND status = 'verified'
+          GROUP BY tutee_id";
 $stmt = $user_login->runQuery($query);
 $stmt->bindParam(":tutor_id", $tutor_id);
 $stmt->execute();
@@ -443,9 +458,6 @@ $progress_percentage = min(($total_rendered_hours / $target_hours) * 100, 100);
 // Determine if hours came from events or tutee progress
 $has_events_data = $events_rendered_hours > 0;
 $has_tutee_data = count($tutee_rendered_hours) > 0;
-
-
-
 
 ?>
 
@@ -656,6 +668,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                     <th>Rendered Hours</th>
                                     <th>Description</th>
                                     <th>Attached File</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -667,11 +680,12 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                     <td><?php echo htmlspecialchars($event['description']); ?></td>
                                     <td class="file-name-cell">
                                         <?php if ($event['attached_file']): ?>
-                                            <a href="../uploads/events/<?php echo htmlspecialchars($event['attached_file']); ?>" target="_blank" class="btn btn-primary">View File</a>
+                                            <a href="<?php echo htmlspecialchars($event['attached_file']); ?>" target="_blank" class="btn btn-primary">View File</a>
                                         <?php else: ?>
                                             <span>No file uploaded</span>
                                         <?php endif; ?>
                                     </td>
+                                    <td><?php echo htmlspecialchars($event['status']); ?></td>
                                     <td class="d-flex justify-content-center">
                                         <button class="btn btn-primary me-2 editEventBtn" 
                                         data-id="<?php echo $event['id']; ?>" 
@@ -727,6 +741,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                     <th>Location</th>
                                     <th>Subject</th>
                                     <th>Date Submitted</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -751,6 +766,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                             <td><?php echo htmlspecialchars($progress['location'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($progress['subject'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($progress['date'] ?? ''); ?></td>
+                                            <td><?php echo htmlspecialchars($progress['status'] ?? ''); ?></td>
                                             <td class="text-center">
                                                 <button class="btn btn-primary me-2 edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
                                                     data-tutee-id="<?php echo $tutee['id']; ?>" 
@@ -856,7 +872,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         <textarea class="form-control" id="edit-description" name="description" rows="3" required></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="edit-rendered-hours" class="form-label">Rendered Hours</label>
+                        <label for="edit-rendered-hours" class="form-label">Rendered Hours(Max 4)</label>
                         <input type="number" class="form-control" id="edit-rendered-hours" name="rendered_hours" 
                             required min="0" max="4" oninput="this.value = Math.min(this.value, 4)">
                     </div>
@@ -869,7 +885,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         <input type="text" class="form-control" id="edit-subject" name="subject" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit-file-upload" class="form-label">Upload File</label>
+                        <label for="edit-file-upload" class="form-label">Upload Tutoring Session File</label>
                         <input type="file" class="form-control" id="edit-file-upload" name="file-upload">
                     </div>
                 </form>
@@ -898,7 +914,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
               <input type="number" class="form-control" id="week-number-<?php echo $tutee['id']; ?>" placeholder="Enter week number" required>
             </div>
             <div class="col-md-6">
-                <label for="rendered-hours-<?php echo $tutee['id']; ?>" class="form-label">Rendered Hours</label>
+                <label for="rendered-hours-<?php echo $tutee['id']; ?>" class="form-label">Rendered Hours(Max 4)</label>
                 <input type="number" class="form-control" id="rendered-hours-<?php echo $tutee['id']; ?>" 
                     placeholder="Enter rendered hours" required min="0" max="4" oninput="this.value = Math.min(this.value, 4)">
             </div>
@@ -918,7 +934,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             <textarea class="form-control" id="description-<?php echo $tutee['id']; ?>" placeholder="Describe the week..." required></textarea>
           </div>
           <div class="mb-3">
-            <label for="file-upload-<?php echo $tutee['id']; ?>" class="form-label">Upload Files</label>
+            <label for="file-upload-<?php echo $tutee['id']; ?>" class="form-label">Upload Tutoring Session File</label>
             <input type="file" class="form-control" id="file-upload-<?php echo $tutee['id']; ?>" accept="*/*">
           </div>
       </div>
@@ -1357,7 +1373,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
     </script>
 
     <script>
-document.getElementById("saveEventBtn").addEventListener("click", function (e) {
+    document.getElementById("saveEventBtn").addEventListener("click", function (e) {
     e.preventDefault();  // Prevent the default form submission
 
     // Get form values
@@ -1624,44 +1640,6 @@ $('#save-week-btn').on('click', function() {
         alert('Please fill in all fields.');
         return;
     }
-
-    // Append the new row to the table
-    const newRow = `
-        <tr>
-            <td>
-                Week ${weekNumber}
-            </td>
-            <td>
-                <span class="file-name">${uploadedFile}</span>
-            </td>
-            <td>
-                ${weekDescription}
-            </td>
-            <td>
-                ${renderedHours}
-            </td>
-            <td>
-                ${dateSubmitted}
-            </td>
-            <td>
-                ${location}
-            </td>
-            <td>
-                ${subject}
-            </td>
-            <td class="text-center">
-            <button class="btn btn-primary edit-btn">
-                    <i class="bx bx-edit"></i>
-                </button>
-                <button class="btn btn-danger delete-btn">
-                    <i class="bx bx-trash"></i>
-                </button>
-            </td>
-        </tr>
-    `;
-
-    // Append the new row to the table body
-    $('#file-upload-list-<?php echo $tutee['id']; ?>').append(newRow);
     
     // Close the modal
     $('#addWeekModal').modal('hide');
@@ -1699,8 +1677,6 @@ document.getElementById('saveWeekBtn').addEventListener('click', function() {
     })
     .catch(error => console.error('Error:', error));
 });
-
-
 </script>
 </body>
 </html>

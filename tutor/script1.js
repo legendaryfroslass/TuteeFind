@@ -248,25 +248,4 @@ document.addEventListener("DOMContentLoaded", function () {
   // }
 });
 
-function showProfileModal(event, row) {
-  // Ensure the row is only activated when clicked directly
-  if (event.target.closest("button")) return;
 
-  // Extract data from the row
-  const name = row.dataset.name;
-  const photo = row.dataset.photo;
-  const brgy = row.dataset.brgy;
-  const bio = row.dataset.bio;
-
-  // Populate the profile modal with the data
-  document.getElementById("profileModalName").innerText = name;
-  document.getElementById("profileModalPhoto").src = photo;
-  document.getElementById("profileModalBrgy").innerText = brgy;
-  document.getElementById("profileModalBio").innerText = bio;
-
-  // Show the profile modal
-  const profileModal = new bootstrap.Modal(
-    document.getElementById("profileModal")
-  );
-  profileModal.show();
-}

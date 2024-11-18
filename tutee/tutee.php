@@ -43,7 +43,12 @@ $filterQuery = "SELECT
         tutor.firstname AS tutor_firstname,
         tutor.lastname AS tutor_lastname,
         tutor.barangay,
-        tutor.photo
+        tutor.photo,
+        tutor.bio,
+        tutor.number,
+        tutor.emailaddress,
+        tutor.fblink,
+        tutor.age
     FROM requests
     JOIN tutor ON requests.tutor_id = tutor.id
     WHERE tutee_id = :tutee_id AND requests.status = 'pending'";
@@ -110,6 +115,27 @@ function acceptTutorRequest($request_id, $tutee_id) {
     }
 
     try {
+        // Fetch the tutor ID associated with the request
+        $stmt = $user_login->runQuery("SELECT tutor_id FROM requests WHERE request_id = :request_id");
+        $stmt->bindParam(":request_id", $request_id);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$result) {
+            echo "<script>alert('Invalid request. Tutor not found.');</script>";
+            return false;
+        }
+        $tutor_id = $result['tutor_id'];
+
+        // Check if the tutor already has 2 tutees
+        $stmt = $user_login->runQuery("SELECT COUNT(*) AS tutee_count FROM requests WHERE tutor_id = :tutor_id AND status = 'accepted'");
+        $stmt->bindParam(":tutor_id", $tutor_id);
+        $stmt->execute();
+        $count = $stmt->fetch(PDO::FETCH_ASSOC)['tutee_count'];
+        if ($count >= 2) {
+            echo "<script>alert('This tutor already has 2 tutees. They cannot accept more.');</script>";
+            return false;
+        }
+
         // Update the request status to accepted
         $stmt = $user_login->runQuery("UPDATE requests SET status = 'accepted' WHERE request_id = :request_id");
         $stmt->bindParam(":request_id", $request_id);
@@ -122,7 +148,6 @@ function acceptTutorRequest($request_id, $tutee_id) {
         $tutor = $stmt->fetch(PDO::FETCH_ASSOC);
         $tutorEmail = $tutor['emailaddress'];
         $tutorName = $tutor['tutor_firstname'] . ' ' . $tutor['tutor_lastname'];
-        $tutor_id = $tutor['id'];
 
         // Fetch tutee details
         $stmt = $user_login->runQuery("SELECT firstname, lastname FROM tutee WHERE id = :tutee_id");
@@ -154,14 +179,10 @@ function acceptTutorRequest($request_id, $tutee_id) {
     }
 }
 
+
 // Function to reject tutor request
 function rejectTutorRequest($request_id, $tutee_id) {
     global $user_login;
-    // Check if the tutee has already accepted a tutor
-    if (hasAcceptedTutor($tutee_id)) {
-        echo "<script>alert('You have already accepted a tutor. You can\\'t accept more tutors.');</script>";
-        return false;
-    }
     try {
         // Fetch tutor details
         $stmt = $user_login->runQuery("SELECT tutor.id, tutor.emailaddress, tutor.firstname AS tutor_firstname, tutor.lastname AS tutor_lastname FROM requests JOIN tutor ON requests.tutor_id = tutor.id WHERE request_id = :request_id");
@@ -472,7 +493,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                             <td class="text-center justify-content-center">
                                                                 <form method="post" class="text-center">
                                                                     <button type="button" 
-                                                                            style="height: 6vh" 
                                                                             class="btn btn-outline-primary bi bi-person-vcard" 
                                                                             data-bs-toggle="modal" 
                                                                             data-bs-target="#profileModal" 
@@ -480,45 +500,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                                             data-name="<?php echo $request['tutor_firstname'] . ' ' . $request['tutor_lastname']; ?>"
                                                                             data-photo="<?php echo !empty($request['photo']) ? $request['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>"
                                                                             data-brgy="<?php echo $request['barangay']; ?>"
+                                                                            data-number="<?php echo $request['number']; ?>"
+                                                                            data-age="<?php echo $request['age']; ?>"
+                                                                            data-emailaddress="<?php echo $request['emailaddress']; ?>"
+                                                                            data-fblink="<?php echo $request['fblink']; ?>"
                                                                             data-bio="<?php echo !empty($request['bio']) ? htmlspecialchars(substr($request['bio'], 0, 50)) . (strlen($request['bio']) > 50 ? '...' : '') : 'No additional information available.'; ?>"
                                                                             onclick="event.stopPropagation();"
                                                                             data-bs-toggle="tooltip" 
                                                                             title="View Tutor's Profile">
                                                                     </button>
                                                                     <button type="button" 
-                                                                            style="height: 6vh"
                                                                             class="btn btn-outline-primary bx" 
                                                                             data-bs-toggle="modal" 
                                                                             data-bs-target="#messageModal" 
                                                                             data-tutor-id="<?php echo $request['tutor_id']; ?>"
                                                                             data-tutor-name="<?php echo $request['tutor_firstname'] . ' ' . $request['tutor_lastname']; ?>"
                                                                             onclick="event.stopPropagation();" 
-                                                                            data-bs-toggle="tooltip" 
-                                                                            title="Send a message to the tutor">
-                                                                        <i class='bx bx-message-square-dots'></i>
+                                                                            data-bs-toggle="tooltip">
+                                                                        <i class='bx bx-message-square-dots'
+                                                                            title="Send a message to the tutor"></i>
                                                                     </button>
                                                                     <?php if ($request['status'] != 'accepted'): ?>
-                                                                        <button type="button" 
-                                                                                style="height: 6vh" 
-                                                                                class="btn btn-outline-success bx bx-check" 
-                                                                                data-bs-toggle="modal" 
-                                                                                data-bs-target="#acceptRequestModal" 
-                                                                                data-request-id="<?php echo $request['request_id']; ?>" 
-                                                                                onclick="setRequestId('accept', this);"
-                                                                                data-bs-toggle="tooltip" 
-                                                                                title="Accept this request">
+                                                                        <button type="button" class="btn btn-outline-success bx bx-check" 
+                                                                        data-bs-toggle="modal" data-bs-target="#acceptRequestModal" 
+                                                                        data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('accept', this)">
                                                                         </button>
-                                                                        <button type="button" 
-                                                                                style="height: 6vh" 
-                                                                                name="reject_request"
-                                                                                class="btn btn-outline-danger bx bx-x" 
-                                                                                data-bs-toggle="modal" 
-                                                                                data-bs-target="#removeTuteeModal" 
-                                                                                data-request-id="<?php echo $request['request_id']; ?>" 
-                                                                                data-tutee-id="<?php echo $userData['id']; ?>" 
-                                                                                onclick="setRequestId('reject', this);"
-                                                                                data-bs-toggle="tooltip" 
-                                                                                title="Reject this request">
+
+                                                                        <button type="button" class="btn btn-outline-danger bx bx-x" 
+                                                                        data-bs-toggle="modal" data-bs-target="#removeTuteeModal" 
+                                                                        data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('reject', this)">
                                                                         </button>
                                                                     <?php else: ?>
                                                                         <button class="btn btn-success" disabled>Already Accepted</button>
@@ -564,7 +574,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <p id="profileModalBrgy" class="mb-1" style="color: #555;">
                     Barangay: <span class="font-weight-bold" id="brgyValue"></span>
                 </p>
-                <p id="profileModalBio" style="font-style: italic; color: #666;"></p>
+                <p id="profileModalBio" class="mb-1" style="color: #555;">
+                    <span class="font-weight-bold" id="bioValue"></span>
+                </p>
+                <p id="profileModalAge" class="mb-1" style="color: #555;">
+                    Age: <span class="font-weight-bold" id="ageValue"></span>
+                </p>
+                <p id="profileModalNumber" class="mb-1" style="color: #555;">
+                    Contact Number: <span class="font-weight-bold" id="numberValue"></span>
+                </p>
+                <p id="profileModalEmailaddress" class="mb-1" style="color: #555;">
+                    Email Address: <span class="font-weight-bold" id="emailaddressValue"></span>
+                </p>
+                <p id="profileModalFblink" class="mb-1" style="color: #555;">
+                    Facebook Profile: <span class="font-weight-bold" id="fblinkValue"></span>
+                </p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -658,6 +682,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
 
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="toasttwoTutee" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+                <div class="toast-header">
+                    <!-- <img src="..." class="rounded me-2" alt="..."> -->
+                    <strong class="me-auto">TuteeFind</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Tutor has already 2 Tutees, You can't accept anymore
+                </div>
+            </div>
+        </div>
+
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="toasthaveTutee" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+                <div class="toast-header">
+                    <!-- <img src="..." class="rounded me-2" alt="..."> -->
+                    <strong class="me-auto">TuteeFind</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    You have already accepted a Tutor.
+                </div>
+            </div>
+        </div>
+
         <!-- Accept Request Modal -->
         <div class="modal fade" id="acceptRequestModal" tabindex="-1" aria-labelledby="acceptRequestModalLabel" aria-hidden="true" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered">
@@ -692,8 +744,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     <div class="modal-footer">
                     <form id="removeTuteeForm" method="POST">
-                        <input type="hidden" name="request_id" id="modalTutorId" value=""> <!-- Added hidden input for tutor_id -->
-                        <input type="hidden" name="tutee_id" id="tutee_id" value=""> <!-- Ensure tutee_id is here -->
+                        <input type="hidden" name="request_id" id="rejectRequestId"> <!-- Added hidden input for tutor_id -->
                         <button type="submit" id="confirmTutorRemove" name="reject_request" class="btn btn-outline-danger">Remove</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     </form>
@@ -835,14 +886,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 var photo = button.getAttribute('data-photo');
                 var brgy = button.getAttribute('data-brgy');
                 var bio = button.getAttribute('data-bio');
-
+                var age = button.getAttribute('data-age');
+                var number = button.getAttribute('data-number');
+                var emailaddress = button.getAttribute('data-emailaddress');
+                var fblink = button.getAttribute('data-fblink');
                 // Update the modal's content
                 var modal = document.getElementById('profileModal');
                 modal.querySelector('#profileModalName').textContent = name;
                 modal.querySelector('#profileModalPhoto').src = photo;
                 modal.querySelector('#brgyValue').textContent = brgy;
-                modal.querySelector('#profileModalBio').textContent = bio;
+                modal.querySelector('#ageValue').textContent = age;
+                modal.querySelector('#numberValue').textContent = number;
+                modal.querySelector('#emailaddressValue').textContent = emailaddress;
+                modal.querySelector('#bioValue').textContent = bio;
+                modal.querySelector('#fblinkValue').textContent = fblink;
             });
+
+            function setRequestId(action, button) {
+                var requestId = button.getAttribute('data-request-id');
+                if (action === 'accept') {
+                document.getElementById('acceptRequestId').value = requestId;
+                } else if (action === 'reject') {
+                document.getElementById('rejectRequestId').value = requestId;
+                }
+            }
         </script>
     </body>
 </html>
