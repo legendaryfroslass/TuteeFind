@@ -453,12 +453,19 @@ if (isset($_POST['send_message'])) {
 <tbody>
     <?php foreach ($current_items as $tutee): ?>
         <tr class="clickable-row" 
-            data-name="<?php echo $tutee['firstname'] . ' ' . $tutee['lastname']; ?>"
-            data-photo="<?php echo !empty($tutee['photo']) ? $tutee['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>"
-            data-brgy="<?php echo $tutee['barangay']; ?>"
+            data-name="<?php echo htmlspecialchars($tutee['firstname'] . ' ' . $tutee['lastname']); ?>"
+            data-photo="<?php echo !empty($tutee['photo']) ? htmlspecialchars($tutee['photo']) : '../assets/TuteeFindLogoName.jpg'; ?>"
+            data-brgy="<?php echo htmlspecialchars($tutee['barangay']); ?>"
             data-bio="<?php echo !empty($tutee['bio']) ? htmlspecialchars(substr($tutee['bio'], 0, 50)) . (strlen($tutee['bio']) > 50 ? '...' : '') : 'No other information available.'; ?>"
-
-            onclick="showProfileModal(event, this)"> <!-- Call the showProfileModal function -->
+            data-number="<?php echo htmlspecialchars($tutee['number']); ?>"
+            data-emailaddress="<?php echo htmlspecialchars($tutee['emailaddress']); ?>"
+            data-age="<?php echo htmlspecialchars($tutee['age']); ?>"
+            data-guardianname="<?php echo htmlspecialchars($tutee['guardianname']); ?>"
+            data-fblink="<?php echo htmlspecialchars($tutee['fblink']); ?>"
+            data-grade="<?php echo htmlspecialchars($tutee['grade']); ?>"
+            data-address="<?php echo htmlspecialchars($tutee['address']); ?>"
+            data-school="<?php echo htmlspecialchars($tutee['school']); ?>"
+            onclick="showProfileModal(event, this)">
             <td>
                 <div class="img-holder text-center">
                     <img style="height: 45px; width: 45px; border-radius: 65px;" src="<?php echo !empty($tutee['photo']) ? $tutee['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>" alt="Tutee Photo" class="img-fluid">
@@ -591,6 +598,7 @@ if (isset($_POST['send_message'])) {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="profileModalLabel">Profile Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body d-flex flex-column align-items-center">
                 <img id="profileModalPhoto" 
@@ -598,10 +606,23 @@ if (isset($_POST['send_message'])) {
                      style="border-radius: 50%; border: 3px solid #007bff; height: 120px; width: 120px;" 
                      alt="Profile Photo">
                 <h5 id="profileModalName" class="mt-3 mb-1" style="font-weight: bold; color: #333;"></h5>
-                <p id="profileModalBrgy" class="mb-1" style="color: #555;">
-                    Barangay: <span class="font-weight-bold" id="brgyValue"></span>
+                <p class="mb-1" style="color: #555;">
+                    <span class="font-weight-bold" id="profileModalBio"></span>
                 </p>
-                <p id="profileModalBio" style="font-style: italic; color: #666;"></p>
+                <p class="mb-1" style="color: #555;">
+                    Barangay: <span class="font-weight-bold" id="profileModalBrgy"></span>
+                </p>
+                <!-- Additional Fields -->
+                <div class="w-100">
+                    <p><strong>Contact Number:</strong> <span id="numberValue"></span></p>
+                    <p><strong>Email:</strong> <span id="profileModalEmail"></span></p>
+                    <p><strong>Age:</strong> <span id="profileModalAge"></span></p>
+                    <p><strong>Guardian's Name:</strong> <span id="profileModalGuardianName"></span></p>
+                    <p><strong>Facebook:</strong> <a id="profileModalFbLink" target="_blank" style="text-decoration: none; color: #007bff;"></a></p>
+                    <p><strong>Grade:</strong> <span id="profileModalGrade"></span></p>
+                    <p><strong>Address:</strong> <span id="profileModalAddress"></span></p>
+                    <p><strong>School:</strong> <span id="profileModalSchool"></span></p>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
@@ -609,6 +630,7 @@ if (isset($_POST['send_message'])) {
         </div>
     </div>
 </div>
+
 
 
 
@@ -631,6 +653,45 @@ if (isset($_POST['send_message'])) {
                 <?php unset($_SESSION['request_result']); ?>
             });
         <?php endif; ?>
+
+
+        function showProfileModal(event, row) {
+            if (event.target.closest("button")) return;
+
+            const name = row.dataset.name || "N/A";
+            const photo = row.dataset.photo || "../assets/default-photo.jpg";
+            const brgy = row.dataset.brgy || "N/A";
+            const bio = row.dataset.bio || "N/A";
+            const number = row.dataset.number || "N/A";
+            const email = row.dataset.emailaddress || "N/A";
+            const age = row.dataset.age || "N/A";
+            const guardianName = row.dataset.guardianname || "N/A";
+            const fbLink = row.dataset.fblink || "#";
+            const grade = row.dataset.grade || "N/A";
+            const address = row.dataset.address || "N/A";
+            const school = row.dataset.school || "N/A";
+
+            // Populate the modal
+            document.getElementById("profileModalName").innerText = name;
+            document.getElementById("profileModalPhoto").src = photo;
+            document.getElementById("profileModalBrgy").innerText = brgy;
+            document.getElementById("profileModalBio").innerText = bio;
+            document.getElementById("numberValue").innerText = number;
+            document.getElementById("profileModalEmail").innerText = email;
+            document.getElementById("profileModalAge").innerText = age;
+            document.getElementById("profileModalGuardianName").innerText = guardianName;
+            document.getElementById("profileModalFbLink").href = fbLink;
+            document.getElementById("profileModalFbLink").innerText = "Facebook Profile";
+            document.getElementById("profileModalGrade").innerText = grade;
+            document.getElementById("profileModalAddress").innerText = address;
+            document.getElementById("profileModalSchool").innerText = school;
+
+            // Show the modal
+            const profileModal = new bootstrap.Modal(
+                document.getElementById("profileModal")
+            );
+            profileModal.show();
+            }
     </script>
 </body>
 </html>

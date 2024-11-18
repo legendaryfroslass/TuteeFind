@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+
+
 function showProfileModal(event, row) {
     // Ensure the row is only activated when clicked directly
     if (event.target.closest("button")) return;
