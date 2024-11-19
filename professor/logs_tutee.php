@@ -1,5 +1,10 @@
-<?php include 'includes/session.php'; ?>
-<?php include 'includes/header.php'; ?>
+<?php   
+include 'includes/session.php'; 
+include 'includes/header.php'; 
+
+date_default_timezone_set('Asia/Manila');
+?>
+
 <style>
   .scrollable-table {
     max-height: 230px;
@@ -74,7 +79,9 @@ table td button {
     text-align: center;
 }
 </style>
-<?php
+
+
+<?php 
 // Search and pagination variables
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -87,7 +94,7 @@ $professor_id = $_SESSION['professor_id'];
 // SQL query to retrieve tutee data with search functionality
 $sql = "
     SELECT tutee.id AS tutee_id, tutee.firstname AS tutee_firstname, tutee.lastname AS tutee_lastname, 
-           tutee.barangay, tutee.age, tutee.school
+           tutee.barangay 
     FROM tutee
     INNER JOIN requests r ON tutee.id = r.tutee_id
     INNER JOIN tutor t ON r.tutor_id = t.id
@@ -96,15 +103,13 @@ $sql = "
     AND r.status = 'accepted'
     AND (
         CONCAT(LOWER(tutee.firstname), ' ', LOWER(tutee.lastname)) LIKE LOWER(?) OR
-        LOWER(tutee.barangay) LIKE LOWER(?) OR
-        LOWER(tutee.school) LIKE LOWER(?) OR
-        LOWER(tutee.age) LIKE LOWER(?)
+        LOWER(tutee.barangay) LIKE LOWER(?)
     )
     LIMIT ? OFFSET ?";
 
 $stmt = $conn->prepare($sql);
 $search_param = "%$search%";
-$stmt->bind_param("issssii", $professor_id, $search_param, $search_param, $search_param, $search_param, $limit, $offset);
+$stmt->bind_param("issii", $professor_id, $search_param, $search_param, $limit, $offset);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -119,45 +124,48 @@ $total_sql = "
     AND r.status = 'accepted'
     AND (
         CONCAT(LOWER(tutee.firstname), ' ', LOWER(tutee.lastname)) LIKE LOWER(?) OR
-        LOWER(tutee.barangay) LIKE LOWER(?) OR
-        LOWER(tutee.school) LIKE LOWER(?) OR
-        LOWER(tutee.age) LIKE LOWER(?)
+        LOWER(tutee.barangay) LIKE LOWER(?)
     )";
 
 $stmt_total = $conn->prepare($total_sql);
-$stmt_total->bind_param("issss", $professor_id, $search_param, $search_param, $search_param, $search_param);
+$stmt_total->bind_param("iss", $professor_id, $search_param, $search_param);
 $stmt_total->execute();
 $total_result = $stmt_total->get_result();
 $total_rows = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_rows / $limit);
+
+// Close statements
+$stmt->close();
+$stmt_total->close();
 ?>
+
+
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
+    <?php include 'includes/navbar.php'; ?>
+    <?php include 'includes/menubar.php'; ?>
+  
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>Tutees' Logs</h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">Tutees' Logs</li>
+            </ol>
+        </section>
 
-  <?php include 'includes/navbar.php'; ?>
-  <?php include 'includes/menubar.php'; ?>
-
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <h1>
-        Tutees' List
-      </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Tutee</li>
-      </ol>
-    </section>
-    <!-- Main content -->
-    <section class="content">
-      <?php
+        <section class="content">
+        <div class="row">
+        <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header with-border">
+            <?php
         if(isset($_SESSION['error'])){
           echo "
             <div class='alert alert-danger alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
               <h4><i class='icon fa fa-warning'></i> Error!</h4>
-              ".$_SESSION['error']." 
+              ".$_SESSION['error']."
             </div>
           ";
           unset($_SESSION['error']);
@@ -167,26 +175,15 @@ $total_pages = ceil($total_rows / $limit);
             <div class='alert alert-success alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
               <h4><i class='icon fa fa-check'></i> Success!</h4>
-              ".$_SESSION['success']." 
+              ".$_SESSION['success']."
             </div>
           ";
           unset($_SESSION['success']);
         }
       ?>
-      <div class="row">
-        <div class="col-xs-12">
-          <div class="box">
-            <div class="box-header with-border">
-            <a href="tutee_pdf.php?search=<?php echo urlencode($search); ?>" class="btn btn-primary btn-sm btn-flat" target="_blank">
-                <i class="fa fa-file-pdf-o"></i> Export to PDF
-              </a>
-            </div>
-      <div class="box-body">
-
-
-
+  <div class="box-body">
              <!-- Search Form --> 
-  <form method="GET" action="tutee.php" class="form-inline d-flex justify-content-between align-items-center">
+<form method="GET" action="logs_tutee.php" class="form-inline d-flex justify-content-between align-items-center">
     <div class="form-group me-4"> 
         <label>Show 
             <select name="limit" class="form-control" onchange="this.form.submit()">
@@ -202,7 +199,7 @@ $total_pages = ceil($total_rows / $limit);
         </div>
         <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
     </div>
-</form>     
+</form>      
 <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
   <div class="row">
     <div class="col-sm-12">
@@ -211,70 +208,112 @@ $total_pages = ceil($total_rows / $limit);
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
           <thead>
             <tr role="row">
-                <th onclick="sortTable(0)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(1)">Barangay <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(2)">Age <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(2)">School <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+              <th onclick="sortTable(0)">Last Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(1)">First Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(2)">Barangay <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>  
             <?php
-// Assuming you're storing the professor's ID in the session
-if (isset($_SESSION['professor_id'])) {
-    $professor_id = $_SESSION['professor_id'];
-    $search = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '%%'; // Prepare search term for LIKE query
+            // Get the professor ID from the request
+            $professorId = isset($_GET['professor_id']) ? $_GET['professor_id'] : null;
 
-    // SQL query to fetch required data
-    $sql = "
-    SELECT tutee.id AS tutee_id, tutee.firstname AS tutee_firstname, tutee.lastname AS tutee_lastname, 
-           tutee.barangay, tutee.age, tutee.school
-    FROM tutee
-    INNER JOIN requests r ON tutee.id = r.tutee_id
-    INNER JOIN tutor t ON r.tutor_id = t.id
-    INNER JOIN professor p ON t.professor = p.faculty_id
-    WHERE p.id = ? 
-    AND r.status = 'accepted'
-    AND (
-        CONCAT(LOWER(tutee.firstname), ' ', LOWER(tutee.lastname)) LIKE LOWER(?) OR
-        LOWER(tutee.barangay) LIKE LOWER(?) OR
-        LOWER(tutee.school) LIKE LOWER(?) OR
-        LOWER(tutee.age) LIKE LOWER(?)
-    )      
-    ";
 
-    if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("sssss", $professor_id, $search, $search, $search, $search); // Bind search term to relevant columns
-        $stmt->execute();
-        $result = $stmt->get_result();
+            // Get search term from the request, default to an empty string if none provided
+            $search = isset($_GET['search']) ? strtolower($_GET['search']) : '';
 
-        if ($result->num_rows > 0) {
+            // Query to retrieve tutee data based on professor ID and accepted request status
+            $sql = "
+                SELECT 
+                    tutee.id AS tutee_id, 
+                    tutee.firstname AS tutee_firstname, 
+                    tutee.lastname AS tutee_lastname, 
+                    tutee.barangay
+                FROM tutee
+                INNER JOIN requests r ON tutee.id = r.tutee_id
+                INNER JOIN tutor t ON r.tutor_id = t.id
+                INNER JOIN professor p ON t.professor = p.faculty_id
+                WHERE p.id = ? 
+                AND r.status = 'accepted'";
+
+            // Prepare the SQL statement
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $professorId); // Bind the professor ID parameter
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            // Temporary array to store filtered results
+            $results = [];
+
+            // Loop through the query result
             while ($row = $result->fetch_assoc()) {
-                $name = htmlspecialchars($row['tutee_firstname']) . ' ' . htmlspecialchars($row['tutee_lastname']); // Sanitize output
-                echo "
-                    <tr>
-                        <td>$name</td>
-                        <td>" . htmlspecialchars($row['barangay']) . "</td>
-                        <td>" . htmlspecialchars($row['age']) . "</td>
-                        <td>" . htmlspecialchars($row['school']) . "</td>
-                        <td>
-                            <button class='btn btn-primary btn-sm btn-flat view' data-id='" . htmlspecialchars($row['tutee_id']) . "'><i class='fa fa-eye'></i> View</button>
-                        </td>
-                    </tr>
-                ";
+                // Sanitize fields from the query
+                $firstname = htmlspecialchars($row['tutee_firstname'], ENT_QUOTES);
+                $lastname = htmlspecialchars($row['tutee_lastname'], ENT_QUOTES);
+                $barangay = htmlspecialchars($row['barangay'], ENT_QUOTES);
+                $status = "Inactive"; // Default status to Inactive
+
+                // Check for activity logs for the current tutee
+                $activitySql = "SELECT * FROM tutee_logs WHERE tutee_id = ?";
+                $activityStmt = $conn->prepare($activitySql);
+                $activityStmt->bind_param("i", $row['tutee_id']);
+                $activityStmt->execute();
+                $activityResult = $activityStmt->get_result();
+
+                // Update status if the last login is recent
+                if (!empty($row['last_login']) && $activityResult->num_rows > 0) {
+                    $lastLoginDate = strtotime($row['last_login']);
+                    if ($lastLoginDate >= strtotime('-2 weeks')) {
+                        $status = "Active";
+                    }
+                }
+
+                // Check if the search term matches any of the relevant fields
+                if (
+                    strpos(strtolower($firstname . ' ' . $lastname), $search) !== false || 
+                    strpos(strtolower($barangay), $search) !== false || 
+                    ($search === 'active' && $status === 'Active') || 
+                    ($search === 'inactive' && $status === 'Inactive')
+                ) {
+                    // Add matching row to results array, including a concatenated 'name'
+                    $results[] = [
+                        'id' => $row['tutee_id'],
+                        'lastname' => $lastname,
+                        'firstname' => $firstname,
+                        'barangay' => $barangay,
+                        'status' => $status,
+                        'name' => $firstname . ' ' . $lastname // Construct the name here
+                    ];
+                }
             }
-        } else {
-            echo "<tr><td colspan='5'>No records found.</td></tr>";
-        }
-    } else {
-        echo "Error: " . $conn->error;
-    }
-} else {
-    echo "<tr><td colspan='5'>No list.</td></tr>";
+
+            // Output the filtered results
+            foreach ($results as $row) {
+                // Determine status and apply appropriate button styles
+                $statusClass = $row['status'] === "Active" ? "btn-success" : "btn-danger";
+                $statusText = $row['status'];
+
+                echo "<tr>
+                        <td>" . htmlspecialchars($row['lastname'], ENT_QUOTES) . "</td>
+                        <td>" . htmlspecialchars($row['firstname'], ENT_QUOTES) . "</td>
+                        <td>" . htmlspecialchars($row['barangay'], ENT_QUOTES) . "</td>
+                        <td style='text-align: center;'>
+                            <button class='btn $statusClass btn-sm' style='border-radius: 10px; padding: 1px 10px; width: 100px;'>
+                                $statusText
+                            </button>
+                        </td>
+                        <td>
+                            <button class='btn btn-primary btn-sm btn-flat view' data-id='" . htmlspecialchars($row['id'], ENT_QUOTES) . "' data-professor-name='" . htmlspecialchars($row['name'], ENT_QUOTES) . "'>
+                                <i class='fa fa-eye'></i> View
+                            </button>
+                        </td>
+                      </tr>";
 }
 ?>
 
-</tbody>
+   </tbody>
           </table>
         </div>
       </div>
@@ -313,79 +352,64 @@ if (isset($_SESSION['professor_id'])) {
 </div>
 </section>
 </div>
-  <?php include 'includes/footer.php'; ?>
-  <?php include 'includes/tutee_modal.php'; ?>
+<?php include 'includes/footer.php'; ?>
+<?php include 'includes/professor_modal.php'; ?>
+
 </div>
 <?php include 'includes/scripts.php'; ?>
+</body>
+            <script>
+                $(document).ready(function(){
+                    $('.view').click(function(){
+                        var id = $(this).data('id'); // Get the professor ID
+                        var professorName = $(this).data('professor-name'); // Get the professor name
 
-<script>
-$(function(){
-  $(document).on('click', '.view', function(e){
-    e.preventDefault();
-    $('#view').modal('show'); // Display the view modal
+                        // Set the professor's name in the modal title
+                        $('#professorName').text(professorName);
+
+                        // Fetch activity logs using AJAX
+                        $.ajax({
+                            url: 'professorfetch_logs.php', // Create this file to fetch logs based on the professor ID
+                            type: 'POST',
+                            data: { id: id },
+                            success: function(data){
+                                $('#logsTable tbody').html(data);
+                                $('#viewLogsModal').modal('show');
+                            },
+                            error: function(){
+                                alert('Error retrieving logs.');
+                            }
+                        });
+                    });
+                });
+
+                // Your existing code for viewing logs
+$('.view').click(function() {
     var id = $(this).data('id');
-    getViewRow(id);
-  });
+    var professorName = $(this).data('professor-name');
+    $('#professorName').text(professorName);
+
+    $.ajax({
+        url: 'professorfetch_logs.php',
+        type: 'POST',
+        data: { id: id },
+        success: function(data) {
+            $('#logsTable tbody').html(data);
+            
+            // Check if the logs are empty
+            if ($('#logsTable tbody tr').length === 0) {
+                $('#emptyLogsMessage').show(); // Show the empty message
+            } else {
+                $('#emptyLogsMessage').hide(); // Hide the empty message
+            }
+
+            $('#viewLogsModal').modal('show');
+        },
+        error: function() {
+            alert('Error retrieving logs.');
+        }
+    });
 });
-
-function getViewRow(id){
-  $.ajax({
-    type: 'POST',
-    url: 'tutee_view.php', // PHP file to handle the AJAX request and retrieve tutee information
-    data: {id:id},
-    dataType: 'json',
-    success: function(response){
-      // Populate the modal with the retrieved data
-      $('#view_firstname').text(response.firstname);
-      $('#view_lastname').text(response.lastname);
-      $('#view_age').text(response.age);
-      $('#view_sex').text(response.sex);
-      $('#view_number').text(response.number);
-      $('#view_guardianname').text(response.guardianname);
-      $('#view_fblink').text(response.fblink);
-      $('#view_emailaddress').text(response.emailaddress);
-      $('#view_barangay').text(response.barangay);
-    }
-  });
-}
-
-$(function(){
-  $(document).on('click', '.edit', function(e){
-    e.preventDefault();
-    $('#edit').modal('show');
-    var id = $(this).data('id');
-    getRow(id);
-  });
-
-  $(document).on('click', '.delete', function(e){
-    e.preventDefault();
-    $('#delete').modal('show');
-    var id = $(this).data('id');
-    getRow(id);
-  });
-});
-
-function getRow(id){
-  $.ajax({
-    type: 'POST',
-    url: 'tutee_row.php',
-    data: {id:id},
-    dataType: 'json',
-    success: function(response){
-      $('.id').val(response.id);
-      $('#edit_firstname').val(response.firstname);
-      $('#edit_lastname').val(response.lastname);
-      $('#edit_age').val(response.age);
-      $('#edit_sex').val(response.sex);
-      $('#edit_number').val(response.number);
-      $('#edit_guardianname').val(response.guardianname);
-      $('#edit_fblink').val(response.fblink);
-      $('#edit_emailaddress').val(response.emailaddress);
-      $('#edit_barangay').val(response.barangay);
-      $('.fullname').html(response.firstname+' '+response.lastname);
-    }
-  });
-}
 </script>
 <script>
   let sortDirection = false;
@@ -437,5 +461,4 @@ function getRow(id){
     });
   }
 </script>
-</body>
 </html>
