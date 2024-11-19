@@ -244,7 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (move_uploaded_file($file_tmp, $upload_file)) {
                                 // Insert into database
-                                $query = "INSERT INTO events (tutor_id, event_name, rendered_hours, description, attached_file) VALUES (:tutor_id, :event_name, :rendered_hours, :description, :attached_file)";
+                                $query = "INSERT INTO events (tutor_id, event_name, rendered_hours, description, attached_file, status) VALUES (:tutor_id, :event_name, :rendered_hours, :description, :attached_file, 'unverified')";
                                 $stmt = $user_login->runQuery($query);
                                 $stmt->bindParam(':tutor_id', $userData['id']); // Use the current tutor's ID
                                 $stmt->bindParam(':event_name', $event_name);
