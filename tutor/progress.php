@@ -839,7 +839,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         
                                 // Disable button if hours are less than 90 or session status is 'requested' or 'completed'
                                 if ($total_rendered_hours < 90 || $sessionStatus === 'requested' || $sessionStatus === 'completed') {
-                                    echo 'disabled';  // Only echo 'disabled' if the condition is met
+                                    echo 'style="display:none;"';  // Only echo 'disabled' if the condition is met
                                 }
                             ?>>
                             Request Finish Tutoring
