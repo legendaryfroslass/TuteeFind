@@ -122,47 +122,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['success' => false, 'message' => 'No file uploaded.']);
             }
         } elseif ($_POST['action'] === 'edit_week') {
-                    $tutee_id = $_POST['tutee_id'];
-                    $week_number = $_POST['week_number'];
-                    $description = $_POST['description'];
-                    $rendered_hours = $_POST['rendered_hours'];
-                    $location = $_POST['location'];
-                    $subject = $_POST['subject'];
-                    $file_path = null;
-
-                    // Handle file upload if provided
-                    if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] === UPLOAD_ERR_OK) {
-                        $file = $_FILES['file-upload'];
-                        $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
-                        $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . $random_number = random_int(100000, 999999) . '.' . $fileExtension;
-                        $file_path = $uploadDir;
-                        move_uploaded_file($_FILES['file-upload']['tmp_name'], $file_path);
+            $tutee_id = $_POST['tutee_id'];
+            $week_number = $_POST['week_number'];
+            $description = $_POST['description'];
+            $rendered_hours = $_POST['rendered_hours'];
+            $location = $_POST['location'];
+            $subject = $_POST['subject'];
+            $file_path = null;
+        
+            // Fetch the existing file path from the database
+            try {
+                $query = "SELECT uploaded_files FROM tutee_progress WHERE tutee_id = :tutee_id AND week_number = :week_number";
+                $stmt = $user_login->runQuery($query);
+                $stmt->bindParam(':tutee_id', $tutee_id);
+                $stmt->bindParam(':week_number', $week_number);
+                $stmt->execute();
+                $existing_file = $stmt->fetch(PDO::FETCH_ASSOC)['uploaded_files'];
+            } catch (PDOException $e) {
+                echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+                exit;
+            }
+        
+            // Handle file upload if provided
+            if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['file-upload'];
+                $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $uploadDir = '../uploads/' . $tutorSession . '_week' . $week_number . random_int(100000, 999999) . '.' . $fileExtension;
+                $file_path = $uploadDir;
+        
+                // Move the new file
+                if (move_uploaded_file($file['tmp_name'], $file_path)) {
+                    // Delete the existing file if the upload was successful
+                    if (!empty($existing_file) && file_exists($existing_file)) {
+                        unlink($existing_file);
                     }
-
-                    $stmt = $user_login->runQuery("
-                        UPDATE tutee_progress 
-                        SET week_number = :week_number, 
-                            description = :description, 
-                            rendered_hours = :rendered_hours, 
-                            location = :location, 
-                            subject = :subject, 
-                            uploaded_files = COALESCE(:uploaded_files, uploaded_files)
-                        WHERE tutee_id = :tutee_id AND week_number = :week_number
-                    ");
-                    $stmt->bindParam(':week_number', $week_number);
-                    $stmt->bindParam(':description', $description);
-                    $stmt->bindParam(':rendered_hours', $rendered_hours);
-                    $stmt->bindParam(':location', $location);
-                    $stmt->bindParam(':subject', $subject);
-                    $stmt->bindParam(':uploaded_files', $file_path);
-                    $stmt->bindParam(':tutee_id', $tutee_id);
-
-                    if ($stmt->execute()) {
-                        echo json_encode(['success' => true]);
-                    } else {
-                        echo json_encode(['success' => false, 'error' => 'Failed to update record.']);
-                    }
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'File upload failed']);
+                    exit;
                 }
+            }
+        
+            // Update the tutee's progress in the database
+            try {
+                $stmt = $user_login->runQuery("
+                    UPDATE tutee_progress 
+                    SET week_number = :week_number, 
+                        description = :description, 
+                        rendered_hours = :rendered_hours, 
+                        location = :location, 
+                        subject = :subject, 
+                        uploaded_files = COALESCE(:uploaded_files, uploaded_files)
+                    WHERE tutee_id = :tutee_id AND week_number = :week_number
+                ");
+                $stmt->bindParam(':week_number', $week_number);
+                $stmt->bindParam(':description', $description);
+                $stmt->bindParam(':rendered_hours', $rendered_hours);
+                $stmt->bindParam(':location', $location);
+                $stmt->bindParam(':subject', $subject);
+                $stmt->bindParam(':uploaded_files', $file_path);
+                $stmt->bindParam(':tutee_id', $tutee_id);
+        
+                if ($stmt->execute()) {
+                    echo json_encode(['success' => true]);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Failed to update record.']);
+                }
+            } catch (PDOException $e) {
+                echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+            }
+        }
         elseif ($_POST['action'] === 'finish_session') {
             $tutor_id = $_POST['tutor_id'];
             $tutee_id = $_POST['tutee_id'];
@@ -279,6 +307,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Initialize file name variable (for the new file)
                 $file_name = null;
             
+                // Set upload directory
+                $upload_dir = '../uploads/events/';
+            
+                // Check for the existing file in the database
+                try {
+                    $query = "SELECT attached_file FROM events WHERE id = :event_id AND tutor_id = :tutor_id";
+                    $stmt = $user_login->runQuery($query);
+                    $stmt->bindParam(':event_id', $event_id);
+                    $stmt->bindParam(':tutor_id', $tutor_id); // Use the logged-in tutor ID
+                    $stmt->execute();
+                    $existing_file = $stmt->fetch(PDO::FETCH_ASSOC)['attached_file'];
+                } catch (PDOException $e) {
+                    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+                    exit;
+                }
+            
                 // Handle file upload if there is a new file
                 if (isset($_FILES['attached_file']) && $_FILES['attached_file']['error'] === UPLOAD_ERR_OK) {
                     $file_name = $_FILES['attached_file']['name'];
@@ -290,13 +334,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (in_array($file_ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
                         // Check file size (limit to 10MB)
                         if ($file_size <= 10485760) {
-                            // Set upload directory
-                            $upload_dir = '../uploads/events/';
-                            $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
+                            $upload_file = $upload_dir . $tutorSession . '_event_' . random_int(100000, 999999) . '.' . $file_ext;
             
                             // Move the file to the upload directory
                             if (move_uploaded_file($file_tmp, $upload_file)) {
-                                // File uploaded successfully
+                                // Delete the existing file if a new file is successfully uploaded
+                                if (!empty($existing_file) && file_exists($existing_file)) {
+                                    unlink($existing_file);
+                                }
                             } else {
                                 echo json_encode(['success' => false, 'message' => 'File upload failed']);
                                 exit;
@@ -318,7 +363,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                               SET event_name = :event_name, 
                                   rendered_hours = :rendered_hours, 
                                   description = :description, 
-                                  created_at = CURRENT_TIMESTAMP";  // Add this line to update created_at
+                                  created_at = CURRENT_TIMESTAMP";
             
                     // If there is a new file, include it in the update query
                     if ($file_name) {
@@ -352,7 +397,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } catch (PDOException $e) {
                     echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
                 }
-            } elseif ($_POST['action'] === 'delete_event') {
+            }
+             elseif ($_POST['action'] === 'delete_event') {
                 $event_id = $_POST['event_id'];
             
                 // Validate the event belongs to the tutor (replace $tutor_id with the current tutor's ID)
