@@ -9,7 +9,7 @@
     display: block;
   }
   .scrollable-table thead {
-    position: sticky;
+    position: sticky; 
     top: 0;
     background-color: #fff;
     z-index: 1;

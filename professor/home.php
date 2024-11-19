@@ -81,7 +81,29 @@ $professor_id = $_SESSION['professor_id'];
             <a href="matches.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
-      
+
+       <!-- ./col -->
+       <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-green">
+            <div class="inner">
+
+              <?php
+               $sql = "SELECT * FROM tutor";
+                $query = $conn->query($sql);
+
+                echo "<h3>".$query->num_rows."</h3>";
+              ?>
+          
+              <p>No. of Request</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-user"></i>
+            </div>
+            <a href="rendered_request.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+
         <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
           <!-- small box -->
@@ -97,10 +119,9 @@ $professor_id = $_SESSION['professor_id'];
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $row = $result->fetch_assoc();
-                
                 echo "<h3>".$row['count']."</h3>";
-        
               ?>
+              
 
               <p>No. of Tutor</p>
             </div>

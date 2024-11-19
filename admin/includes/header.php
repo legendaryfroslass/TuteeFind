@@ -61,4 +61,7 @@
         font-size: 25px;
       }
   	</style>
+    <!-- //for logo -->
+        <link rel="icon" href="LoginBackground/ltslogo.png" type="image/png">
+
 </head>

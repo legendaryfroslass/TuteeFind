@@ -6,7 +6,9 @@
 ?>
 <?php include 'includes/header.php'; ?>
 <body class="hold-transition login-page" style="background-image: url('LoginBackground/plv1.jpg'); background-size: cover; background-position: center;">
-
+<head>
+<link rel="icon" href="LoginBackground/ltslogo.png" type="image/png">
+</head>
 <div class="login-overlay"></div> <!-- Overlay to darken the background -->
 
 <div class="login-box">
