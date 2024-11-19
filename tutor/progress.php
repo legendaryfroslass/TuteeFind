@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
                 $file = $_FILES['file'];
                 $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
-                $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . '.' . $fileExtension;
+                $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . $random_number = random_int(100000, 999999) . '.' . $fileExtension;
                 $targetPath = $uploadDir;
 
                 if (move_uploaded_file($file['tmp_name'], $targetPath)) {
