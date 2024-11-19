@@ -292,7 +292,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($file_size <= 10485760) {
                             // Set upload directory
                             $upload_dir = '../uploads/events/';
-                            $upload_file = $upload_dir . basename($file_name);
+                            $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
             
                             // Move the file to the upload directory
                             if (move_uploaded_file($file_tmp, $upload_file)) {
@@ -337,7 +337,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                     // Bind the file parameter if there is a file
                     if ($file_name) {
-                        $stmt->bindParam(':attached_file', $file_name);
+                        $stmt->bindParam(':attached_file', $upload_file);
                     }
             
                     $stmt->bindParam(':event_id', $event_id);
