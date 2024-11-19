@@ -836,12 +836,11 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                 $stmt->bindParam(':tutee_id', $tutee['id']);
                                 $stmt->execute();
                                 $sessionStatus = $stmt->fetchColumn();
-
+                        
                                 // Disable button if hours are less than 90 or session status is 'requested' or 'completed'
                                 if ($total_rendered_hours < 90 || $sessionStatus === 'requested' || $sessionStatus === 'completed') {
-                                    echo 'disabled';
+                                    echo 'disabled';  // Only echo 'disabled' if the condition is met
                                 }
-                                
                             ?>>
                             Request Finish Tutoring
                         </button>
