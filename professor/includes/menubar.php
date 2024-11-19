@@ -38,9 +38,9 @@
             </span>
         </a>
         <ul class="treeview-menu">
-            <li><a href="tutor.php"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
-            <li><a href="tutee.php"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
-            <li><a href="tutor_request.php"><i class="fa fa-child"></i> <span>Request</span></a></li>
+            <li><a href="tutor"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
+            <li><a href="tutee"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
+            <li><a href="tutor_request"><i class="fa fa-child"></i> <span>Request</span></a></li>
         </ul>
     </li>
 
@@ -54,8 +54,8 @@
             </span>
         </a>
         <ul class="treeview-menu">
-            <li><a href="logs_tutor.php"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
-            <li><a href="logs_tutee.php"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
+            <li><a href="logs_tutor"><i class="fa fa-users"></i> <span>Tutor</span></a></li>
+            <li><a href="logs_tutee"><i class="fa fa-child"></i> <span>Tutee</span></a></li>
         </ul>
     </li>
 </ul>
