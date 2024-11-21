@@ -597,7 +597,7 @@ if (isset($_POST['send_message'])) {
 
 <!-- Profile Modal -->
 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg w-50">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
@@ -608,7 +608,7 @@ if (isset($_POST['send_message'])) {
             <div class="modal-body">
                 <!-- Scrollable Section -->
                 <div class="row">
-                    <div class="text-center mb-4">
+                    <div class="col-12 text-center mb-4">
                         <img id="profileModalPhoto" 
                             class="img-fluid" 
                             style="border-radius: 50%; border: 3px solid #007bff; height: 120px; width: 120px;" 
@@ -616,55 +616,55 @@ if (isset($_POST['send_message'])) {
                         <h5 id="profileModalName" class="mt-3 mb-1" style="font-weight: bold; color: #333;"></h5>
                         <p id="profileModalBio" class="mb-1" style="color: #555;"></p>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
                         <label class="fw-bold text-start">Barangay</label>
                         <div class="border p-2 rounded bg-light">
                             <span id="profileModalBrgy"></span>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
                         <label class="fw-bold">Contact Number</label>
                         <div class="border p-2 rounded bg-light">
                             <span id="numberValue"></span>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
                         <label class="fw-bold">Email</label>
                         <div class="border p-2 rounded bg-light">
                             <span id="profileModalEmail"></span>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
                         <label class="fw-bold">Age</label>
                         <div class="border p-2 rounded bg-light">
                             <span id="profileModalAge"></span>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
                         <label class="fw-bold">Guardian's Name</label>
                         <div class="border p-2 rounded bg-light">
                             <span id="profileModalGuardianName"></span>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
                         <label class="fw-bold">Facebook</label>
                         <div class="border p-2 rounded bg-light">
                             <a id="profileModalFbLink" target="_blank" style="text-decoration: none; color: #007bff;"></a>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
                         <label class="fw-bold">Grade</label>
                         <div class="border p-2 rounded bg-light">
                             <span id="profileModalGrade"></span>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
                         <label class="fw-bold">Address</label>
                         <div class="border p-2 rounded bg-light">
                             <span id="profileModalAddress"></span>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
                         <label class="fw-bold">School</label>
                         <div class="border p-2 rounded bg-light">
                             <span id="profileModalSchool"></span>
@@ -679,6 +679,7 @@ if (isset($_POST['send_message'])) {
         </div>
     </div>
 </div>
+
 
 
 
