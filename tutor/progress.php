@@ -238,8 +238,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Check file type (allow only image formats)
                     if (in_array($file_ext, ['jpg', 'jpeg', 'png'])) {
-                        // Check file size (limit to 10MB)
-                        if ($file_size <= 10485760) {
+                        // Check file size (limit to 4MB)
+                        if ($file_size <= 4194304) {
                             // Move the file to your upload directory
                             $upload_dir = '../uploads/events/';
                             $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
@@ -263,7 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 echo json_encode(['success' => false, 'message' => 'File upload failed']);
                             }
                         } else {
-                            echo json_encode(['success' => false, 'message' => 'File size exceeds 10MB']);
+                            echo json_encode(['success' => false, 'message' => 'File size exceeds 4MB']);
                         }
                     } else {
                         echo json_encode(['success' => false, 'message' => 'Invalid file type. Only JPG, JPEG, PNG allowed']);
@@ -290,8 +290,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                     // Check file type (allow only image formats)
                     if (in_array($file_ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
-                        // Check file size (limit to 10MB)
-                        if ($file_size <= 10485760) {
+                        // Check file size (limit to 4MB)
+                        if ($file_size <= 4194304) {
                             // Set upload directory
                             $upload_dir = '../uploads/events/';
                             $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
@@ -304,7 +304,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 exit;
                             }
                         } else {
-                            echo json_encode(['success' => false, 'message' => 'File size exceeds 10MB']);
+                            echo json_encode(['success' => false, 'message' => 'File size exceeds 4MB']);
                             exit;
                         }
                     } else {
@@ -959,7 +959,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
       </div>
       <div class="modal-footer d-flex justify-content-center border-0">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary" onclick="showSpinner()">Save Week</button>
+        <button type="submit" class="btn btn-primary" >Save Week</button>
         </form>
       </div>
     </div>
@@ -983,7 +983,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                   <button type="submit" class="btn btn-danger" id="deleteBtn" onclick="showSpinner()">Delete</button>
+                   <button type="submit" class="btn btn-danger" id="deleteBtn">Delete</button>
                 </div>
             </form>
         </div>
@@ -1022,7 +1022,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="attachFileOther" class="form-label">Attach File (Pictures Only, Max 10mb)</label>
+                            <label for="attachFileOther" class="form-label">Attach Event File (Max 4mb)</label>
                             <input type="file" class="form-control" id="attachFileOther" name="attached_file" accept="image/*" required>
                         </div>
                     </div>
@@ -1031,11 +1031,30 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             </div>
             <div class="modal-footer d-flex justify-content-center border-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary"  onclick="showSpinner()" id="saveEventBtn">Add Event</button>
+                <button type="submit" class="btn btn-primary" id="saveEventBtn">Add Event</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- error modal for upload -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="errorModalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -1050,7 +1069,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="showSpinner()" id="confirmDeleteBtn">Delete</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
             </div>
         </div>
     </div>
@@ -1297,7 +1316,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         // Reload the page or remove the row from the table
                         showSpinner();
                     } else {
-                        alert(res.message); // Show any error message
+                        showErrorModal(response.message); // Show any error message
                     }
                     
                 }
@@ -1420,10 +1439,20 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
         return;
     }
 
-    // Check file size (max 10MB) and type (only .jpg, .jpeg, .png allowed)
-    if (file.size > 10485760) {
-        alert("File size exceeds 10MB. Please upload a smaller file.");
+    // Check file size (max 4MB) and type (only .jpg, .jpeg, .png allowed)
+    if (file.size > 4194304) {
+        alert("File size exceeds 4MB. Please upload a smaller file.");
         return;
+    }
+
+    // Function to show the error modal with a message
+    function showErrorModal(message) {
+        // Set the error message in the modal body
+        document.getElementById('errorModalMessage').textContent = message;
+
+        // Show the modal
+        const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
     }
 
     // Prepare FormData to send via AJAX
@@ -1443,13 +1472,12 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             if (response.success) {
                 showSpinner();
             } else {
-                alert("Failed to add event. Please try again.");
+                showErrorModal(response.message);
             }
         } else {
-            alert("Error occurred. Please try again.");
+            showErrorModal(response.message);
         }
     };
-    hideSpinner();
     xhr.send(formData);
 });
 
@@ -1514,9 +1542,6 @@ $('.deleteEventBtn').on('click', function() {
     var eventId = $(this).find('i').data('id');  // Get the event ID from the icon's data-id
     $('#event_id').val(eventId);  // Set the event ID in the hidden input field inside the modal
     $('#deleteEventMessage').text('');  // Clear any previous messages
-
-    // Show the spinner when the delete button is clicked
-    
 });
 
 // Handle form submission
@@ -1615,7 +1640,7 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             error: function(xhr, status, error) {
                 // Handle error
-                alert('An error occurred: ' + error);
+                showErrorModal(response.message);
             }
         }); $('#addWeekModal-' + tuteeId).modal('hide'); // Hide modal after success
             hideSpinner();
