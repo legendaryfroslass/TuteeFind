@@ -819,6 +819,15 @@ body {
 .table-wrapper {
   max-height: 200px; /* Adjust height as needed */
   overflow-y: auto;
+  display: flex; /* Enable flexbox layout */
+  justify-content: center; /* Center the table horizontally */
+}
+
+#eventsTable th,
+#eventsTable td {
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle; /* Ensures vertical centering */
 }
 
 @media (max-width: 768px) {
