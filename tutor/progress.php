@@ -3,10 +3,12 @@ error_reporting(E_ALL);
 session_start();
 require_once '../tutor.php';
 
+
 $user_login = new TUTOR();
 if (!$user_login->is_logged_in()) {
     $user_login->redirect('login');
 }
+
 
 $tutorSession = $_SESSION['tutorSession'];
 $stmt = $user_login->runQuery("SELECT * FROM tutor WHERE student_id = :student_id");
@@ -122,75 +124,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['success' => false, 'message' => 'No file uploaded.']);
             }
         } elseif ($_POST['action'] === 'edit_week') {
-            $tutee_id = $_POST['tutee_id'];
-            $week_number = $_POST['week_number'];
-            $description = $_POST['description'];
-            $rendered_hours = $_POST['rendered_hours'];
-            $location = $_POST['location'];
-            $subject = $_POST['subject'];
-            $file_path = null;
-        
-            // Fetch the existing file path from the database
-            try {
-                $query = "SELECT uploaded_files FROM tutee_progress WHERE tutee_id = :tutee_id AND week_number = :week_number";
-                $stmt = $user_login->runQuery($query);
-                $stmt->bindParam(':tutee_id', $tutee_id);
-                $stmt->bindParam(':week_number', $week_number);
-                $stmt->execute();
-                $existing_file = $stmt->fetch(PDO::FETCH_ASSOC)['uploaded_files'];
-            } catch (PDOException $e) {
-                echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
-                exit;
-            }
-        
-            // Handle file upload if provided
-            if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] === UPLOAD_ERR_OK) {
-                $file = $_FILES['file-upload'];
-                $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
-                $uploadDir = '../uploads/' . $tutorSession . '_week' . $week_number . random_int(100000, 999999) . '.' . $fileExtension;
-                $file_path = $uploadDir;
-        
-                // Move the new file
-                if (move_uploaded_file($file['tmp_name'], $file_path)) {
-                    // Delete the existing file if the upload was successful
-                    if (!empty($existing_file) && file_exists($existing_file)) {
-                        unlink($existing_file);
+                    $tutee_id = $_POST['tutee_id'];
+                    $week_number = $_POST['week_number'];
+                    $description = $_POST['description'];
+                    $rendered_hours = $_POST['rendered_hours'];
+                    $location = $_POST['location'];
+                    $subject = $_POST['subject'];
+                    $file_path = null;
+
+                    // Handle file upload if provided
+                    if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] === UPLOAD_ERR_OK) {
+                        $file = $_FILES['file-upload'];
+                        $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+                        $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . $random_number = random_int(100000, 999999) . '.' . $fileExtension;
+                        $file_path = $uploadDir;
+                        move_uploaded_file($_FILES['file-upload']['tmp_name'], $file_path);
                     }
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'File upload failed']);
-                    exit;
+
+                    $stmt = $user_login->runQuery("
+                        UPDATE tutee_progress 
+                        SET week_number = :week_number, 
+                            description = :description, 
+                            rendered_hours = :rendered_hours, 
+                            location = :location, 
+                            subject = :subject, 
+                            uploaded_files = COALESCE(:uploaded_files, uploaded_files)
+                        WHERE tutee_id = :tutee_id AND week_number = :week_number
+                    ");
+                    $stmt->bindParam(':week_number', $week_number);
+                    $stmt->bindParam(':description', $description);
+                    $stmt->bindParam(':rendered_hours', $rendered_hours);
+                    $stmt->bindParam(':location', $location);
+                    $stmt->bindParam(':subject', $subject);
+                    $stmt->bindParam(':uploaded_files', $file_path);
+                    $stmt->bindParam(':tutee_id', $tutee_id);
+
+                    if ($stmt->execute()) {
+                        echo json_encode(['success' => true]);
+                    } else {
+                        echo json_encode(['success' => false, 'error' => 'Failed to update record.']);
+                    }
                 }
-            }
-        
-            // Update the tutee's progress in the database
-            try {
-                $stmt = $user_login->runQuery("
-                    UPDATE tutee_progress 
-                    SET week_number = :week_number, 
-                        description = :description, 
-                        rendered_hours = :rendered_hours, 
-                        location = :location, 
-                        subject = :subject, 
-                        uploaded_files = COALESCE(:uploaded_files, uploaded_files)
-                    WHERE tutee_id = :tutee_id AND week_number = :week_number
-                ");
-                $stmt->bindParam(':week_number', $week_number);
-                $stmt->bindParam(':description', $description);
-                $stmt->bindParam(':rendered_hours', $rendered_hours);
-                $stmt->bindParam(':location', $location);
-                $stmt->bindParam(':subject', $subject);
-                $stmt->bindParam(':uploaded_files', $file_path);
-                $stmt->bindParam(':tutee_id', $tutee_id);
-        
-                if ($stmt->execute()) {
-                    echo json_encode(['success' => true]);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Failed to update record.']);
-                }
-            } catch (PDOException $e) {
-                echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
-            }
-        }
         elseif ($_POST['action'] === 'finish_session') {
             $tutor_id = $_POST['tutor_id'];
             $tutee_id = $_POST['tutee_id'];
@@ -272,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (move_uploaded_file($file_tmp, $upload_file)) {
                                 // Insert into database
-                                $query = "INSERT INTO events (tutor_id, event_name, rendered_hours, description, attached_file, status) VALUES (:tutor_id, :event_name, :rendered_hours, :description, :attached_file, 'unverified')";
+                                $query = "INSERT INTO events (tutor_id, event_name, rendered_hours, description, attached_file) VALUES (:tutor_id, :event_name, :rendered_hours, :description, :attached_file)";
                                 $stmt = $user_login->runQuery($query);
                                 $stmt->bindParam(':tutor_id', $userData['id']); // Use the current tutor's ID
                                 $stmt->bindParam(':event_name', $event_name);
@@ -307,22 +281,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Initialize file name variable (for the new file)
                 $file_name = null;
             
-                // Set upload directory
-                $upload_dir = '../uploads/events/';
-            
-                // Check for the existing file in the database
-                try {
-                    $query = "SELECT attached_file FROM events WHERE id = :event_id AND tutor_id = :tutor_id";
-                    $stmt = $user_login->runQuery($query);
-                    $stmt->bindParam(':event_id', $event_id);
-                    $stmt->bindParam(':tutor_id', $tutor_id); // Use the logged-in tutor ID
-                    $stmt->execute();
-                    $existing_file = $stmt->fetch(PDO::FETCH_ASSOC)['attached_file'];
-                } catch (PDOException $e) {
-                    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
-                    exit;
-                }
-            
                 // Handle file upload if there is a new file
                 if (isset($_FILES['attached_file']) && $_FILES['attached_file']['error'] === UPLOAD_ERR_OK) {
                     $file_name = $_FILES['attached_file']['name'];
@@ -334,14 +292,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (in_array($file_ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
                         // Check file size (limit to 10MB)
                         if ($file_size <= 10485760) {
-                            $upload_file = $upload_dir . $tutorSession . '_event_' . random_int(100000, 999999) . '.' . $file_ext;
+                            // Set upload directory
+                            $upload_dir = '../uploads/events/';
+                            $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
             
                             // Move the file to the upload directory
                             if (move_uploaded_file($file_tmp, $upload_file)) {
-                                // Delete the existing file if a new file is successfully uploaded
-                                if (!empty($existing_file) && file_exists($existing_file)) {
-                                    unlink($existing_file);
-                                }
+                                // File uploaded successfully
                             } else {
                                 echo json_encode(['success' => false, 'message' => 'File upload failed']);
                                 exit;
@@ -363,7 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                               SET event_name = :event_name, 
                                   rendered_hours = :rendered_hours, 
                                   description = :description, 
-                                  created_at = CURRENT_TIMESTAMP";
+                                  created_at = CURRENT_TIMESTAMP";  // Add this line to update created_at
             
                     // If there is a new file, include it in the update query
                     if ($file_name) {
@@ -397,8 +354,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } catch (PDOException $e) {
                     echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
                 }
-            }
-             elseif ($_POST['action'] === 'delete_event') {
+            } elseif ($_POST['action'] === 'delete_event') {
                 $event_id = $_POST['event_id'];
             
                 // Validate the event belongs to the tutor (replace $tutor_id with the current tutor's ID)
@@ -510,6 +466,8 @@ $progress_percentage = min(($total_rendered_hours / $target_hours) * 100, 100);
 $has_events_data = $events_rendered_hours > 0;
 $has_tutee_data = count($tutee_rendered_hours) > 0;
 
+// spinner
+    include('spinner.php');
 ?>
 
 <!DOCTYPE html>
@@ -518,6 +476,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="what.css">
+    <link rel="stylesheet" href="spinner.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="icon" href="../assets/TuteeFindLogo.png" type="image/png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -737,7 +696,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                         <?php endif; ?>
                                     </td>
                                     <td><?php echo htmlspecialchars($event['status']); ?></td>
-                                    <td class="d-flex justify-content-center">
+                                    <td class="justify-content-center">
                                         <button 
                                         <?php if ($event['status'] === 'verified'): ?> disabled <?php endif; ?>
                                         class="btn btn-primary me-2 editEventBtn" 
@@ -745,8 +704,10 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                         data-name="<?php echo htmlspecialchars($event['event_name']); ?>" 
                                         data-hours="<?php echo htmlspecialchars($event['rendered_hours']); ?>" 
                                         data-description="<?php echo htmlspecialchars($event['description']); ?>" 
-                                        data-file="<?php echo htmlspecialchars($event['attached_file']); ?>"><i class='bx bxs-edit'
-                                        data-bs-toggle="modal" data-bs-target="#editEventModal"></i></button>
+                                        data-file="<?php echo htmlspecialchars($event['attached_file']); ?>"
+                                        data-bs-toggle="modal" data-bs-target="#editEventModal">
+                                        <i class='bx bxs-edit'></i>
+                                        </button>
 
                                         <!-- Delete Event Button -->
                                         <button class="btn btn-danger deleteEventBtn" 
@@ -998,7 +959,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
       </div>
       <div class="modal-footer d-flex justify-content-center border-0">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Week</button>
+        <button type="submit" class="btn btn-primary" onclick="showSpinner()">Save Week</button>
         </form>
       </div>
     </div>
@@ -1022,7 +983,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger" id="deleteBtn">Delete</button>
+                   <button type="submit" class="btn btn-danger" id="deleteBtn" onclick="showSpinner()">Delete</button>
                 </div>
             </form>
         </div>
@@ -1070,7 +1031,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             </div>
             <div class="modal-footer d-flex justify-content-center border-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="saveEventBtn">Add Event</button>
+                <button type="submit" class="btn btn-primary"  onclick="showSpinner()" id="saveEventBtn">Add Event</button>
             </div>
         </div>
     </div>
@@ -1089,7 +1050,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                <button type="button" class="btn btn-danger" onclick="showSpinner()" id="confirmDeleteBtn">Delete</button>
             </div>
         </div>
     </div>
@@ -1334,15 +1295,17 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                     const res = JSON.parse(response);
                     if (res.success) {
                         // Reload the page or remove the row from the table
-                        window.location.reload();  // Refresh the page to show the new event
+                        showSpinner();
                     } else {
                         alert(res.message); // Show any error message
                     }
+                    
                 }
             });
 
             // Hide the modal after the deletion attempt
             $('#deleteModal').modal('hide');
+            hideSpinner();
         });
 
 
@@ -1478,7 +1441,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
         if (xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             if (response.success) {
-                window.location.reload();  // Refresh the page to show the new event
+                showSpinner();
             } else {
                 alert("Failed to add event. Please try again.");
             }
@@ -1486,6 +1449,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             alert("Error occurred. Please try again.");
         }
     };
+    hideSpinner();
     xhr.send(formData);
 });
 
@@ -1545,11 +1509,14 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
     });
 
 
-    // When the delete button is clicked
+// When the delete button is clicked
 $('.deleteEventBtn').on('click', function() {
     var eventId = $(this).find('i').data('id');  // Get the event ID from the icon's data-id
     $('#event_id').val(eventId);  // Set the event ID in the hidden input field inside the modal
     $('#deleteEventMessage').text('');  // Clear any previous messages
+
+    // Show the spinner when the delete button is clicked
+    
 });
 
 // Handle form submission
@@ -1570,18 +1537,25 @@ $('#deleteEventForm').on('submit', function(e) {
             if (data.success) {
                 $('#deleteEventMessage').text(data.message).removeClass('text-danger').addClass('text-success');  // Display success message in modal
                 setTimeout(function() {
-                    $('#deleteEventModal').modal('hide');  // Hide the modal after a short delay
-                    location.reload();  // Optionally reload the page to remove the event from the list
-                }, 1500);  // Delay to show the success message
+                    showSpinner();
+                });  // Delay to show the success message
             } else {
                 $('#deleteEventMessage').text(data.message).removeClass('text-success').addClass('text-danger');  // Display error message in modal
             }
+
+            // Hide the spinner after the request completes (either success or error)
+            $('#deleteEventModal').modal('hide');
+            hideSpinner();
         },
         error: function(xhr, status, error) {
             $('#deleteEventMessage').text('An error occurred: ' + error).removeClass('text-success').addClass('text-danger');
+            
+            // Hide the spinner if the request fails
+            hideSpinner();
         }
     });
 });
+
 
 
 // progress bar script
@@ -1636,14 +1610,15 @@ document.addEventListener("DOMContentLoaded", function () {
             contentType: false,
             success: function(response) {
                 // Handle success (e.g., update the UI, close the modal, etc.)
-                $('#addWeekModal-' + tuteeId).modal('hide'); // Hide modal after success
-                window.location.reload(true); // Force reload and bypass cache
+                
+                showSpinner();
             },
             error: function(xhr, status, error) {
                 // Handle error
                 alert('An error occurred: ' + error);
             }
-        });
+        }); $('#addWeekModal-' + tuteeId).modal('hide'); // Hide modal after success
+            hideSpinner();
     });
 
     // Open the modal when the "Add Week" button is clicked
