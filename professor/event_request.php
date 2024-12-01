@@ -76,26 +76,40 @@ table td button {
 }
 </style>
 <?php
-// Capture the search input if it exists
+// Search and pagination variables
 $search = isset($_GET['search']) ? $_GET['search'] : '';
-
-// Get the current page and the number of entries to show
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10; // Default to 10
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 $offset = ($page - 1) * $limit;
 
+$professor_id = $_SESSION['professor_id'];
+
 // Modify your SQL query to include LIMIT and OFFSET for pagination
+// Query to fetch data with pagination
+// SQL query to fetch tutor data with pagination and search
 $sql = "
-    SELECT t.id, t.lastname, t.firstname, t.student_id, t.course, t.year_section
+    SELECT 
+        t.id AS tutor_id, 
+        t.firstname, 
+        t.lastname, 
+        t.student_id, 
+        t.course, 
+        t.year_section, 
+        e.id AS event_id, 
+        e.rendered_hours, 
+        e.status,
+        e.remarks
     FROM tutor t
+    INNER JOIN events e ON t.id = e.tutor_id
     INNER JOIN professor p ON t.professor = p.faculty_id
     WHERE p.id = ?
     AND (
-        CONCAT(LOWER(t.course), ' ', LOWER(t.year_section)) LIKE LOWER(?) OR
-        CONCAT(LOWER(t.firstname), ' ', LOWER(t.lastname)) LIKE LOWER(?) OR
-        LOWER(t.student_id) LIKE LOWER(?)
+        CONCAT(LOWER(t.firstname), ' ', LOWER(t.lastname)) LIKE ? OR
+        LOWER(t.student_id) LIKE ? OR
+        CONCAT(LOWER(t.course), ' ', LOWER(t.year_section)) LIKE ?
     )
-    LIMIT ? OFFSET ?";
+    LIMIT ? OFFSET ?
+";
 
 $stmt = $conn->prepare($sql);
 $search_param = "%$search%";
@@ -103,17 +117,20 @@ $stmt->bind_param("isssii", $professor_id, $search_param, $search_param, $search
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Query to get total count for pagination
+
+// Query to get the total count for pagination
 $total_sql = "
-    SELECT COUNT(*) as total
+    SELECT COUNT(*) AS total
     FROM tutor t
+    INNER JOIN events e ON t.id = e.tutor_id
     INNER JOIN professor p ON t.professor = p.faculty_id
     WHERE p.id = ?
     AND (
-        CONCAT(LOWER(t.course), ' ', LOWER(t.year_section)) LIKE LOWER(?) OR
-        CONCAT(LOWER(t.firstname), ' ', LOWER(t.lastname)) LIKE LOWER(?) OR
-        LOWER(t.student_id) LIKE LOWER(?)
-    )";
+        CONCAT(LOWER(t.firstname), ' ', LOWER(t.lastname)) LIKE ? OR
+        LOWER(t.student_id) LIKE ? OR
+        CONCAT(LOWER(t.course), ' ', LOWER(t.year_section)) LIKE ?
+    )
+";
 
 $stmt_total = $conn->prepare($total_sql);
 $stmt_total->bind_param("isss", $professor_id, $search_param, $search_param, $search_param);
@@ -122,6 +139,7 @@ $total_result = $stmt_total->get_result();
 $total_rows = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_rows / $limit);
 ?>
+
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -134,11 +152,11 @@ $total_pages = ceil($total_rows / $limit);
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Tutor's List
+Event Request
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Tutor</li>
+        <li class="active">Event Request</li>
       </ol>
     </section>
     <!-- Main content -->
@@ -169,17 +187,16 @@ $total_pages = ceil($total_rows / $limit);
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header with-border">
-            <button class='btn btn-success btn-sm edit btn-flat' data-id='".$row['id']."'><i class='fa fa-edit'></i> Accept All</button>
-            <button class='btn btn-danger btn-sm archiveTutor btn-flat' data-id='".$row['id']."'><i class='fa fa-archive'></i> Reject All</button>     
-              <a href="tutor_pdf.php?search=<?php echo urlencode($search); ?>" class="btn btn-primary btn-sm btn-flat" target="_blank">
-                <i class="fa fa-file-pdf-o"></i> Export to PDF
-              </a>
+            <button class='btn btn-success btn-sm eventAcceptAll btn-flat' data-id='".$row['event_id']."'><i class="fa fa-check-circle mr-2"></i> Accept All</button>
+            <button class='btn btn-danger btn-sm btn-flat eventRejectAll' data-id='" . $row['event_id'] . "'>
+                    <i class='fa fa-times-circle mr-2'></i> Reject All
+                </button>  
             </div>
             
             <div class="box-body">
             
 <!-- Search Form --> 
-<form method="GET" action="tutor_request.php" class="form-inline d-flex justify-content-between align-items-center">
+<form method="GET" action="event_request.php" class="form-inline d-flex justify-content-between align-items-center">
     <div class="form-group me-4"> 
         <label>Show 
             <select name="limit" class="form-control" onchange="this.form.submit()">
@@ -205,7 +222,7 @@ $total_pages = ceil($total_rows / $limit);
           <thead>
             <tr role="row">
               <th><input type="checkbox" id="selectAll"></th> <!-- Checkbox for selecting all -->
-              <th onclick="sortTable(1)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(1)">Tutor <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(2)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(3)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(4)">Rendered Hour/s <i class="fa fa-sort" aria-hidden="true"></i></th>
@@ -216,61 +233,109 @@ $total_pages = ceil($total_rows / $limit);
           <tbody>
           <?php
 if (isset($_SESSION['professor_id'])) {
-    $professor_id = $_SESSION['professor_id'];
-    $search = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '%%'; // Prepare search term for LIKE query
+  $professor_id = $_SESSION['professor_id'];
+  $search = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '%%'; // Prepare search term for LIKE query
 
-    $sql = "
-        SELECT 
-            t.id, 
-            t.firstname, 
-            t.lastname, 
-            t.student_id, 
-            t.course, 
-            t.year_section
-        FROM tutor t
-        INNER JOIN professor p ON t.professor = p.faculty_id
-        WHERE p.id = ?
-        AND (
-            CONCAT(LOWER(t.firstname), ' ', LOWER(t.lastname)) LIKE ? OR
-            LOWER(t.student_id) LIKE ? OR
-            CONCAT(LOWER(t.course), ' ', LOWER(t.year_section)) LIKE ?
-        )
-    ";
+  $sql = "
+  SELECT 
+      t.id AS tutor_id, 
+      t.firstname, 
+      t.lastname, 
+      t.student_id, 
+      t.course, 
+      t.year_section, 
+      e.id AS event_id, 
+      e.rendered_hours, 
+      e.status,
+      e.remarks
+  FROM tutor t
+  INNER JOIN events e ON t.id = e.tutor_id
+  INNER JOIN professor p ON t.professor = p.faculty_id
+  WHERE p.id = ?
+  AND (
+      CONCAT(LOWER(t.firstname), ' ', LOWER(t.lastname)) LIKE ? OR
+      LOWER(t.student_id) LIKE ? OR
+      CONCAT(LOWER(t.course), ' ', LOWER(t.year_section)) LIKE ?
+  )
+  LIMIT ? OFFSET ?
+";
 
-    if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("ssss", $professor_id, $search, $search, $search); // Bind search term to relevant columns
-        $stmt->execute();
-        $result = $stmt->get_result();
+if ($stmt = $conn->prepare($sql)) {
+  $stmt->bind_param("isssii", $professor_id, $search_param, $search_param, $search_param, $limit, $offset);
+  $stmt->execute();
+  $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $name = htmlspecialchars($row['firstname']) . ' ' . htmlspecialchars($row['lastname']); // Sanitize output
-                $courseYearSection = htmlspecialchars($row['course']) . ' ' . htmlspecialchars($row['year_section']);
-                echo "
-                    <tr>
-                        <td><input type='checkbox' class='selectRow' value='" . $row['id'] . "'></td>
-                        <td>$name</td>
-                        <td>" . htmlspecialchars($row['student_id']) . "</td>
-                        <td>$courseYearSection</td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <button class='btn btn-primary btn-sm btn-flat view' data-id='".$row['id']."'><i class='fa fa-eye'></i> View</button>
-                            <button class='btn btn-success btn-sm edit btn-flat' data-id='".$row['id']."'><i class='fa fa-edit'></i> Accept</button>
-                            <button class='btn btn-danger btn-sm archiveTutor btn-flat' data-id='".$row['id']."'><i class='fa fa-archive'></i> Reject</button>                        </td>
-                    </tr>
-                ";
-            }
-        } else {
-            echo "<tr><td colspan='4'>No records found.</td></tr>";
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $name = htmlspecialchars($row['firstname']) . ' ' . htmlspecialchars($row['lastname']); // Sanitize output
+        $courseYearSection = htmlspecialchars($row['course']) . ' ' . htmlspecialchars($row['year_section']);
+        $renderedHours = htmlspecialchars($row['rendered_hours']);
+        $status = htmlspecialchars($row['status']);
+
+        // Define button color based on status
+        $statusClass = '';
+        $statusText = '';
+
+        switch ($status) {
+            case 'pending':
+                $statusClass = 'btn-warning'; // Yellow for pending
+                $statusText = 'Pending';
+                break;
+            case 'accepted':
+                $statusClass = 'btn-success'; // Green for accepted
+                $statusText = 'Accepted';
+                break;
+            case 'rejected':
+                $statusClass = 'btn-danger'; // Red for rejected
+                $statusText = 'Rejected';
+                break;
+            default:
+                $statusClass = 'btn-secondary'; // Default for undefined status
+                $statusText = 'Unknown';
+                break;
         }
-    } else {
-        echo "Error: " . $conn->error;
+
+        // Render the row with conditional buttons
+        echo "
+            <tr>
+                <td><input type='checkbox' class='selectRow' value='" . $row['tutor_id'] . "'></td>
+                <td>$name</td>
+                <td>" . htmlspecialchars($row['student_id']) . "</td>
+                <td>$courseYearSection</td>
+                <td>$renderedHours</td>
+                <td style='text-align: center;'>
+                    <button class='btn $statusClass btn-sm' style='border-radius: 10px; padding: 1px 10px; width: 100px;'>
+                        $statusText
+                    </button>
+                </td>
+                <td>
+                    <button class='btn btn-primary btn-sm btn-flat viewEvent' data-id='" . $row['event_id'] . "'>
+                        <i class='fa fa-eye'></i> View
+                    </button>";
+
+        // Conditionally render Accept and Reject buttons
+        if ($status === 'pending') {
+            echo "
+                <button class='btn btn-success btn-sm accept' data-id='" . $row['event_id'] . "'>
+                    <i class='fa fa-check-circle mr-2'></i> Accept
+                </button>
+                <button class='btn btn-danger btn-sm btn-flat reject' data-id='" . $row['event_id'] . "'>
+                    <i class='fa fa-times-circle mr-2'></i> Reject
+                </button>";
+        }
+
+        echo "
+                </td>
+            </tr>
+        ";
     }
-} else {
-    echo "<tr><td colspan='4'>No faculty ID found for the current professor.</td></tr>";
 }
-?>             
+
+  } else {
+      echo "<tr><td colspan='7'>No records found</td></tr>";
+  }
+}
+  ?>              
 </tbody>
 </table>
 </div>
@@ -310,7 +375,7 @@ if (isset($_SESSION['professor_id'])) {
   </section>
 </div>
 <?php include 'includes/footer.php'; ?>
-  <?php include 'includes/tutor_modal.php'; ?>
+<?php include 'includes/tutor_modal.php'; ?>
 </div>
 <?php include 'includes/scripts.php'; ?>
 
@@ -324,81 +389,91 @@ $(function(){
   });
 });
 
-function getViewRow(id){
-  $.ajax({
-    type: 'POST',
-    url: 'tutor_view.php', // PHP file to handle the AJAX request and retrieve tutor information
-    data: {id:id},
-    dataType: 'json',
-    success: function(response){
-      // Populate the modal with the retrieved data
-      $('#view_firstname').text(response.firstname);
-      $('#view_lastname').text(response.lastname);
-      $('#view_age').text(response.age);
-      $('#view_sex').text(response.sex);
-      $('#view_number').text(response.number);
-      $('#view_barangay').text(response.barangay);
-      $('#view_student_id').text(response.student_id);
-      $('#view_course').text(response.course);
-      $('#view_year_section').text(response.year_section);
-      $('#view_professor').text(response.professor);
-      $('#view_fblink').text(response.fblink);
-      $('#view_emailaddress').text(response.emailaddress);
-    }
-  });
-}
-
-$(function(){
-  $(document).on('click', '.edit', function(e){
+$(function() { 
+  $(document).on('click', '.viewEvent', function(e) {
     e.preventDefault();
-    $('#edit').modal('show');
+    $('#viewEvent').modal('show');
     var id = $(this).data('id');
-    getRow(id);
-  });
-
-  $(document).on('click', '.archiveTutor', function(e){
-    e.preventDefault();
-    $('#archiveTutor').modal('show');
-    var id = $(this).data('id');
-    getRow(id);
-  });
-
-
-  $(document).on('click', '.delete', function(e){
-    e.preventDefault();
-    $('#delete').modal('show');
-    var id = $(this).data('id');
-    getRow(id);
+    getViewRow(id); // Fetch event details
   });
 });
 
-function getRow(id){
-  $.ajax({
-    type: 'POST',
-    url: 'tutor_row.php',
-    data: {id:id},
-    dataType: 'json',
-    success: function(response){
-      $('.id').val(response.id);
-      $('#edit_firstname').val(response.firstname);
-      $('#edit_lastname').val(response.lastname);
-      $('#edit_age').val(response.age);
-      $('#edit_sex').val(response.sex);
-      $('#edit_number').val(response.number);
-      $('#edit_barangay').val(response.barangay);
-      $('#edit_student_id').val(response.student_id);
-      $('#edit_course').val(response.course);
-      $('#edit_year_section').val(response.year_section);
-      $('#edit_preferred_day').val(response.preferred_day);
-      $('#edit_preferred_subject').val(response.preferred_subject);
-      $('#edit_professor').val(response.professor);
-      $('#edit_fblink').val(response.fblink);
-      $('#edit_emailaddress').val(response.emailaddress);
-      $('#edit_password').val(response.password);
-      $('.fullname').html(response.firstname+' '+response.lastname);
-    }
+$(function() { 
+  $(document).on('click', '.accept', function(e) {
+    e.preventDefault();
+    var id = $(this).data('id');
+    $('#accept').modal('show');
+    // Set the event_id in the hidden field when the modal is shown
+    $('#event_id').val(id);
+    getViewRow(id); // Fetch event details
   });
+});
+
+$(function() {
+    $(document).on('click', '.reject', function(e) {
+        e.preventDefault();
+        
+        var id = $(this).data('id');  // Get the event ID from the button's data-id attribute
+        $('#reject').modal('show');   // Show the modal
+        
+        // Dynamically set the event_id in the hidden input
+        $('#event_id2').val(id);       // Set the value of the hidden input
+
+        // Optionally, you can fetch additional details about the event if needed
+        getViewRow(id);  // Call a function to get event details (if required)
+    });
+});
+
+$(function() {
+    $(document).on('click', '.eventRejectAll', function(e) {
+        e.preventDefault();
+        
+        var id = $(this).data('id');  // Get the event ID from the button's data-id attribute
+        $('#eventRejectAll').modal('show');   // Show the modal
+        
+        // Dynamically set the event_id in the hidden input
+        $('#event_id3').val(id);       // Set the value of the hidden input
+
+        // Optionally, you can fetch additional details about the event if needed
+        getViewRow(id);  // Call a function to get event details (if required)
+    });
+});
+
+
+
+function getViewRow(id) {
+    $.ajax({
+        type: 'POST',
+        url: 'view_events.php',
+        data: { id: id },
+        dataType: 'json',
+        success: function(response) {
+            if (response && response.event_name) {
+                $('#view_event_name').text(response.event_name);
+                $('#view_rendered_hours').text(response.rendered_hours);
+                $('#view_description').text(response.description);
+                $('#view_created_at').text(response.created_at);
+                $('#view_status').text(response.status);
+                $('#edit_remarks').val(response.remarks);
+                $('#view_remarks').text(response.remarks);
+
+                if (response.attached_file) {
+                    $('#view_attached_file').html('<img src="' + response.attached_file + '" class="event-image" alt="Event Image">');
+                } else {
+                    $('#view_attached_file').text("No image available.");
+                }
+            } else {
+                $('#view_event_name').text("No event found");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error: " + status + " - " + error);
+        }
+    });
 }
+
+
+
 </script>
 <script>
   let sortDirection = false;
@@ -450,120 +525,8 @@ function getRow(id){
   }
 </script>
 
-<script>
-  // Initialize an array to store selected row IDs
-let selectedRows = JSON.parse(sessionStorage.getItem('selectedRows')) || [];
-
-// Function to update the state of checkboxes based on selected rows
-function updateCheckboxes() {
-  document.querySelectorAll('.selectRow').forEach(checkbox => {
-    if (selectedRows.includes(checkbox.value)) {
-      checkbox.checked = true;
-    }
-  });
-}
-
-// Save selected rows to sessionStorage
-function saveSelectedRows() {
-  sessionStorage.setItem('selectedRows', JSON.stringify(selectedRows));
-}
-
-// When the page loads, update the checkboxes based on previously selected rows
-document.addEventListener('DOMContentLoaded', () => {
-  updateCheckboxes();
-
-  // Event listener for individual row selection
-  document.querySelectorAll('.selectRow').forEach(checkbox => {
-    checkbox.addEventListener('change', function () {
-      const rowId = this.value;
-      if (this.checked) {
-        // Add rowId to selectedRows if it's not already in the array
-        if (!selectedRows.includes(rowId)) {
-          selectedRows.push(rowId);
-        }
-      } else {
-        // Remove rowId from selectedRows if it is unchecked
-        selectedRows = selectedRows.filter(id => id !== rowId);
-      }
-      saveSelectedRows(); // Save updated selected rows to sessionStorage
-    });
-  });
-
-  // Event listener for "Select All" checkbox
-  document.getElementById('selectAll').addEventListener('change', function () {
-    document.querySelectorAll('.selectRow').forEach(checkbox => {
-      checkbox.checked = this.checked;
-      const rowId = checkbox.value;
-      if (this.checked) {
-        if (!selectedRows.includes(rowId)) {
-          selectedRows.push(rowId);
-        }
-      } else {
-        selectedRows = [];
-      }
-    });
-    saveSelectedRows(); // Save updated selected rows to sessionStorage
-  });
-});
-
-// Submit the selected IDs for archiving
-function archiveAllSelected() {
-  if (selectedRows.length === 0) {
-    alert('No tutor selected for archiving.');
-    return;
-  }
-
-  // Create a form to submit the selected IDs
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = 'tutor_archiveAll.php';
-
-  // Add the selected IDs as a hidden input
-  const input = document.createElement('input');
-  input.type = 'hidden';
-  input.name = 'selected_ids';
-  input.value = JSON.stringify(selectedRows);
-  form.appendChild(input);
-
-  // Add a hidden field to indicate the archive action
-  const archiveAction = document.createElement('input');
-  archiveAction.type = 'hidden';
-  archiveAction.name = 'archiveAll';
-  archiveAction.value = 'true';
-  form.appendChild(archiveAction);
-
-  // Submit the form
-  document.body.appendChild(form);
-  form.submit();
-}
-
-  </script>
-
 </body>
 </html>
 
-<!-- Archive All -->
-<div class="modal fade" id="archiveAll">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title"><b>Archiving All...</b></h4>
-            </div>
-            <div class="modal-body">
-              <div class="text-center">
-                  <p>ARCHIVING LIST OF ALL TUTORS</p>
-                  <h4>This will archive all data and counting back to 0.</h4>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
-              <form action="tutor_archiveAll.php" method="POST">
-                <button type="submit" name="archiveAll" class="btn btn-warning btn-sm btn-flat"><i class="fa fa-archive"></i> Archive</button>
-              </form>
-            </div>
-        </div>
-    </div>
-</div>
+
 
