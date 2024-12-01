@@ -81,10 +81,10 @@ if ($userData) {
         $progressData[$tutor['id']] = $progressStmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
-
-// Fetch status for each tutor
+// Fetch status and rating existence for each tutor
 $statusData = [];
 foreach ($tutors as $tutor) {
+    // Fetch session status
     $statusStmt = $user_login->runQuery("
         SELECT status 
         FROM tutor_sessions 
@@ -94,7 +94,22 @@ foreach ($tutors as $tutor) {
     $statusStmt->bindParam(':tutor_id', $tutor['id']);
     $statusStmt->execute();
     $status = $statusStmt->fetch(PDO::FETCH_ASSOC);
-    $statusData[$tutor['id']] = $status ? $status['status'] : ''; 
+
+    // Check if rating exists
+    $ratingStmt = $user_login->runQuery("
+        SELECT COUNT(*) AS rating_exists 
+        FROM tutor_ratings 
+        WHERE tutee_id = :tutee_id AND tutor_id = :tutor_id
+    ");
+    $ratingStmt->bindParam(':tutee_id', $tutee_id);
+    $ratingStmt->bindParam(':tutor_id', $tutor['id']);
+    $ratingStmt->execute();
+    $rating = $ratingStmt->fetch(PDO::FETCH_ASSOC);
+
+    $statusData[$tutor['id']] = [
+        'status' => $status ? $status['status'] : '',
+        'rating_exists' => $rating['rating_exists'] > 0
+    ];
 }
 require_once '../vendor/autoload.php';
 // Decode JSON input
@@ -539,14 +554,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         data-bs-target="#confirmationModal" 
                                         data-tutor-id="<?php echo $tutor['id']; ?>" 
                                         data-tutee-id="<?php echo htmlspecialchars($tutee_id); ?>" 
-                                        <?php echo $statusData[$tutor['id']] === 'requested' ? '' : 'disabled'; ?>>
+                                        <?php echo $statusData[$tutor['id']]['status'] === 'requested' ? '' : 'disabled'; ?>>
                                         Confirm Finish
                                     </button>
                                     <button type="button" class="btn btn-primary my-2" 
                                             id="rateTutorBtn-<?php echo $tutor['id']; ?>" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#rateTutorModal-<?php echo $tutor['id']; ?>"
-                                            <?php echo ($statusData[$tutor['id']] === 'completed') ? '' : 'disabled'; ?>>
+                                            <?php echo $statusData[$tutor['id']]['status'] === 'completed' && !$statusData[$tutor['id']]['rating_exists'] ? '' : 'disabled'; ?>>
                                         Rate Tutor
                                     </button>
                                 </div>

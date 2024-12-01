@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 01, 2024 at 12:47 PM
+-- Generation Time: Dec 01, 2024 at 02:04 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -146,13 +146,6 @@ CREATE TABLE `archive_tutor` (
   `bio` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `archive_tutor`
---
-
-INSERT INTO `archive_tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `emailaddress`, `password`, `archive_at`, `bio`) VALUES
-(11, 'Jasmine', 'Fernandez', 21, 'Female', '9682226610', 'Dalandanan', '21-1251', 'BSIT', '2-2', NULL, '21-1261', 'jasmine/me.', 'fernandezjasmine095@gmail.com', '$2y$10$ZjqsBry3Ob.1YHorQyS6leC/.jxAkNU6oRt86GNXj6GohHVQTZ3Fu', '2024-11-22 18:04:05', 'bio');
-
 -- --------------------------------------------------------
 
 --
@@ -246,20 +239,8 @@ CREATE TABLE `events` (
   `attached_file` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `status` enum('pending','accepted','rejected') NOT NULL,
-  `remarks` varchar(255) NOT NULL
+  `remarks` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `events`
---
-
-INSERT INTO `events` (`id`, `tutor_id`, `event_name`, `rendered_hours`, `description`, `attached_file`, `created_at`, `status`, `remarks`) VALUES
-(57, 12, 'swimming', 2, 'President', '../uploads/events/21-1252_event_393287.jpg', '2024-11-29 14:06:19', 'rejected', 'fgdfgd'),
-(59, 12, 'ggdfgfdg', 6, 'ggdfgdfg', '../uploads/events/21-1252_event_252837.jpg', '2024-11-30 10:22:02', 'pending', 'haha'),
-(61, 12, 'swimming', 2, 'President', '../uploads/events/21-1252_event_393287.jpg', '2024-11-29 14:06:19', 'pending', 'gdfdf'),
-(63, 12, 'swimming', 2, 'President', '../uploads/events/21-1252_event_393287.jpg', '2024-11-29 14:06:19', 'pending', 'gdfdf'),
-(65, 12, 'swimming', 2, 'President', '../uploads/events/21-1252_event_393287.jpg', '2024-11-29 14:06:19', 'pending', 'gdfdf'),
-(67, 12, 'swimming', 2, 'President', '../uploads/events/21-1252_event_393287.jpg', '2024-11-29 14:06:19', 'pending', 'gdfdf');
 
 -- --------------------------------------------------------
 
@@ -277,14 +258,6 @@ CREATE TABLE `messages` (
   `is_read` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `messages`
---
-
-INSERT INTO `messages` (`id`, `tutor_id`, `tutee_id`, `sender_type`, `message`, `created_at`, `is_read`) VALUES
-(1, 12, 1, 'tutee', 'gagaga', '2024-11-18 08:58:40', 0),
-(2, 11, 1, 'tutee', 'hahahaha', '2024-11-18 08:58:45', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -300,29 +273,6 @@ CREATE TABLE `notifications` (
   `status` varchar(20) DEFAULT 'unread',
   `date_sent` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `notifications`
---
-
-INSERT INTO `notifications` (`id`, `sender_id`, `receiver_id`, `title`, `message`, `status`, `date_sent`) VALUES
-(1, 12, 1, 'New Tutor Request', 'You have a new tutor request from Lyka Fernandez.', 'read', '2024-11-18 16:55:12'),
-(2, 12, 1, 'New Tutor Request', 'You have a new tutor request from Lyka Fernandez.', 'read', '2024-11-18 16:55:18'),
-(3, 11, 1, 'New Tutor Request', 'You have a new tutor request from Jasmine Fernandez.', 'read', '2024-11-18 16:56:32'),
-(4, 1, 12, 'Request Accepted', 'Your tutor request has been accepted by Steve Thunder.', 'read', '2024-11-18 17:06:19'),
-(5, 1, 12, 'Request Rejected', 'Your tutor request has been rejected by Steve Thunder.', 'read', '2024-11-18 17:09:33'),
-(6, 1, 11, 'Request Accepted', 'Your tutor request has been accepted by Steve Thunder.', 'read', '2024-11-18 17:09:48'),
-(7, 12, 1, 'New Tutor Request', 'You have a new tutor request from Lyka Fernandez.', 'read', '2024-11-18 17:22:48'),
-(8, 11, 1, 'New Tutor Request', 'You have a new tutor request from Jasmine Fernandez.', 'unread', '2024-11-18 18:51:32'),
-(9, 1, 11, 'Request Accepted', 'Your tutor request has been accepted by Steve Thunder.', 'unread', '2024-11-18 18:51:53'),
-(10, 12, 1, 'New Tutor Request', 'You have a new tutor request from Lyka Fernandez.', 'unread', '2024-11-18 18:52:48'),
-(11, 1, 11, 'Request Accepted', 'Your tutor request has been accepted by Steve Thunder.', 'unread', '2024-11-18 18:53:23'),
-(12, 12, 2, 'New Tutor Request', 'You have a new tutor request from Lyka Fernandez.', 'read', '2024-11-20 20:43:45'),
-(13, 2, 12, 'Request Accepted', 'Your tutor request has been accepted by jasmine fernandez12.', 'read', '2024-11-20 20:44:21'),
-(14, 12, 3, 'New Tutor Request', 'You have a new tutor request from Lyka Fernandez.', 'read', '2024-11-20 20:55:21'),
-(15, 3, 12, 'Request Accepted', 'Your tutor request has been accepted by Soleen fernandez.', 'read', '2024-11-20 20:55:41'),
-(16, 12, 3, 'New Tutor Request', 'You have a new tutor request from Lyka Fernandez.', 'read', '2024-11-27 11:08:15'),
-(17, 3, 12, 'Request Accepted', 'Your tutor request has been accepted by Soleen fernandez.', 'read', '2024-11-27 11:08:37');
 
 -- --------------------------------------------------------
 
@@ -349,9 +299,9 @@ CREATE TABLE `professor` (
 --
 
 INSERT INTO `professor` (`id`, `firstname`, `lastname`, `middlename`, `age`, `faculty_id`, `emailaddress`, `prof_password`, `prof_username`, `prof_photo`, `last_login`) VALUES
-(1, 'Jasmine', 'Fernandez', 'Meralles', 27, '21-1261', 'jasminefernandez031@gmail.com', '$2y$10$tBHaytdxK5Y/NYISs6IgJesJipSX4Mh7T/2PP9uhx7Sr/MFA6IhXC', 'prof1', NULL, '2024-12-01 12:13:57'),
-(2, 'John Paul', 'Gracio', 'Meralles', 27, '21-1262', 'jasmine.elisolutions@gmail.com', '$2y$10$z.c0oT.hD9pssSA3A8cNleTLWfy95/wQtiv1FeIbzOn6ivhDLvJ1O', 'prof2', NULL, '2024-11-25 15:38:19'),
-(3, 'Clarisse', 'Dizon', 'Claus', 27, '21-1263', 'fernandezjasmine095@gmail.com', '$2y$10$3f8vlnnEmwmafR/dWoCKeOky6qpTJSL5vIljuIaeDdgQpplh5oej.', 'prof3', NULL, NULL);
+(4, 'Jasmine', 'Fernandez', 'Meralles', 27, '21-1261', 'jasminefernandez031@gmail.com', '$2y$10$7I/9r413L/62rZuoGSgH1.SWJAGDDCTT5hgB0kkXNFlK.C81hjw5e', 'prof1', 'profile.jpg', NULL),
+(5, 'John Paul', 'Gracio', 'Meralles', 27, '21-1262', 'jasmine.elisolutions@gmail.com', '$2y$10$2bDoIschIgSMnTis3BXsLOYFGC.tUzZDHr0Do5SY4RxKYt9qtcVla', 'prof2', 'profile.jpg', NULL),
+(6, 'Clarisse', 'Dizon', 'Claus', 27, '21-1263', 'fernandezjasmine095@gmail.com', '$2y$10$g5TJsMWxN6iikjcDSDgXu.pfGlTJJEurg4OsACuIVA158M.JkTcKG', 'prof3', 'profile.jpg', NULL);
 
 -- --------------------------------------------------------
 
@@ -366,33 +316,6 @@ CREATE TABLE `professor_logs` (
   `datetime` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `professor_logs`
---
-
-INSERT INTO `professor_logs` (`id`, `professor_id`, `activity`, `datetime`) VALUES
-(1, 1, 'Log-in', 'November 16, 2024 10:17:36 PM'),
-(2, 1, 'Download PDF Report: Tutor List', 'November 16, 2024 11:07:39 PM'),
-(3, 1, 'Download PDF Report: Tutor List', 'November 16, 2024 11:07:46 PM'),
-(4, 1, 'Log-in', 'November 17, 2024 06:47:30 PM'),
-(5, 1, 'Log-out', 'November 17, 2024 11:34:14 PM'),
-(6, 1, 'Log-in', 'November 17, 2024 11:34:37 PM'),
-(7, 1, 'Log-in', 'November 20, 2024 08:59:07 PM'),
-(8, 1, 'Log-in', 'November 22, 2024 01:52:39 PM'),
-(9, 1, 'Log-in', 'November 23, 2024 04:19:07 PM'),
-(10, 1, 'Log-in', 'November 24, 2024 06:25:16 PM'),
-(11, 2, 'Log-in', 'November 25, 2024 03:38:19 PM'),
-(12, 2, 'Log-out', 'November 25, 2024 03:38:45 PM'),
-(13, 1, 'Log-in', 'November 25, 2024 03:38:56 PM'),
-(14, 1, 'Log-out', 'November 25, 2024 03:39:52 PM'),
-(15, 1, 'Log-in', 'November 25, 2024 03:39:54 PM'),
-(16, 1, 'Log-in', 'November 27, 2024 11:10:04 AM'),
-(17, 1, 'Log-in', 'November 27, 2024 11:18:29 AM'),
-(18, 1, 'Log-in', 'November 29, 2024 12:49:15 PM'),
-(19, 1, 'Log-in', 'November 30, 2024 08:40:12 PM'),
-(20, 1, 'Log-in', 'November 30, 2024 08:43:20 PM'),
-(21, 1, 'Log-in', 'December 1, 2024 12:13:57 PM');
-
 -- --------------------------------------------------------
 
 --
@@ -405,13 +328,6 @@ CREATE TABLE `requests` (
   `tutee_id` int(11) DEFAULT NULL,
   `status` enum('pending','accepted','rejected','removed') DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `requests`
---
-
-INSERT INTO `requests` (`request_id`, `tutor_id`, `tutee_id`, `status`) VALUES
-(8, 12, 3, 'accepted');
 
 -- --------------------------------------------------------
 
@@ -444,8 +360,7 @@ CREATE TABLE `tutee` (
 --
 
 INSERT INTO `tutee` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `guardianname`, `fblink`, `barangay`, `emailaddress`, `photo`, `password`, `tutee_bday`, `school`, `grade`, `bio`, `address`) VALUES
-(2, 'jasmine', 'fernandez12', '6', 'Male', '56745756765', 'jasmine meralles fernandez12', 'gdfhdfh', 'Mabolo', 'rymund1016@gmail.com', NULL, '$2y$10$fgoxojqGP1cTHGOhWGEyEuA/1VIXTTl85mtKNpw.dkJ7ouLQKddge', '2018-06-17', 'Valenzuela Elementary School', 'Grade 2', 'hello', 'fgdfg656564654fgfg'),
-(3, 'Soleen', 'fernandez', '7', 'Female', '09546456456', 'Jenilyn Fernandez', 'https://www.facebook.com/johnpaul.gracio.96/', 'Mabolo', 'molihuachenyu7@gmail.com', NULL, '$2y$10$cxmcWOnDMJVnd2hllFMphuy73vMMCUp76GXqswSnyOazxRExhGB1O', '2017-01-20', 'Valenzuela Elementary School', 'Grade 2', 'Tell something about you, or your Child. Have a nice day.', 'Block 24 lot 18 m. Delos Reyes St. Valenzuela City');
+(4, 'Steve', 'Thunder', '6', 'Male', '1234', 'Steve Thunder', 'fawadawd', 'Marulas', 'mularwarren@gmail.com', NULL, '$2y$10$T/To7FVQSCm6a4i78isbuOF5xTUVD11Kle2Too4VLdNzLLcbb79E.', '2018-06-06', 'aq', 'Grade 1', 'Tell something about you, or your Child. Have a nice day.', 'dwadawda');
 
 -- --------------------------------------------------------
 
@@ -478,16 +393,8 @@ CREATE TABLE `tutee_progress` (
   `location` varchar(255) NOT NULL,
   `subject` varchar(255) NOT NULL,
   `status` enum('pending','accepted','rejected') NOT NULL,
-  `remarks` varchar(255) NOT NULL
+  `remarks` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tutee_progress`
---
-
-INSERT INTO `tutee_progress` (`id`, `tutee_id`, `tutor_id`, `week_number`, `uploaded_files`, `description`, `date`, `rendered_hours`, `location`, `subject`, `status`, `remarks`) VALUES
-(18, 3, 12, 4, '../uploads/21-1252_week4104686.png', 'hrhr', '2024-12-01 19:30:12', 4, 'valenzuela', 'math', 'accepted', 'hehe'),
-(19, 3, 12, 1, '../uploads/21-1252_week1163448.pdf', 'gdggfdgf', '2024-12-01 19:39:29', 3, 'valenzuela', 'math', 'rejected', 'sorry nak rejected bawi next time');
 
 -- --------------------------------------------------------
 
@@ -501,13 +408,6 @@ CREATE TABLE `tutee_summary` (
   `completed_weeks` int(11) DEFAULT 0,
   `registered_weeks` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tutee_summary`
---
-
-INSERT INTO `tutee_summary` (`tutee_id`, `tutor_id`, `completed_weeks`, `registered_weeks`) VALUES
-(3, 12, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -539,10 +439,11 @@ CREATE TABLE `tutor` (
 --
 
 INSERT INTO `tutor` (`id`, `firstname`, `lastname`, `age`, `sex`, `number`, `barangay`, `student_id`, `course`, `year_section`, `photo`, `professor`, `fblink`, `bio`, `emailaddress`, `password`) VALUES
-(12, 'Lyka', 'Fernandez', 20, 'Female', '9682226610', 'Parada', '21-1252', 'BSED', '2-3', NULL, '21-1261', 'lyka/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$PK40wBpiJDUmNa35OTW5cOqrmXqJbHq1vU1BmLVqypcCXMY7X4JUm'),
-(13, 'Marbie', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1253', 'BSIT', '2-4', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$cMhvzr7n9Z9KMqfgwqiCTuAaoiaJ6NUNgj9W.yOYd54MV4LOhLJa.'),
-(14, 'Clara', 'Fernandez', 19, 'Female', '96822266106', 'Maysan', '21-1254', 'BSIT', '2-5', NULL, '21-1261', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$zkbSi5QREyu9bIm6JW.ZGeW5H0B3er6BCg6r5jYuQUngfq.wLK1Rm'),
-(15, 'Tiny', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1255', 'BSIT', '2-6', NULL, '21-1262', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$qgVfab7KKbRsAdPCcqgA4eYFhN2L9kikkV/hB7VEXN/EsrBQO/cP2');
+(16, 'Jasmine', 'Fernandez', 21, 'Female', '9682226610', 'Dalandanan', '21-1251', 'BSIT', '2-2', NULL, '21-1261', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$8qQK0dOTumG1b8XREMikseaIDVQp79Qt9irQPHiIX1OH95dhXQsPW'),
+(17, 'Lyka', 'Fernandez', 20, 'Female', '9682226610', 'Parada', '21-1252', 'BSED', '2-3', '../uploads/21-1252.png', '21-1261', 'lyka/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$hNNCz8.ZqGFP0acTOVyZKejNCZ8U59weDHxD2AAG5R5.mOX3brPb2'),
+(18, 'Marbie', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1253', 'BSIT', '2-4', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$ywjEI4Iox5jkQg7b9c07muL16dmQN.fKmboV189ueSLkF.9EVya0e'),
+(19, 'Clara', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1254', 'BSIT', '2-5', NULL, '21-1262', 'marbie/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$UuNKTP/xovQbGVqNwRZbTexGHEVUseJyKqWATgPrxiy/8HAEFJlwG'),
+(20, 'Tiny', 'Fernandez', 19, 'Female', '9682226610', 'Maysan', '21-1255', 'BSIT', '2-6', NULL, '21-1262', 'jasmine/me.', 'bio', 'fernandezjasmine095@gmail.com', '$2y$10$eIQPtcHgFPYBPmC/3s8ZbetBupM5A0PdZuCeodYU7Bu6hq3paoYyu');
 
 -- --------------------------------------------------------
 
@@ -763,7 +664,7 @@ ALTER TABLE `districts`
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -775,13 +676,13 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `professor`
 --
 ALTER TABLE `professor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `professor_logs`
@@ -793,13 +694,13 @@ ALTER TABLE `professor_logs`
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `tutee`
 --
 ALTER TABLE `tutee`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tutee_logs`
@@ -811,13 +712,13 @@ ALTER TABLE `tutee_logs`
 -- AUTO_INCREMENT for table `tutee_progress`
 --
 ALTER TABLE `tutee_progress`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `tutor`
 --
 ALTER TABLE `tutor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `tutor_logs`
@@ -829,13 +730,13 @@ ALTER TABLE `tutor_logs`
 -- AUTO_INCREMENT for table `tutor_ratings`
 --
 ALTER TABLE `tutor_ratings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tutor_sessions`
 --
 ALTER TABLE `tutor_sessions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
