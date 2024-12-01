@@ -26,6 +26,7 @@ if ($userData) {
     $number = $userData['number'];
     $tutee_id = $userData['id']; 
     
+    
     // Fetch unread notifications count for the current tutee
 $unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND status = 'unread'");
 $unreadNotifQuery->bindParam(":tutee_id", $tutee_id);

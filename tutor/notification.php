@@ -20,6 +20,7 @@ $tutor_id = $userData['id']; // This is the tutor's ID used for notifications
 
 $imagePath = !empty($userData['photo']) ? $userData['photo'] : '../assets/TuteeFindLogoName.jpg';
 
+
 // Fetch unread notifications count for the current tutor
 $unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutor_id AND status = 'unread'");
 $unreadNotifQuery->bindParam(":tutor_id", $tutor_id);

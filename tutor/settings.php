@@ -205,7 +205,6 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                             <textarea class="form-control " name="bio" id="bio" rows="1" placeholder="<?php echo htmlspecialchars(string: $bio); ?>"><?php echo htmlspecialchars(string: $bio); ?></textarea>
                         </div>
                     </div>
-
                             <!-- First Name, Email, Barangay, and Password section -->
                             <div class="col-12 col-md-4">
                                 <div class="form-group mb-4">
