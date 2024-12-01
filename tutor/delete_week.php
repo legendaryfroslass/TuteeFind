@@ -62,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
             }
-
             // Check if both completed_weeks and registered_weeks are now zero
             $checkCountsStmt = $user_login->runQuery("
                 SELECT completed_weeks, registered_weeks 

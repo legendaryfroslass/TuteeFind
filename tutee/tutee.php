@@ -398,6 +398,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             </nav>
 
+            
         <div class="home">
             <div class="container-lg p-3">
                 <div class="career-form headings d-flex justify-content-center mt-3">

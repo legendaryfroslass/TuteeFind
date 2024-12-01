@@ -14,6 +14,7 @@ $stmt->bindParam(":student_id", $tutorSession);
 $stmt->execute();
 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
+
 // Ensure $userData is not false before accessing its fields
 if ($userData) {
     $firstname = $userData['firstname'];
@@ -48,7 +49,6 @@ if ($userData) {
     $tuteeStmt->execute();
     $tutees = $tuteeStmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
 
 function removeTutee($tutee_id) {
     global $user_login;

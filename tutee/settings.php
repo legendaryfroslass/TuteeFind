@@ -48,6 +48,7 @@ $imagePath = !empty($userData['photo']) ? $userData['photo'] : '../assets/TuteeF
 $toastMessage = '';
 $toastClass = '';
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Gather all form data
     $firstname = $_POST['firstname'];

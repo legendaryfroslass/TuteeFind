@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Add a new week if description is saved successfully
             $stmt = $user_login->runQuery("
                 INSERT INTO tutee_progress (tutee_id, week_number, uploaded_files, tutor_id, description, rendered_hours, location, subject, status) 
-                VALUES (:tutee_id, :week_number, '', :tutor_id, :description, :rendered_hours, :location, :subject, 'unverified')
+                VALUES (:tutee_id, :week_number, '', :tutor_id, :description, :rendered_hours, :location, :subject, 'pending')
             ");
             $stmt->bindParam(':tutee_id', $_POST['tutee_id']);
             $stmt->bindParam(':week_number', $_POST['week_number']);
@@ -246,7 +246,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             if (move_uploaded_file($file_tmp, $upload_file)) {
                                 // Insert into database
-                                $query = "INSERT INTO events (tutor_id, event_name, rendered_hours, description, attached_file) VALUES (:tutor_id, :event_name, :rendered_hours, :description, :attached_file)";
+                                $query = "INSERT INTO events (tutor_id, event_name, rendered_hours, description, attached_file, status) VALUES (:tutor_id, :event_name, :rendered_hours, :description, :attached_file, 'pending')";
+
                                 $stmt = $user_login->runQuery($query);
                                 $stmt->bindParam(':tutor_id', $userData['id']); // Use the current tutor's ID
                                 $stmt->bindParam(':event_name', $event_name);
@@ -435,7 +436,7 @@ $total_rendered_hours = 0;
 // Fetch rendered hours from `events` table where status is 'verified'
 $query = "SELECT COALESCE(SUM(rendered_hours), 0) as total_rendered_hours 
           FROM events 
-          WHERE tutor_id = :tutor_id AND status = 'verified'";
+          WHERE tutor_id = :tutor_id AND status = 'accepted'";
 $stmt = $user_login->runQuery($query);
 $stmt->bindParam(":tutor_id", $tutor_id);
 $stmt->execute();
@@ -446,7 +447,7 @@ $events_rendered_hours = $row['total_rendered_hours'];
 $tutee_rendered_hours = [];
 $query = "SELECT tutee_id, COALESCE(SUM(rendered_hours), 0) as tutee_rendered_hours 
           FROM tutee_progress 
-          WHERE tutor_id = :tutor_id AND status = 'verified'
+          WHERE tutor_id = :tutor_id AND status = 'accepted'
           GROUP BY tutee_id";
 $stmt = $user_login->runQuery($query);
 $stmt->bindParam(":tutor_id", $tutor_id);
@@ -698,7 +699,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                     <td><?php echo htmlspecialchars($event['status']); ?></td>
                                     <td class="justify-content-center">
                                         <button 
-                                        <?php if ($event['status'] === 'verified'): ?> disabled <?php endif; ?>
+                                        <?php if ($event['status'] === 'accepted'): ?> disabled <?php endif; ?>
                                         class="btn btn-primary me-2 editEventBtn" 
                                         data-id="<?php echo $event['id']; ?>" 
                                         data-name="<?php echo htmlspecialchars($event['event_name']); ?>" 
@@ -711,7 +712,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 
                                         <!-- Delete Event Button -->
                                         <button class="btn btn-danger deleteEventBtn" 
-                                                <?php if ($event['status'] === 'verified'): ?> disabled <?php endif; ?>
+                                                <?php if ($event['status'] === 'accepted'): ?> disabled <?php endif; ?>
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#deleteEventModal">
                                             <i class='bx bx-trash' data-id="<?php echo $event['id']; ?>"></i>
@@ -784,7 +785,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                             <td><?php echo htmlspecialchars($progress['status'] ?? ''); ?></td>
                                             <td class="text-center">
                                                 <button 
-                                                    <?php if ($progress['status'] === 'verified'): ?> disabled <?php endif; ?>
+                                                    <?php if ($progress['status'] === 'accepted'): ?> disabled <?php endif; ?>
                                                     class="btn btn-primary me-2 edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
                                                     data-tutee-id="<?php echo $tutee['id']; ?>" 
                                                     data-week-number="<?php echo $progress['week_number']; ?>"
@@ -796,7 +797,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                                     <i class='bx bx-edit'></i>
                                                 </button>
                                                 <button 
-                                                    <?php if ($progress['status'] === 'verified'): ?> disabled <?php endif; ?>
+                                                    <?php if ($progress['status'] === 'accepted'): ?> disabled <?php endif; ?>
                                                     class="btn btn-danger delete-btn" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#deleteModal"
@@ -1715,6 +1716,7 @@ document.querySelectorAll('.edit-btn').forEach(button => {
         document.getElementById('edit-subject').value = this.dataset.subject;
     });
 });
+
 
 document.getElementById('saveWeekBtn').addEventListener('click', function() {
     const form = document.getElementById('editForm');

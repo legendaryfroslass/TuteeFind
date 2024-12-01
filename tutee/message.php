@@ -14,6 +14,7 @@ $stmt->execute();
 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
 
+
 $firstname = $userData['firstname'];
 $lastname = $userData['lastname'];
 $barangay = $userData['barangay'];

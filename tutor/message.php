@@ -18,6 +18,7 @@ $firstname = $userData['firstname'];
 $lastname = $userData['lastname'];
 $tutor_id = $userData['id'];
 
+
 $imagePath = !empty($userData['photo']) ? $userData['photo'] : '../assets/TuteeFindLogoName.jpg';
 
 // Fetch unread notifications count for the current tutor

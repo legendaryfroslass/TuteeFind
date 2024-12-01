@@ -594,7 +594,8 @@ if (isset($_POST['send_message'])) {
                 </div>
             </div>
         </div>
-
+    </div>
+</div>
 <!-- Profile Modal -->
 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
