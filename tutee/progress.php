@@ -953,8 +953,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     </div>
                                     <div class="d-flex justify-content-between mt-4">
                                         <button type="button" class="btn btn-secondary" id="prevBtn-9">Back</button>
-                                        
-                                        <button type="button" class="btn btn-primary" id="submitCommentButton">Submit Comment</button>
+                                        <button type="button" class="btn btn-primary" id="submitCommentButton" data-bs-dismiss="modal">Submit Comment</button>
                                     </div>
                             </div>
                         </div>
