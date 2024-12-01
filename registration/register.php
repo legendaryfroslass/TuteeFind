@@ -149,8 +149,8 @@ include('../tutee/spinner.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="../tutee/spinner.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <title>Register</title>
     <style>
         body {
@@ -313,22 +313,30 @@ include('../tutee/spinner.php');
                             </div>
                             
                         </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="firstname" class="first-name form-control form-control-lg bg-light fs-6" id="tuteeFirstName" placeholder="First Name" required>
-                                <label for="tuteeFirstName">Tutee First Name</label>
+                            <div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" name="firstname" class="first-name form-control form-control-lg bg-light fs-6" id="tuteeFirstName" placeholder="First Name" required>
+                                    <label for="tuteeFirstName">Tutee First Name</label>
+                                </div>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="lastname" class="last-name form-control form-control-lg bg-light fs-6" id="tuteeLastName" placeholder="Last Name" required>
-                                <label for="tuteeLastName">Tutee Last Name</label>
+                            <div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" name="lastname" class="last-name form-control form-control-lg bg-light fs-6" id="tuteeLastName" placeholder="Last Name" required>
+                                    <label for="tuteeLastName">Tutee Last Name</label>
+                                </div>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="calculatedAge" class="form-control form-control-lg bg-light fs-6" id="tuteeCalculatedAge" placeholder="Calculated Age" value="<?php echo htmlspecialchars($age); ?>" readonly required>
-                                <label for="calculatedAge">Tutee's Age</label>
-                                <div class="invalid-feedback" id="birthday-feedback">Sorry! You must be between <b>6</b> and <b>11</b> years old to register.</div>
+                            <div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" name="calculatedAge" class="form-control form-control-lg bg-light fs-6" id="tuteeCalculatedAge" placeholder="Calculated Age" value="<?php echo htmlspecialchars($age); ?>" readonly required>
+                                    <label for="calculatedAge">Tutee's Age</label>
+                                    <div class="invalid-feedback" id="birthday-feedback">Sorry! You must be between <b>6</b> and <b>11</b> years old to register.</div>
+                                </div>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="date" name="birthday" class="form-control form-control-lg bg-light fs-6" id="tuteeBirthday" placeholder="Tutee Birthday" value="<?php echo htmlspecialchars($tutee_bday); ?>" required>
-                                <label for="tuteeBirthday">Tutee Birthday</label>
+                            <div>
+                                <div class="form-floating mb-3">
+                                    <input type="date" name="birthday" class="form-control form-control-lg bg-light fs-6" id="tuteeBirthday" placeholder="Tutee Birthday" value="<?php echo htmlspecialchars($tutee_bday); ?>" required>
+                                    <label for="tuteeBirthday">Tutee Birthday</label>
+                                </div>
                             </div>
                             <div class="input-group mb-3">
                                 <select name="sex" class="sex form-select form-control-lg bg-light fs-6" aria-label="Default select example" required>
@@ -337,9 +345,11 @@ include('../tutee/spinner.php');
                                     <option value="Female">Female</option>
                                 </select>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="number" name="number" maxlength="11" class="last-name form-control form-control-lg bg-light fs-6 numOnly" id="contactNo" placeholder="Contact Number" required>
-                                <label for="contactNo">Contact Number</label>
+                            <div>
+                                <div class="form-floating mb-3">
+                                    <input type="number" name="number" maxlength="11" class="last-name form-control form-control-lg bg-light fs-6 numOnly" id="contactNo" placeholder="Contact Number" required>
+                                    <label for="contactNo">Contact Number</label>
+                                </div>
                             </div>
                         <div class="d-flex align-items-center justify-content-center input-group mb-2">
                             <a class="btn btn-lg btn-primary w-100 fs-6" href="#" role="button" type="button" id="nextButton-1">Next</a>
@@ -367,7 +377,7 @@ include('../tutee/spinner.php');
                             <h2>Create Account</h2>
                             <p>Fill all the information needed</p>
                             <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 45%" aria-valuenow="66.67" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" style="width: 30%" aria-valuenow="66.67" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                         <div>
@@ -402,7 +412,7 @@ include('../tutee/spinner.php');
                         <div>
                             <div class="contact-number form-floating mb-3">
                                 <input type="text" name="fblink" class="form-control form-control-lg bg-light fs-6" id="facebookLink" placeholder="Facebook Link">
-                                <label for="facebookLink">FaceBook Link</label>
+                                <label for="facebookLink">Guardian's FaceBook Link</label>
                             </div>
                         </div>
                         <div class="input-group mb-3">
@@ -485,7 +495,7 @@ include('../tutee/spinner.php');
                             <h2>Create Account</h2>
                             <p>Fill all the information needed</p>
                             <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 90%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                         <div>
@@ -500,7 +510,7 @@ include('../tutee/spinner.php');
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-3">Back</a>
                                 </div>
                                 <div class="col-md-8 text-center">
-                                    <button class="btn btn-lg btn-primary fs-6 d-flex justify-content-center align-items-center" onclick="showSpinner(); setTimeout(hideSpinner, 5000);" id="nextButton-3" name="sendEmail">
+                                    <button class="btn btn-lg btn-primary fs-6 d-flex justify-content-center align-items-center" onclick="showSpinner(); setTimeout(hideSpinner, 6000);" id="nextButton-3" name="sendEmail">
                                         Send OTP <i class="bi bi-send ms-2"></i>
                                     </button>
                                 </div>
@@ -523,14 +533,19 @@ include('../tutee/spinner.php');
                         <div class="header-text text-center mb-4">
                             <h2>Email Verification</h2>
                             <p>Enter the OTP sent to your email</p>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 70%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
-                        <div class="form-floating mb-3">
-                            <input type="text" name="otp" class="otp form-control form-control-lg bg-light fs-6" style="margin: 10vh 0 5vh 0" id="otp" placeholder="Enter OTP" required>
-                            <label for="otp" style="padding: 13vh 0 0 4vh">OTP</label>
+                        <div>
+                            <div class="form-floating mb-3">
+                                <input type="text" name="otp" class="otp form-control form-control-lg bg-light fs-6" style="margin: 10vh 0 5vh 0" id="otp" placeholder="Enter OTP" required>
+                                <label for="otp">OTP</label>
+                            </div>
                         </div>
                         <div class="input-group btnClass">
                             <div class="row justify-content-center">
-                                <div class="col-md-4">
+                                <div class="col-md-4 text-center">
                                     <a class="btn btn-lg btn-secondary fs-6" href="#" role="button" id="backButton-4">Back</a>
                                 </div>
                                 <div class="col-md-8">

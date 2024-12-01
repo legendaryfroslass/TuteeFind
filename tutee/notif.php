@@ -141,6 +141,7 @@ $markAsReadQuery->execute();
                                         <?php echo $unreadMessageCount; ?>
                                     </span> <!-- Notification counter -->
                                 </div>
+                                <span class="text nav-text">Messages</span>
                             </a>
                         </li>
                         <li class="nav-link navbar-active" data-bs-toggle="tooltip" data-bs-placement="right" title="Notification">

@@ -176,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <?php echo $unreadMessageCount; ?>
                                         </span> <!-- Notification counter -->
                                     </div>
+                                    <span class="text nav-text">Messages</span>
                                 </a>
                             </li>
                             <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Notification">

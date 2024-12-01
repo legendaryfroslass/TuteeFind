@@ -182,7 +182,7 @@ $markAsReadQuery->execute();
                                 <span class="text nav-text">Home</span>
                             </a>
                         </li>
-                        <li class="nav-link navbar-active" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
+                        <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                             <a href="../tutee/message">
                                 <div style="position: relative;">
                                     <i class='bx bxs-inbox icon'></i>
@@ -190,6 +190,7 @@ $markAsReadQuery->execute();
                                         <?php echo $unreadMessageCount; ?>
                                     </span> <!-- Notification counter -->
                                 </div>
+                                <span class="text nav-text">Messages</span>
                             </a>
                         </li>
                         <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Notification">
