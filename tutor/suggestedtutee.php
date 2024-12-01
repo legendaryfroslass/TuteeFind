@@ -265,6 +265,8 @@ if (isset($_POST['send_message'])) {
     // Set a session variable to indicate success
     $_SESSION['message_result'] = 'Message sent successfully!';
 }
+    // spinner actions
+    include('spinner.php');
 ?>
 
 <!DOCTYPE html>
@@ -273,8 +275,8 @@ if (isset($_POST['send_message'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="what.css">
+    <link rel="stylesheet" href="spinner.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="icon" href="../assets/TuteeFindLogo.png" type="image/png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <title>home</title>
     <script>
@@ -433,6 +435,8 @@ if (isset($_POST['send_message'])) {
                             </div>
                         </form>
         </div>
+
+        <!--Results-->
         <div class="container-lg px-3">
             <div class="row">
                 <div class="col">
@@ -450,61 +454,60 @@ if (isset($_POST['send_message'])) {
                                                 <th></th>
                                             </tr>
                                         </thead>
-<tbody>
-    <?php foreach ($current_items as $tutee): ?>
-        <tr class="clickable-row" 
-            data-name="<?php echo htmlspecialchars($tutee['firstname'] . ' ' . $tutee['lastname']); ?>"
-            data-photo="<?php echo !empty($tutee['photo']) ? htmlspecialchars($tutee['photo']) : '../assets/TuteeFindLogoName.jpg'; ?>"
-            data-brgy="<?php echo htmlspecialchars($tutee['barangay']); ?>"
-            data-bio="<?php echo !empty($tutee['bio']) ? htmlspecialchars(substr($tutee['bio'], 0, 50)) . (strlen($tutee['bio']) > 50 ? '...' : '') : 'No other information available.'; ?>"
-            data-number="<?php echo htmlspecialchars($tutee['number']); ?>"
-            data-emailaddress="<?php echo htmlspecialchars($tutee['emailaddress']); ?>"
-            data-age="<?php echo htmlspecialchars($tutee['age']); ?>"
-            data-guardianname="<?php echo htmlspecialchars($tutee['guardianname']); ?>"
-            data-fblink="<?php echo htmlspecialchars($tutee['fblink']); ?>"
-            data-grade="<?php echo htmlspecialchars($tutee['grade']); ?>"
-            data-address="<?php echo htmlspecialchars($tutee['address']); ?>"
-            data-school="<?php echo htmlspecialchars($tutee['school']); ?>"
-            onclick="showProfileModal(event, this)">
-            <td>
-                <div class="img-holder text-center">
-                    <img style="height: 45px; width: 45px; border-radius: 65px;" src="<?php echo !empty($tutee['photo']) ? $tutee['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>" alt="Tutee Photo" class="img-fluid">
-                </div>
-            </td>
-            <td>
-                <div class="tutor-name fw-bold m-2 text-center">
-                    <?php echo $tutee['firstname'] . ' ' . $tutee['lastname']; ?>
-                </div>
-            </td>
-            <td class="tutor-name text-center">
-                <?php echo $tutee['barangay']; ?>
-            </td>
-            <td>
-                <form method="post" class="text-center">
-                    <button type="button" 
-                            class="btn btn-outline-success bx" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#messageModal"
-                            data-tutee-name="<?php echo $tutee['firstname'] . ' ' . $tutee['lastname']; ?>"
-                            data-tutee-id="<?php echo $tutee['id']; ?>"
-                            >
-                        <i class='bx bx-message-square-dots'></i>
-                    </button>
-                    
-                    <input type="hidden" name="tutee_id" value="<?php echo $tutee['id']; ?>">
-                    
-                    <button type="submit" 
-                            class="btn btn-outline-primary" 
-                            name="send_request" 
-                            onclick="event.stopPropagation();"> <!-- Prevent row click -->
-                        <i class='bx bx-user-plus'></i>
-                    </button>
-                </form>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</tbody>
-
+                                            <tbody>
+                                                <?php foreach ($current_items as $tutee):  ?>
+                                                    <tr class="clickable-row" 
+                                                        data-name="<?php echo htmlspecialchars($tutee['firstname'] . ' ' . $tutee['lastname']); ?>"
+                                                        data-photo="<?php echo !empty($tutee['photo']) ? htmlspecialchars($tutee['photo']) : '../assets/TuteeFindLogoName.jpg'; ?>"
+                                                        data-brgy="<?php echo htmlspecialchars($tutee['barangay']); ?>"
+                                                        data-bio="<?php echo !empty($tutee['bio']) ? htmlspecialchars(substr($tutee['bio'], 0, 50)) . (strlen($tutee['bio']) > 50 ? '...' : '') : 'No other information available.'; ?>"
+                                                        data-number="<?php echo htmlspecialchars($tutee['number']); ?>"
+                                                        data-emailaddress="<?php echo htmlspecialchars($tutee['emailaddress']); ?>"
+                                                        data-age="<?php echo htmlspecialchars($tutee['age']); ?>"
+                                                        data-guardianname="<?php echo htmlspecialchars($tutee['guardianname']); ?>"
+                                                        data-fblink="<?php echo htmlspecialchars($tutee['fblink']); ?>"
+                                                        data-grade="<?php echo htmlspecialchars($tutee['grade']); ?>"
+                                                        data-address="<?php echo htmlspecialchars($tutee['address']); ?>"
+                                                        data-school="<?php echo htmlspecialchars($tutee['school']); ?>"
+                                                        onclick="showProfileModal(event, this)">
+                                                        <td>
+                                                            <div class="img-holder text-center">
+                                                                <img style="height: 45px; width: 45px; border-radius: 65px;" src="<?php echo !empty($tutee['photo']) ? $tutee['photo'] : '../assets/TuteeFindLogoName.jpg'; ?>" alt="Tutee Photo" class="img-fluid">
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="tutor-name fw-bold m-2 text-center">
+                                                                <?php echo $tutee['firstname'] . ' ' . $tutee['lastname']; ?>
+                                                            </div>
+                                                        </td>
+                                                        <td class="tutor-name text-center">
+                                                            <?php echo $tutee['barangay']; ?>
+                                                        </td>
+                                                        <td>
+                                                            <form method="post" class="text-center">
+                                                                <button type="button" 
+                                                                        class="btn btn-outline-success bx " 
+                                                                        data-bs-toggle="modal" 
+                                                                        data-bs-target="#messageModal"
+                                                                        data-tutee-name="<?php echo $tutee['firstname'] . ' ' . $tutee['lastname']; ?>"
+                                                                        data-tutee-id="<?php echo $tutee['id']; ?>"
+                                                                        >
+                                                                    <i class='bx bx-message-square-dots'></i>
+                                                                </button>
+                                                                
+                                                                <input type="hidden" name="tutee_id" value="<?php echo $tutee['id']; ?>">
+                                                                
+                                                                <button type="submit" 
+                                                                        class="btn btn-outline-primary" 
+                                                                        name="send_request" 
+                                                                        onclick=" showSpinner(); setTimeout(hideSpinner, 5000); event.stopPropagation();"> <!-- Prevent row click -->
+                                                                    <i class='bx bx-user-plus'></i>
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
                                     </table>
                                 </div>
 
@@ -539,91 +542,139 @@ if (isset($_POST['send_message'])) {
                 </div>
             </div>
 
-    <!-- Message Modal -->
-    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="emailModalLabel">Send Message</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-start d-block">
-                    <form method="post" id="messageForm">
-                        <div class="mb-3">
-                            <label for="recipient" class="form-label">To: </label>
-                            <span id="recipient"></span>
-                            <input type="hidden" name="tutee_id" id="tutee_id">
+            <!-- Message Modal -->
+            <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="emailModalLabel">Send Message</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="mb-3">
-                            <label for="message" class="form-label">Message</label>
-                            <textarea class="form-control" id="message" name="message" rows="4" placeholder="Enter your message"></textarea>
+                        <div class="modal-body text-start d-block">
+                            <form method="post" id="messageForm">
+                                <div class="mb-3">
+                                    <label for="recipient" class="form-label">To: </label>
+                                    <span id="recipient"></span>
+                                    <input type="hidden" name="tutee_id" id="tutee_id">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="message" name="message" rows="4" placeholder="Enter your message"></textarea>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" name="send_message">
+                                        <i class='bx bx-send'></i> Send Message
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <div>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" name="send_message">
-                                <i class='bx bx-send'></i> Send Message
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-<!-- Modal Structure -->
-<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
-                <div class="checkmark-container">
-                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-                        <path class="checkmark__check" fill="none" d="M14 27l7.5 7.5L38 18"/>
-                    </svg>
+        <!-- Modal Structure -->
+        <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
+                        <div class="checkmark-container">
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                                <path class="checkmark__check" fill="none" d="M14 27l7.5 7.5L38 18"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
+                        Notification sent successfully.
+                    </div>
+                    <div class="modal-footer border-0">
+                        <!-- Footer left empty as per original design -->
+                    </div>
                 </div>
-            </div>
-            <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
-                Notification sent successfully.
-            </div>
-            <div class="modal-footer border-0">
-                <!-- Footer left empty as per original design -->
             </div>
         </div>
     </div>
 </div>
 <!-- Profile Modal -->
 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+            <!-- Modal Header -->
             <div class="modal-header">
                 <h5 class="modal-title" id="profileModalLabel">Profile Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body d-flex flex-column align-items-center">
-                <img id="profileModalPhoto" 
-                     class="img-fluid" 
-                     style="border-radius: 50%; border: 3px solid #007bff; height: 120px; width: 120px;" 
-                     alt="Profile Photo">
-                <h5 id="profileModalName" class="mt-3 mb-1" style="font-weight: bold; color: #333;"></h5>
-                <p class="mb-1" style="color: #555;">
-                    <span class="font-weight-bold" id="profileModalBio"></span>
-                </p>
-                <p class="mb-1" style="color: #555;">
-                    Barangay: <span class="font-weight-bold" id="profileModalBrgy"></span>
-                </p>
-                <!-- Additional Fields -->
-                <div class="w-100">
-                    <p><strong>Contact Number:</strong> <span id="numberValue"></span></p>
-                    <p><strong>Email:</strong> <span id="profileModalEmail"></span></p>
-                    <p><strong>Age:</strong> <span id="profileModalAge"></span></p>
-                    <p><strong>Guardian's Name:</strong> <span id="profileModalGuardianName"></span></p>
-                    <p><strong>Facebook:</strong> <a id="profileModalFbLink" target="_blank" style="text-decoration: none; color: #007bff;"></a></p>
-                    <p><strong>Grade:</strong> <span id="profileModalGrade"></span></p>
-                    <p><strong>Address:</strong> <span id="profileModalAddress"></span></p>
-                    <p><strong>School:</strong> <span id="profileModalSchool"></span></p>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Scrollable Section -->
+                <div class="row">
+                    <div class="col-12 text-center mb-4">
+                        <img id="profileModalPhoto" 
+                            class="img-fluid" 
+                            style="border-radius: 50%; border: 3px solid #007bff; height: 120px; width: 120px;" 
+                            alt="Profile Photo">
+                        <h5 id="profileModalName" class="mt-3 mb-1" style="font-weight: bold; color: #333;"></h5>
+                        <p id="profileModalBio" class="mb-1" style="color: #555;"></p>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="fw-bold text-start">Barangay</label>
+                        <div class="border p-2 rounded bg-light">
+                            <span id="profileModalBrgy"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="fw-bold">Contact Number</label>
+                        <div class="border p-2 rounded bg-light">
+                            <span id="numberValue"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="fw-bold">Email</label>
+                        <div class="border p-2 rounded bg-light">
+                            <span id="profileModalEmail"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="fw-bold">Age</label>
+                        <div class="border p-2 rounded bg-light">
+                            <span id="profileModalAge"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="fw-bold">Guardian's Name</label>
+                        <div class="border p-2 rounded bg-light">
+                            <span id="profileModalGuardianName"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="fw-bold">Facebook</label>
+                        <div class="border p-2 rounded bg-light">
+                            <a id="profileModalFbLink" target="_blank" style="text-decoration: none; color: #007bff;"></a>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="fw-bold">Grade</label>
+                        <div class="border p-2 rounded bg-light">
+                            <span id="profileModalGrade"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="fw-bold">Address</label>
+                        <div class="border p-2 rounded bg-light">
+                            <span id="profileModalAddress"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="fw-bold">School</label>
+                        <div class="border p-2 rounded bg-light">
+                            <span id="profileModalSchool"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <!-- Modal Footer -->
+            <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -633,9 +684,6 @@ if (isset($_POST['send_message'])) {
 
 
 
-
-
-        
     <script src="script1.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>    

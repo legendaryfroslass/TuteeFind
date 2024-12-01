@@ -196,6 +196,353 @@
   </div>
 </div>
 
+<!-- View Event -->
+<div class="modal fade" id="viewEvent">
+  <div class="modal-dialog" style="max-width: 600px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title"><b>View Event</b></h4>
+      </div>
+      <div class="modal-body">
+        <!-- Event Information -->
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Event</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_event_name"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Rendered Hours</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_rendered_hours"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Description</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_description"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Event Image</label>
+            <div class="col-sm-9">
+              <div id="view_attached_file" class="d-flex justify-content-center">
+                <img src="" alt="Event Image" id="event_image">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Date Submitted</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_created_at"></p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Remarks</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_remarks"></p>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-flat pull-right" data-dismiss="modal">
+          <i class="fa fa-close"></i> Close
+        </button>
+     
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- View Weekly Report -->
+<div class="modal fade" id="viewWeeklyReport">
+  <div class="modal-dialog" style="max-width: 600px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title"><b>View Weekly Progress</b></h4>
+      </div>
+      <div class="modal-body">
+        <!-- Event Information -->
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Week</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_week_number"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Rendered Hours</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_weekly_rendered_hours"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Location</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_location"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Subject</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_subject"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Description</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_weekly_description"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Attached File</label>
+            <div class="col-sm-9" id="view_weekly_attached_file">
+              <!-- View button will be inserted here dynamically -->
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Date Submitted</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_date"></p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Remarks</label>
+            <div class="col-sm-9">
+              <p class="form-control-static view-text" id="view_weekly_remarks"></p>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-flat pull-right" data-dismiss="modal">
+          <i class="fa fa-close"></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- CSS for Image Field Adjustment -->
+<style>
+  /* Custom styles for the image inside the modal */
+.event-image {
+  max-width: 100%; /* Makes sure the image doesn't exceed the container's width */
+  max-height: 250px; /* Limit the image height */
+  object-fit: contain; /* Maintain aspect ratio */
+  display: block; /* Prevents any inline element issues */
+  margin: 0 auto; /* Centers the image horizontally */
+}
+
+#view_attached_file {
+  display: flex;
+  justify-content: center; /* Centers the image horizontally */
+  align-items: center; /* Centers the image vertically */
+  width: 100%; /* Ensures the container takes the full width of the modal */
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+</style>
+
+<!-- Accept Event  -->
+<div class="modal fade" id="accept" tabindex="-1" role="dialog" aria-labelledby="acceptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+         <!-- Modal Header -->
+         <div class="modal-header" style="background-color: #32a85e; color: white">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title"><b>Accepting...</b></h4>
+      </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Form for Remarks and Submission -->
+                <form action="accept_event.php" method="POST">
+                    <!-- Event ID (Hidden Input) -->
+                    <input type="hidden" id="event_id" name="event_id" value="">
+
+                    <!-- Remarks Section -->
+                    <div class="form-group">
+                        <label for="remarks" class="control-label" style="font-weight: bold;">Remarks</label>
+                        <textarea id="remarks" name="remarks" class="form-control" rows="3" placeholder="Enter remarks here..." required></textarea>
+                    </div>
+
+                    <!-- Modal Footer Buttons -->
+                    <div class="modal-footer" style="border-top: none;">
+                        <button type="submit" class="btn btn-success btn-flat" name="accept">
+                            <i class="fa fa-check-circle"></i> Accept
+                        </button>
+                        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal">
+                            <i class="fa fa-close"></i> Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Accept weekly Progress -->
+<div class="modal fade" id="weeeklyProgressAccept" tabindex="-1" role="dialog" aria-labelledby="acceptWeeklyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+         <!-- Modal Header -->
+         <div class="modal-header" style="background-color: #32a85e; color: white">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title"><b>Accepting...</b></h4>
+      </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Form for Remarks and Submission -->
+                <form action="accept_weeklyRequest.php" method="POST">
+                    <!-- Event ID (Hidden Input) -->
+                    <input type="hidden" id="weekly_id" name="weekly_id" value="">
+
+                    <!-- Remarks Section -->
+                    <div class="form-group">
+                        <label for="remarks" class="control-label" style="font-weight: bold;">Remarks</label>
+                        <textarea id="remarks" name="remarks" class="form-control" rows="3" placeholder="Enter remarks here..." required></textarea>
+                    </div>
+
+                    <!-- Modal Footer Buttons -->
+                    <div class="modal-footer" style="border-top: none;">
+                        <button type="submit" class="btn btn-success btn-flat" name="accept">
+                            <i class="fa fa-check-circle"></i> Accept
+                        </button>
+                        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal">
+                            <i class="fa fa-close"></i> Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Event Modal -->
+<div class="modal fade" id="reject" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header" style="background-color: #DE4931; color: white">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title"><b>Rejecting...</b></h4>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Form for Remarks and Submission -->
+                <form action="reject_event.php" method="POST">
+                    <!-- Event ID (Hidden Input) -->
+                    <input type="hidden" id="event_id2" name="event_id" value="">
+
+                    <!-- Remarks Section -->
+                    <div class="form-group">
+                        <label for="remarks" class="control-label" style="font-weight: bold;">Remarks</label>
+                        <textarea id="remarks2" name="remarks" class="form-control" rows="3" placeholder="Enter remarks here..." required></textarea>
+                    </div>
+
+                    <!-- Modal Footer Buttons -->
+                    <div class="modal-footer" style="border-top: none;">
+                        <button type="submit" class="btn btn-danger btn-flat" name="reject">
+                            <i class="fa fa-times-circle"></i> Reject
+                        </button>
+                        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal">
+                            <i class="fa fa-close"></i> Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Weekly Progress Modal -->
+<div class="modal fade" id="weeklyProgressReject" tabindex="-1" role="dialog" aria-labelledby="rejectWeeklyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header" style="background-color: #DE4931; color: white">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title"><b>Rejecting...</b></h4>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Form for Remarks and Submission -->
+                <form action="reject_weeklyRequest.php" method="POST">
+                    <!-- Event ID (Hidden Input) -->
+                    <input type="hidden" id="weekly_id2" name="weekly_id" value="">
+
+                    <!-- Remarks Section -->
+                    <div class="form-group">
+                        <label for="remarks" class="control-label" style="font-weight: bold;">Remarks</label>
+                        <textarea id="remarks2" name="remarks" class="form-control" rows="3" placeholder="Enter remarks here..." required></textarea>
+                    </div>
+
+                    <!-- Modal Footer Buttons -->
+                    <div class="modal-footer" style="border-top: none;">
+                        <button type="submit" class="btn btn-danger btn-flat" name="reject">
+                            <i class="fa fa-times-circle"></i> Reject
+                        </button>
+                        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal">
+                            <i class="fa fa-close"></i> Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Reject All -->
+<div class="modal fade" id="eventRejectAll">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title"><b>Reject All...</b></h4>
+            </div>
+            <div class="modal-body">
+              <div class="text-center">
+                  <p>REJECTING ALL REQUEST</p>
+                  <h4>This will reject all selected request.</h4>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
+              <form action="rejectAllEventRequest.php" method="POST">
+                <button type="submit" name="eventRejectAll" class="btn btn-danger btn-sm btn-flat"><i class="fa fa-times-circle"></i> Reject All</button>
+              </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Edit Tutor Modal -->
 <div class="modal fade" id="edit">
   <div class="modal-dialog">

@@ -19,7 +19,7 @@ if(isset($_POST['id'])){
         echo json_encode($row);
     } else {
         // If no professor found with the provided ID, return an error message
-        echo json_encode(['error' => 'Professor not found']);
+        echo json_encode(['error' => 'Tutor not found']);
     }
 }
 ?>

@@ -211,7 +211,7 @@ $total_pages = ceil($total_rows / $limit);
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
           <thead>
             <tr role="row">
-                <th onclick="sortTable(0)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+                <th onclick="sortTable(0)">Tutee <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(1)">Barangay <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(2)">Age <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(2)">School <i class="fa fa-sort" aria-hidden="true"></i></th>

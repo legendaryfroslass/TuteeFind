@@ -176,11 +176,11 @@ $total_pages = ceil($total_rows / $limit);
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Student's List
+        Tutors' List
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Student</li>
+        <li class="active">Tutor </li>
       </ol>
     </section>
     <section class="content">
@@ -243,7 +243,7 @@ $total_pages = ceil($total_rows / $limit);
                 <th onclick="sortTable(1)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(2)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(3)">Rendered Hours <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th>Ratings and Feedback</th>
+                <th>Evaluation</th>
                 <th>Actions</th>
               </tr>
             </thead>

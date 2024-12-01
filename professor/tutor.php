@@ -199,7 +199,7 @@ $total_pages = ceil($total_rows / $limit);
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
           <thead>
             <tr role="row">
-                <th onclick="sortTable(0)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+                <th onclick="sortTable(0)">Tutor <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(1)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(2)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th>Actions</th>
@@ -298,9 +298,8 @@ if (isset($_SESSION['professor_id'])) {
 </div>
 </section>
 </div>
-  <?php include 'includes/tutor_modal.php'; ?>
-  <?php include 'includes/footer.php'; ?>
-
+<?php include 'includes/footer.php'; ?>
+<?php include 'includes/tutor_modal.php'; ?>
 </div>
 <?php include 'includes/scripts.php'; ?>
 </body>
@@ -438,4 +437,5 @@ function getRow(id){
   }
 </script>
 </html>
+
 

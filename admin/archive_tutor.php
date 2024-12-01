@@ -221,12 +221,14 @@ $total_pages = ceil($total_rows / $limit);
         </tr>
       ";
     }
+    
   ?>              
 </tbody>
 </table>
 </div>
     </div>
   </div>
+  
               <div class="row">
                 <div class="col-sm-5">
                   <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
