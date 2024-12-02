@@ -30,7 +30,7 @@ function showSpinner() {
     setTimeout(function() {
         hideSpinner();  // Hide the spinner after 5 seconds
         location.reload();  // Reload the page after the spinner disappears
-    }, 4000);  // 5000 milliseconds = 5 seconds
+    }, 2000);  // 5000 milliseconds = 5 seconds
 }
 
 function hideSpinner() {

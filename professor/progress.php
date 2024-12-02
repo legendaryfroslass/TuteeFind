@@ -266,7 +266,8 @@ $sql = "
         COALESCE(MAX(rt.comment), 'No Comment') AS comment,
         MAX(r.tutor_id) AS tutor_id, 
         MAX(r.tutee_id) AS tutee_id,
-        COALESCE(SUM(tp.rendered_hours), 0) + COALESCE(SUM(e.rendered_hours), 0) AS total_rendered_hours,  -- Summing both rendered hours
+        COALESCE(SUM(CASE WHEN tp.status = 'accepted' THEN tp.rendered_hours ELSE 0 END), 0) + 
+        COALESCE(SUM(CASE WHEN e.status = 'accepted' THEN e.rendered_hours ELSE 0 END), 0) AS total_rendered_hours,  -- Summing only accepted rendered hours
         MAX(rt.pdf_content) AS pdf_content  -- Fetching PDF content from tutor_ratings
     FROM tutor t
     INNER JOIN professor p ON t.professor = p.faculty_id

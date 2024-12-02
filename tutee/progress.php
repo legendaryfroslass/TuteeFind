@@ -1,5 +1,8 @@
 <?php
 session_start();
+
+// spinner
+include('spinner.php');
 require_once '../tutee.php';
 require '../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
@@ -348,7 +351,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="tutee.css">
     <link rel="stylesheet" href="notif.css">
-    <link rel="stylesheet" href="progress.css">  
+    <link rel="stylesheet" href="progress.css">
+    <link rel="stylesheet" href="spinner.css">
     <link rel="icon" href="../assets/TuteeFindLogo.png" type="image/png">  
     <title>Progress</title>
 </head>
@@ -1032,7 +1036,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <p>Thank you for your comment!</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="location.reload()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thank You Modal -->
+    <div class="modal fade" id="thankYouModal1" tabindex="-1" aria-labelledby="thankYouModal1" aria-hidden="true">
+        <div>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="thankYouModal1">Thank You!</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Thank you for your validation!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="location.reload()">Close</button>
                     </div>
                 </div>
             </div>
@@ -1081,6 +1105,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <script src="tutee_sidebar.js"></script>
         <script src="notif.js"></script>
         <script src="tutee.js"></script>
+
         <script>
            document.addEventListener('DOMContentLoaded', function () {
     // Handle confirmation of finishing the session
@@ -1094,7 +1119,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             alert("Tutor or Tutee ID is missing.");
             return;
         }
-
+        
+        showSpinner();
         // Send AJAX request to confirm session finish
         fetch('', {
             method: 'POST',
@@ -1104,8 +1130,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message); // Show success message
-
+                location.reload();
                 // Enable the "Rate Tutor" button
                 const rateTutorButton = document.querySelector(`#rateTutorBtn[data-tutor-id="${tutorId}"]`);
                 if (rateTutorButton) {
@@ -1113,7 +1138,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     rateTutorButton.disabled = false; // Ensure button is enabled
                 }
 
-                // Optionally update the UI to reflect session completion
             } else {
                 alert("Error: " + data.message); // Show error message
             }
@@ -1176,7 +1200,10 @@ document.getElementById('submitCommentButton').addEventListener('click', functio
             comment: comment
         }
     };
-
+    const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
+    
+            // Show the thank you modal after the rate tutor modal has hidden
+            thankYouModal.show();
     fetch('', {
         method: 'POST',
         headers: {
@@ -1189,14 +1216,10 @@ document.getElementById('submitCommentButton').addEventListener('click', functio
         if (data.success) {
             // Hide the rate tutor modal and then show the thank you modal
             const rateTutorModal = document.getElementById(`rateTutorModal-<?php echo $tutor['id']; ?>`);
-            const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
-            
             // Hide the rate tutor modal
             const bootstrapModal = bootstrap.Modal.getInstance(rateTutorModal);
             bootstrapModal.hide();
-            
-            // Show the thank you modal after the rate tutor modal has hidden
-            thankYouModal.show();
+            // location.reload()
         } else {
             alert('Error: ' + data.message);
         }

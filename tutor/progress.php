@@ -2,7 +2,14 @@
 error_reporting(E_ALL);
 session_start();
 require_once '../tutor.php';
+require '../vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
 
+require '../vendor/phpmailer/phpmailer/src/Exception.php';
+require '../vendor/phpmailer/phpmailer/src/SMTP.php';
+require '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
 
 $user_login = new TUTOR();
 if (!$user_login->is_logged_in()) {
@@ -131,6 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $location = $_POST['location'];
                     $subject = $_POST['subject'];
                     $file_path = null;
+                    $status = 'pending';
 
                     // Handle file upload if provided
                     if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] === UPLOAD_ERR_OK) {
@@ -148,6 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             rendered_hours = :rendered_hours, 
                             location = :location, 
                             subject = :subject, 
+                            status = :status, 
                             uploaded_files = COALESCE(:uploaded_files, uploaded_files)
                         WHERE tutee_id = :tutee_id AND week_number = :week_number
                     ");
@@ -158,6 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->bindParam(':subject', $subject);
                     $stmt->bindParam(':uploaded_files', $file_path);
                     $stmt->bindParam(':tutee_id', $tutee_id);
+                    $stmt->bindParam(':status', $status);
 
                     if ($stmt->execute()) {
                         echo json_encode(['success' => true]);
@@ -207,6 +217,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->bindParam(':tutee_id', $tutee_id);
                 $stmt->execute();
                 echo json_encode(['success' => true]);
+
+                // Insert notification into notifications table
+                $title = "Finish Tutoring";
+                $message = "Your tutor $firstname $lastname request to finish your overall tutoring session.";
+                $stmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, date_sent) 
+                    VALUES (:tutor_id, :tutee_id, :title, :message, 'unread', NOW())");
+                $stmt->bindParam(":tutor_id", $tutor_id);
+                $stmt->bindParam(":tutee_id", $tutee_id);
+                $stmt->bindParam(":title", $title, PDO::PARAM_STR);
+                $stmt->bindParam(":message", $message, PDO::PARAM_STR);
+                $stmt->execute();
+
+                // Fetch the tutee's email
+                $stmt = $user_login->runQuery("SELECT emailaddress FROM tutee WHERE id = :tutee_id");
+                $stmt->bindParam(":tutee_id", $tutee_id);
+                $stmt->execute();
+                $tuteeEmail = $stmt->fetchColumn();
+                
+                // Prepare and send the email using PHPMailer
+                $mail = new PHPMailer(true);
+                    //Server settings
+                    $mail->isSMTP();
+                    $mail->Host = 'smtp.gmail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = 'findtutee@gmail.com';
+                    $mail->Password = 'tzbb qafz fhar ryzf';
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port = 587;
+                    
+                    $mail->setFrom('findtutee@gmail.com', 'TUTEEFIND');
+                    $mail->addAddress($tuteeEmail); // Set the recipient as the email entered in the form
+
+                    // Content
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Finish Tutoring Request';
+                    $mail->Body    = "
+                        <h3>Your tutor $firstname $lastname request to finish your overall tutoring session, open the website to validate.</h3>
+                    ";
+
+                    $mail->send();
             }
         }
              elseif ($_POST['action'] === 'get_session_status') {
@@ -278,6 +328,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $event_name = $_POST['event_name'];
                 $rendered_hours = $_POST['rendered_hours'];
                 $description = $_POST['description'];
+                $status = 'pending';
             
                 // Initialize file name variable (for the new file)
                 $file_name = null;
@@ -320,7 +371,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $query = "UPDATE events 
                               SET event_name = :event_name, 
                                   rendered_hours = :rendered_hours, 
-                                  description = :description, 
+                                  description = :description,
+                                  status = :status, 
                                   created_at = CURRENT_TIMESTAMP";  // Add this line to update created_at
             
                     // If there is a new file, include it in the update query
@@ -337,6 +389,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->bindParam(':event_name', $event_name);
                     $stmt->bindParam(':rendered_hours', $rendered_hours);
                     $stmt->bindParam(':description', $description);
+                    $stmt->bindParam(':status', $status);
             
                     // Bind the file parameter if there is a file
                     if ($file_name) {
@@ -784,8 +837,19 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                             <td><?php echo htmlspecialchars($progress['date'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($progress['status'] ?? ''); ?></td>
                                             <td class="text-center">
+                                            <?php
+                                            // Check if the tutee is removed
+                                            $stmt = $user_login->runQuery("
+                                                SELECT status FROM requests 
+                                                WHERE tutor_id = :tutor_id AND tutee_id = :tutee_id
+                                            ");
+                                            $stmt->bindParam(':tutor_id', $tutor_id);
+                                            $stmt->bindParam(':tutee_id', $tutee['id']);
+                                            $stmt->execute();
+                                            $tuteeStatus = $stmt->fetchColumn();
+                                            ?>
                                                 <button 
-                                                    <?php if ($progress['status'] === 'accepted'): ?> disabled <?php endif; ?>
+                                                    <?php if ($progress['status'] === 'accepted' || $tuteeStatus === 'removed'): ?> disabled <?php endif; ?>
                                                     class="btn btn-primary me-2 edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
                                                     data-tutee-id="<?php echo $tutee['id']; ?>" 
                                                     data-week-number="<?php echo $progress['week_number']; ?>"
@@ -797,7 +861,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                                     <i class='bx bx-edit'></i>
                                                 </button>
                                                 <button 
-                                                    <?php if ($progress['status'] === 'accepted'): ?> disabled <?php endif; ?>
+                                                    <?php if ($progress['status'] === 'accepted' || $tuteeStatus === 'removed'): ?> disabled <?php endif; ?>
                                                     class="btn btn-danger delete-btn" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#deleteModal"
@@ -827,9 +891,18 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                 $stmt->execute();
                                 $sessionStatus = $stmt->fetchColumn();
 
+                                $stmt = $user_login->runQuery("
+                                    SELECT status FROM requests 
+                                    WHERE tutor_id = :tutor_id AND tutee_id = :tutee_id
+                                ");
+                                $stmt->bindParam(':tutor_id', $tutor_id);
+                                $stmt->bindParam(':tutee_id', $tutee['id']);
+                                $stmt->execute();
+                                $tuteeStatus = $stmt->fetchColumn();
+
                                 // Disable the button if status is 'requested' or 'completed'
-                                if ($sessionStatus === 'requested' || $sessionStatus === 'completed') {
-                                    echo 'disabled';
+                                if ($sessionStatus === 'requested' || $sessionStatus === 'completed' || $tuteeStatus === 'removed') {
+                                    echo 'style="display:none;"';
                                 }
                             ?>>
                             Add Week
@@ -844,9 +917,18 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                 $stmt->bindParam(':tutee_id', $tutee['id']);
                                 $stmt->execute();
                                 $sessionStatus = $stmt->fetchColumn();
+
+                                $stmt = $user_login->runQuery("
+                                    SELECT status FROM requests 
+                                    WHERE tutor_id = :tutor_id AND tutee_id = :tutee_id
+                                ");
+                                $stmt->bindParam(':tutor_id', $tutor_id);
+                                $stmt->bindParam(':tutee_id', $tutee['id']);
+                                $stmt->execute();
+                                $tuteeStatus = $stmt->fetchColumn();
                         
                                 // Disable button if hours are less than 90 or session status is 'requested' or 'completed'
-                                if ($total_rendered_hours < 90 || $sessionStatus === 'requested' || $sessionStatus === 'completed') {
+                                if ($total_rendered_hours < 90 || $sessionStatus === 'requested' || $sessionStatus === 'completed' || $tuteeStatus === 'removed') {
                                     echo 'style="display:none;"';  // Only echo 'disabled' if the condition is met
                                 }
                             ?>>
@@ -1383,7 +1465,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 
     $('#confirmFinish').on('click', function() {
         var tutorId = $('.finish-btn[data-tutee-id="' + tuteeIdGlobal + '"]').data('tutor-id');
-
+        showSpinner();
         $.ajax({
             url: '', // Current PHP file
             type: 'POST',
@@ -1396,6 +1478,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                 const res = JSON.parse(response);
                 if (res.success) {
                     // Disable buttons and set success message
+                    
                     document.querySelector(`#finish-btn-${tuteeIdGlobal}`).disabled = true;
                     $('#successMessage').text('Tutor session finished successfully.');
                     $('#successModal').modal('show');
