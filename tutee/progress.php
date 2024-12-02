@@ -153,7 +153,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $tuteeName = $tutee['firstname'] . ' ' . $tutee['lastname'];
                 $tutorEmail = $tutor['emailaddress'];
                 $tutorName = $tutor['firstname'] . ' ' . $tutor['lastname'];
-        
+                // Insert notification into notifications table
+                $title = "Finish Tutoring Feed Back";
+                $message = "Your tutee $tuteeName already validated you request.";
+                $stmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, date_sent) 
+                    VALUES (:tutee_id, :tutor_id, :title, :message, 'unread', NOW())");
+                $stmt->bindParam(":tutor_id", $tutor_id);
+                $stmt->bindParam(":tutee_id", $tutee_id);
+                $stmt->bindParam(":title", $title, PDO::PARAM_STR);
+                $stmt->bindParam(":message", $message, PDO::PARAM_STR);
+                $stmt->execute();
                 // Send email to the tutee
                 $mail = new PHPMailer(true);
                 try {
