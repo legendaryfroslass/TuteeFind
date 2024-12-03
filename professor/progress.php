@@ -295,8 +295,10 @@ $sql = "
         LOWER(t.course) LIKE CONCAT('%', LOWER(?), '%') OR
         LOWER(t.year_section) LIKE CONCAT('%', LOWER(?), '%')
     )
-    GROUP BY t.id
+    GROUP BY 
+        t.id, t.lastname, t.firstname, t.student_id, t.course, t.year_section
 ";
+
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("issss", $professor_id, $search, $search, $search, $search);
