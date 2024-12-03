@@ -120,7 +120,7 @@ $sql = "
     MAX(rt.pdf_content) AS pdf_content
 FROM tutor t
 INNER JOIN professor p ON t.professor = p.faculty_id
-LEFT JOIN requests r ON t.id = r.tutor_id AND r.status = 'accepted'
+LEFT JOIN requests r ON t.id = r.tutor_id
 LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
 LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
 LEFT JOIN tutee_progress tp ON t.id = tp.tutor_id
@@ -252,8 +252,21 @@ $total_pages = ceil($total_rows / $limit);
 $professor_id = $_SESSION['professor_id'];
 $search = isset($_GET['search']) ? '%' . strtolower($_GET['search']) . '%' : '%%'; // Get the search term and prepare for LIKE query
 
-// SQL query to fetch required data with search functionality
 $sql = "
+    WITH AggregatedProgress AS (
+        SELECT 
+            tutor_id, 
+            SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_tutee_hours
+        FROM tutee_progress
+        GROUP BY tutor_id
+    ),
+    AggregatedEvents AS (
+        SELECT 
+            tutor_id, 
+            SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_event_hours
+        FROM events
+        GROUP BY tutor_id
+    )
     SELECT 
         t.id, 
         t.lastname, 
@@ -266,16 +279,15 @@ $sql = "
         COALESCE(MAX(rt.comment), 'No Comment') AS comment,
         MAX(r.tutor_id) AS tutor_id, 
         MAX(r.tutee_id) AS tutee_id,
-        COALESCE(SUM(CASE WHEN tp.status = 'accepted' THEN tp.rendered_hours ELSE 0 END), 0) + 
-        COALESCE(SUM(CASE WHEN e.status = 'accepted' THEN e.rendered_hours ELSE 0 END), 0) AS total_rendered_hours,  -- Summing only accepted rendered hours
-        MAX(rt.pdf_content) AS pdf_content  -- Fetching PDF content from tutor_ratings
+        COALESCE(ap.total_tutee_hours, 0) + COALESCE(ae.total_event_hours, 0) AS total_rendered_hours, -- Sum of aggregated hours
+        MAX(rt.pdf_content) AS pdf_content
     FROM tutor t
     INNER JOIN professor p ON t.professor = p.faculty_id
-    LEFT JOIN requests r ON t.id = r.tutor_id AND r.status = 'accepted'
+    LEFT JOIN requests r ON t.id = r.tutor_id
     LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
     LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
-    LEFT JOIN tutee_progress tp ON t.id = tp.tutor_id  -- Joining tutee_progress table
-    LEFT JOIN events e ON t.id = e.tutor_id  -- Joining events table
+    LEFT JOIN AggregatedProgress ap ON t.id = ap.tutor_id
+    LEFT JOIN AggregatedEvents ae ON t.id = ae.tutor_id
     WHERE p.id = ? 
     AND (
         LOWER(t.lastname) LIKE CONCAT('%', LOWER(?), '%') OR

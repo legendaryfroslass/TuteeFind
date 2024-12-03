@@ -849,7 +849,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                             $tuteeStatus = $stmt->fetchColumn();
                                             ?>
                                                 <button 
-                                                    <?php if ($progress['status'] === 'accepted' || $tuteeStatus === 'removed'): ?> disabled <?php endif; ?>
+                                                    <?php if ($progress['status'] === 'accepted'): ?> disabled <?php endif; ?>
                                                     class="btn btn-primary me-2 edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
                                                     data-tutee-id="<?php echo $tutee['id']; ?>" 
                                                     data-week-number="<?php echo $progress['week_number']; ?>"
@@ -861,7 +861,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                                     <i class='bx bx-edit'></i>
                                                 </button>
                                                 <button 
-                                                    <?php if ($progress['status'] === 'accepted' || $tuteeStatus === 'removed'): ?> disabled <?php endif; ?>
+                                                    <?php if ($progress['status'] === 'accepted'): ?> disabled <?php endif; ?>
                                                     class="btn btn-danger delete-btn" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#deleteModal"
