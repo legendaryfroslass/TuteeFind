@@ -279,7 +279,7 @@ $sql = "
         COALESCE(MAX(rt.comment), 'No Comment') AS comment,
         MAX(r.tutor_id) AS tutor_id, 
         MAX(r.tutee_id) AS tutee_id,
-        COALESCE(ap.total_tutee_hours, 0) + COALESCE(ae.total_event_hours, 0) AS total_rendered_hours, -- Sum of aggregated hours
+        COALESCE(MAX(ap.total_tutee_hours), 0) + COALESCE(MAX(ae.total_event_hours), 0) AS total_rendered_hours, -- Use MAX to aggregate
         MAX(rt.pdf_content) AS pdf_content
     FROM tutor t
     INNER JOIN professor p ON t.professor = p.faculty_id
@@ -298,7 +298,6 @@ $sql = "
     GROUP BY 
         t.id, t.lastname, t.firstname, t.student_id, t.course, t.year_section
 ";
-
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("issss", $professor_id, $search, $search, $search, $search);
