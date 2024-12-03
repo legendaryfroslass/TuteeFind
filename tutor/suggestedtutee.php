@@ -35,45 +35,63 @@ $tutor_id = $userData['id'];
 
 $imagePath = !empty($userData['photo']) ? $userData['photo'] : '../assets/TuteeFindLogoName.jpg';
 
-// Get the district of the tutor based on their barangay
-$stmt = $user_login->runQuery("SELECT district FROM districts WHERE barangay = :barangay");
-$stmt->bindParam(":barangay", $barangay);
-$stmt->execute();
-$tutorDistrict = $stmt->fetchColumn();
-
-// Prepare the query to select all tutees, prioritizing those in the filtered district (match_count)
 $filterQuery = "SELECT t.*, d.district,
-    (CASE WHEN d.barangay = :barangay THEN 1 ELSE 0 END) AS match_count
+    (CASE WHEN d.barangay = :barangay THEN 1 ELSE 0 END) AS match_count,
+    r.status AS request_status
     FROM tutee t
-    INNER JOIN districts d ON t.barangay = d.barangay";
+    INNER JOIN districts d ON t.barangay = d.barangay
+    LEFT JOIN requests r ON t.id = r.tutee_id AND r.tutor_id = :tutor_id
+    WHERE (r.status != 'accepted' OR r.status IS NULL)";
 
-// Apply additional filters if set
-$filterParams = [];
+// Apply filters if needed
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($_POST['barangay'])) {
         $filterQuery .= " AND d.barangay = :filter_barangay";
         $filterParams[':filter_barangay'] = $_POST['barangay'];
     }
+    if (isset($_POST['status'])) {
+        if ($_POST['status'] === '') {
+            $filterQuery .= " AND (r.status IS NULL OR r.status = '')"; // No pending request
+        } else {
+            $filterQuery .= " AND r.status = :filter_status";
+            $filterParams[':filter_status'] = $_POST['status'];
+        }
+    }
 }
 
-// Exclude tutees to whom the tutor has already sent requests (except for those with a 'removed' status)
-$filterQuery .= " WHERE t.id NOT IN (SELECT tutee_id FROM requests WHERE tutor_id = :tutor_id AND status != 'removed') 
-    ORDER BY match_count DESC, d.district ASC";  // Prioritize matches first, then sort by district
+// Add sorting
+$filterQuery .= " ORDER BY match_count DESC, d.district ASC";
 
 // Prepare and execute the query
 $tuteeStmt = $user_login->runQuery($filterQuery);
 $tuteeStmt->bindParam(":barangay", $barangay);
 $tuteeStmt->bindParam(":tutor_id", $tutor_id);
 
-// Bind filter parameters if set
-if (!empty($filterParams)) {
-    foreach ($filterParams as $key => &$value) {
-        $tuteeStmt->bindParam($key, $value);
-    }
+// Bind additional parameters for filters
+foreach ($filterParams as $key => &$value) {
+    $tuteeStmt->bindValue($key, $value);
 }
 
 $tuteeStmt->execute();
 $tutees = $tuteeStmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+if (isset($_POST['cancel_request'])) {
+    $tutee_id = $_POST['tutee_id'];
+
+    // SQL to delete the request where status is 'pending'
+    $deleteQuery = "DELETE FROM requests 
+                    WHERE tutee_id = :tutee_id AND tutor_id = :tutor_id AND status = 'pending'";
+
+    $stmt = $user_login->runQuery($deleteQuery);
+    $stmt->bindParam(':tutee_id', $tutee_id);
+    $stmt->bindParam(':tutor_id', $tutor_id);
+    $stmt->execute();
+
+    // Reload the page after deleting the request
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
 
 if (isset($_POST['send_request'])) {
     // Check the number of accepted tutees for the current tutor
@@ -395,7 +413,7 @@ if (isset($_POST['send_message'])) {
                                 <div class="col-12 my-1">
                                     <div class="select-container">
                                     <select class="custom-select" id="barangay" name="barangay" onchange="submitForm()">
-                                        <option value="" disabled selected hidden>Barangay</option>
+                                        <option value="" disabled selected hidden>All Barangay</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Arkong Bato') echo 'selected'; ?> value="Arkong Bato">Arkong Bato</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Bagbaguin') echo 'selected'; ?> value="Bagbaguin">Bagbaguin</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Balangkas') echo 'selected'; ?> value="Balangkas">Balangkas</option>
@@ -433,6 +451,19 @@ if (isset($_POST['send_message'])) {
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-12 my-1">
+                                    <div class="select-container">
+                                        <select class="custom-select" id="status" name="status" onchange="submitForm()">
+                                            <option value="" disabled selected hidden>Status</option>
+                                            <option <?php if(isset($_POST['status']) && $_POST['status'] == '') echo 'selected'; ?> value="">No Pending Request</option>
+                                            <option <?php if(isset($_POST['status']) && $_POST['status'] == 'pending') echo 'selected'; ?> value="pending">Pending</option>
+                                            <option <?php if(isset($_POST['status']) && $_POST['status'] == 'rejected') echo 'selected'; ?> value="rejected">Rejected</option>
+                                            <option <?php if(isset($_POST['status']) && $_POST['status'] == 'removed') echo 'selected'; ?> value="removed">Removed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
         </div>
 
@@ -451,6 +482,7 @@ if (isset($_POST['send_message'])) {
                                                 <th class="text-center">Photo</th>
                                                 <th class="text-center">Name</th>
                                                 <th class="text-center">Barangay</th>
+                                                <th class="text-center">Status</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -483,6 +515,9 @@ if (isset($_POST['send_message'])) {
                                                         <td class="tutor-name text-center">
                                                             <?php echo $tutee['barangay']; ?>
                                                         </td>
+                                                        <td class="text-center">
+                                                            <?php echo !empty($tutee['request_status']) ? htmlspecialchars(ucfirst($tutee['request_status'])) : "No Request Sent"; ?>
+                                                        </td>
                                                         <td>
                                                             <form method="post" class="text-center">
                                                                 <button type="button" 
@@ -497,12 +532,30 @@ if (isset($_POST['send_message'])) {
                                                                 
                                                                 <input type="hidden" name="tutee_id" value="<?php echo $tutee['id']; ?>">
                                                                 
-                                                                <button type="submit" 
-                                                                        class="btn btn-outline-primary" 
-                                                                        name="send_request" 
-                                                                        onclick=" showSpinner(); setTimeout(hideSpinner, 5000); event.stopPropagation();"> <!-- Prevent row click -->
-                                                                    <i class='bx bx-user-plus'></i>
-                                                                </button>
+                                                                <?php 
+                                                                // Check if the status is not "accepted" (i.e., "pending", "rejected", or "removed")
+                                                                if ($tutee['request_status'] == 'pending'): 
+                                                                ?>
+                                                                    <!-- Cancel Request button if the request status is pending -->
+                                                                    <button type="submit" 
+                                                                            class="btn btn-outline-danger" 
+                                                                            name="cancel_request" 
+                                                                            onclick="showSpinner(); setTimeout(hideSpinner, 5000); event.stopPropagation();">
+                                                                        <i class='bx bx-x-circle'></i>
+                                                                    </button>
+                                                                <?php elseif ($tutee['request_status'] != 'accepted'): ?>
+                                                                    <!-- Send Request button for statuses other than accepted -->
+                                                                    <button type="submit" 
+                                                                            class="btn btn-outline-primary" 
+                                                                            name="send_request" 
+                                                                            onclick="showSpinner(); setTimeout(hideSpinner, 7000); event.stopPropagation();">
+                                                                        <i class='bx bx-user-plus'></i>
+                                                                    </button>
+                                                                <?php else: ?>
+                                                                    <button type="button" class="btn btn-outline-secondary" disabled>
+                                                                        <i class='bx bx-user-check'></i>
+                                                                    </button>
+                                                                <?php endif; ?>
                                                             </form>
                                                         </td>
                                                     </tr>
