@@ -127,7 +127,7 @@ $pdf->Cell(0, 10, 'Date downloaded: ' . date('F d, Y'), 0, 1, 'R');
 date_default_timezone_set('Asia/Manila');
 $activity = "Download PDF Report: Tutee List";
 $formatted_datetime = date('F j, Y h:i:s A');
-$logSql = "INSERT INTO activity_logs (professor_id, activity, datetime) 
+$logSql = "INSERT INTO professor_logs (professor_id, activity, datetime) 
            VALUES (?, ?, ?)";
 $logStmt = $conn->prepare($logSql);
 $logStmt->bind_param("iss", $professor_id, $activity, $formatted_datetime);
