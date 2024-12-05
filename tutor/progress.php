@@ -87,9 +87,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Handle file upload if a file is uploaded
             if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
                 $file = $_FILES['file'];
+                $fileSize = $file['size'];
+                $maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
                 $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . $random_number = random_int(100000, 999999) . '.' . $fileExtension;
                 $targetPath = $uploadDir;
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+
+                // Check file extension
+                if (!in_array($fileExtension, $allowedExtensions)) {
+                    echo json_encode(['success' => false, 'message' => 'Invalid file type.']);
+                    exit;
+                }
+                if ($fileSize > $maxFileSize) {
+                    echo json_encode(['success' => false, 'message' => 'File exceeds the maximum size limit of 10MB.']);
+                    exit; // Stop further processing
+                }
 
                 if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                     // Update the tutee_progress table with the file path
@@ -147,6 +160,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . $random_number = random_int(100000, 999999) . '.' . $fileExtension;
                         $file_path = $uploadDir;
                         move_uploaded_file($_FILES['file-upload']['tmp_name'], $file_path);
+                        $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+                        if (!in_array($fileExtension, $allowedExtensions)) {
+                            echo json_encode(['success' => false, 'message' => 'Invalid file type.']);
+                            exit;
+                        }
+                        if ($_FILES['file-upload']['size'] > 5 * 1024 * 1024) { // 5 MB in bytes
+                            echo json_encode(['success' => false, 'message' => 'File size exceeds the 5 MB limit.']);
+                            exit;
+                        }
                     }
 
                     $stmt = $user_login->runQuery("
@@ -288,8 +310,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Check file type (allow only image formats)
                     if (in_array($file_ext, ['jpg', 'jpeg', 'png'])) {
-                        // Check file size (limit to 4MB)
-                        if ($file_size <= 4194304) {
+                        // Check file size (limit to 3MB)
+                        if ($file_size <= 3145728) {
                             // Move the file to your upload directory
                             $upload_dir = '../uploads/events/';
                             $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
@@ -342,8 +364,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                     // Check file type (allow only image formats)
                     if (in_array($file_ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
-                        // Check file size (limit to 4MB)
-                        if ($file_size <= 4194304) {
+                        // Check file size (limit to 3MB)
+                        if ($file_size <= 3145728) {
                             // Set upload directory
                             $upload_dir = '../uploads/events/';
                             $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
@@ -987,8 +1009,8 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         <input type="text" class="form-control" id="edit-subject" name="subject" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit-file-upload" class="form-label">Upload Tutoring Session File</label>
-                        <input type="file" class="form-control" id="edit-file-upload" name="file-upload">
+                        <label for="edit-file-upload" class="form-label">Upload Tutoring Session File(Max 5 mb)</label>
+                        <input type="file" class="form-control" id="edit-file-upload" name="file-upload" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
                     </div>
                 </form>
             </div>
@@ -1036,8 +1058,8 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             <textarea class="form-control" id="description-<?php echo $tutee['id']; ?>" placeholder="Describe the week..." required></textarea>
           </div>
           <div class="mb-3">
-            <label for="file-upload-<?php echo $tutee['id']; ?>" class="form-label">Upload Tutoring Session File</label>
-            <input type="file" class="form-control" id="file-upload-<?php echo $tutee['id']; ?>" accept="*/*">
+            <label for="file-upload-<?php echo $tutee['id']; ?>" class="form-label">Upload Tutoring Session File(Max 5 mb)</label>
+            <input type="file" class="form-control" id="file-upload-<?php echo $tutee['id']; ?>" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
           </div>
       </div>
       <div class="modal-footer d-flex justify-content-center border-0">
@@ -1105,8 +1127,8 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="attachFileOther" class="form-label">Attach Event File (Max 4mb)</label>
-                            <input type="file" class="form-control" id="attachFileOther" name="attached_file" accept="image/*" required>
+                            <label for="attachFileOther" class="form-label">Attach Event Image (Max 3mb)</label>
+                            <input type="file" class="form-control" id="attachFileOther" name="attached_file" accept=".jpg,.jpeg,.png" required>
                         </div>
                     </div>
                 </form>
@@ -1115,24 +1137,6 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             <div class="modal-footer d-flex justify-content-center border-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-primary" id="saveEventBtn">Add Event</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- error modal for upload -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="errorModalLabel">Error</h5>
-                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="errorModalMessage"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -1182,8 +1186,8 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         <input type="text" class="form-control" id="editDescription" name="description" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editAttachFile" class="form-label">Attach File (Optional)</label>
-                        <input type="file" class="form-control" id="editAttachFile" name="attached_file" accept="image/*">
+                        <label for="editAttachFile" class="form-label">Attach Image (Optional, Max 3 mb)</label>
+                        <input type="file" class="form-control" id="editAttachFile" name="attached_file" accept=".jpg,.jpeg,.png">
                     </div>
                     <input type="hidden" name="event_id" id="editEventId">
                     <div class="modal-footer">
@@ -1197,23 +1201,6 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
     </div>
 </div>
 
-<!-- Error Modal -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="errorModalLabel">Error</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Please fill all fields and attach a file.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
         <!-- Success Upload Modal UNUSED-->
         <div class="modal fade" id="uploadSuccessModal" tabindex="-1" aria-labelledby="uploadSuccessModalLabel" aria-hidden="true">
@@ -1342,22 +1329,21 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 </div>
 
 
-<!-- Error Modal -->
-<div class="modal fade" id="dateerror" tabindex="-1" aria-labelledby="dateerrorLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="dateerrorLabel">Error</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="errorMessage">
-                <!-- Error message will be injected here -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="errorModalLabel">Error</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="errorModalMessage">
+        <!-- Error message will be dynamically inserted here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
     </div>
+  </div>
 </div>
 
 </div>
@@ -1498,72 +1484,68 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 
     <script>
     document.getElementById("saveEventBtn").addEventListener("click", function (e) {
-    e.preventDefault();  // Prevent the default form submission
+    e.preventDefault(); // Prevent the default form submission
 
-    // Get form values
-    let eventName = document.getElementById("eventName").value;
-    let renderedHours = document.getElementById("renderedHoursOther").value;
-    let description = document.getElementById("descriptionOther").value;
-    let fileInput = document.getElementById("attachFileOther");
-    let file = fileInput.files[0]; // Get the file
+    const eventName = document.getElementById("eventName").value;
+    const renderedHours = document.getElementById("renderedHoursOther").value;
+    const description = document.getElementById("descriptionOther").value;
+    const fileInput = document.getElementById("attachFileOther");
+    const file = fileInput.files[0]; // Get the selected file
 
-    // Check if all fields are filled
+    // Validate required fields
     if (!eventName || !renderedHours || !description || !file) {
-        // Show the error modal with a bounce effect
-        $('#errorModal').modal('show');  // Bootstrap modal (assuming you have an error modal with this ID)
-        
-        // Add bounce animation
-        $('#errorModal').addClass('animate__animated animate__bounce');
-        
-        // Optionally, remove the bounce class after animation ends to avoid repeat animation
-        $('#errorModal').on('hidden.bs.modal', function () {
-            $(this).removeClass('animate__animated animate__bounce');
-        });
-
+        showErrorModal("All fields are required. Please complete the form.");
+        return;
+    }
+    // Validate file type (only images are allowed)
+    const allowedExtensions = ["jpg", "jpeg", "png"];
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+        showErrorModal("Invalid file type. Please upload a JPG, JPEG, or PNG file.");
+        return;
+    }
+    // Validate file size (limit: 3MB)
+    if (file.size > 3145728) { // 3 MB in bytes
+        showErrorModal("File size exceeds 3MB. Please upload a smaller file.");
         return;
     }
 
-    // Check file size (max 4MB) and type (only .jpg, .jpeg, .png allowed)
-    if (file.size > 4194304) {
-        alert("File size exceeds 4MB. Please upload a smaller file.");
-        return;
-    }
+    
 
-    // Function to show the error modal with a message
-    function showErrorModal(message) {
-        // Set the error message in the modal body
-        document.getElementById('errorModalMessage').textContent = message;
-
-        // Show the modal
-        const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-        errorModal.show();
-    }
-
-    // Prepare FormData to send via AJAX
-    let formData = new FormData();
+    // Prepare FormData for the POST request
+    const formData = new FormData();
     formData.append("event_name", eventName);
     formData.append("rendered_hours", renderedHours);
     formData.append("description", description);
-    formData.append("attached_file", file);  // The file
-    formData.append("action", "add_event");  // Action to distinguish from other requests
+    formData.append("attached_file", file);
+    formData.append("action", "add_event"); // Action identifier
 
-    // Send data via AJAX (POST request)
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "", true); // Use the correct PHP file to process the request
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            let response = JSON.parse(xhr.responseText);
-            if (response.success) {
-                showSpinner();
+    // Send the request using Fetch API
+    fetch("", {
+        method: "POST",
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Refresh the page to show the new event
             } else {
-                showErrorModal(response.message);
+                showErrorModal(data.message || "An error occurred while adding the event.");
             }
-        } else {
-            showErrorModal(response.message);
-        }
-    };
-    xhr.send(formData);
+        })
+        .catch(error => {
+            showErrorModal("A network error occurred. Please try again later.");
+            console.error("Error:", error);
+        });
 });
+
+// Function to display the error modal
+function showErrorModal(message) {
+    const modalMessage = document.getElementById("errorModalMessage");
+    modalMessage.textContent = message;
+    const errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+    errorModal.show();
+}
 
 
         document.querySelectorAll('.editEventBtn').forEach(button => {
@@ -1590,35 +1572,48 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
         });
     });
 
-    document.getElementById('saveChangesBtn').addEventListener('click', function (e) {
-        e.preventDefault(); // Prevent default form submission
+    // Validate file size before submission (3MB)
+document.getElementById('saveChangesBtn').addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent default form submission
 
-        // Get the form element
-        var form = document.getElementById('editEventForm');
+    // Validate file size if a file is uploaded
+    const fileInput = document.getElementById('editAttachFile');
+    const file = fileInput.files[0];
 
-        // Get all form data
-        var formData = new FormData(form);
+    const allowedExtensions = ['jpg', 'jpeg', 'png'];
+    const fileExtension = fileInput.name.split('.').pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+        showErrorModal("Invalid file type. Please upload a JPG, JPEG, or PNG file.");
+        return;
+    }
+    if (file.size > 3145728) { // 3MB limit
+        showErrorModal("File size exceeds 3MB. Please upload a smaller file.");
+        return;
+    }
 
-        // Append action type to distinguish
-        formData.append('action', 'edit_event');
+    // Proceed with form submission
+    const form = document.getElementById('editEventForm');
+    const formData = new FormData(form);
 
-        // Create an AJAX request
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '', true); // Replace with your edit event handler script
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                    location.reload(); // Refresh the page to reflect the changes
-                } else {
-                    alert('Failed to update event. Please try again.');
-                }
+    formData.append('action', 'edit_event'); // Append action for server-side handling
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '', true); // Replace with the correct PHP file path
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                location.reload(); // Reload page on success
             } else {
-                alert('Error occurred. Please try again.');
+                alert(response.message || 'Failed to update event.');
             }
-        };
-        xhr.send(formData); // Send the data
-    });
+        } else {
+            alert('An error occurred. Please try again.');
+        }
+    };
+    xhr.send(formData);
+});
+
 
 
 // When the delete button is clicked
@@ -1699,6 +1694,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const renderedHours = $(`#rendered-hours-${tuteeId}`).val();
         const fileUpload = $(`#file-upload-${tuteeId}`).prop('files')[0]; // Get the file object
 
+        if (fileUpload) {
+        const allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+        const fileExtension = fileUpload.name.split('.').pop().toLowerCase();
+        const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
+
+        if (!allowedExtensions.includes(fileExtension)) {
+            showErrorModal('Invalid file type. Only images and documents are allowed.');
+            return;
+        }
+
+        if (fileUpload.size > maxFileSize) {
+            showErrorModal('File exceeds the maximum size limit of 5MB.');
+            return;
+        }
+    }
         const formData = new FormData();
         formData.append('action', 'add_week');
         formData.append('tutee_id', tuteeId);
@@ -1800,8 +1810,27 @@ document.querySelectorAll('.edit-btn').forEach(button => {
     });
 });
 
+function showErrorModal(message) {
+    $('#errorModalMessage').text(message); // Set the error message
+    $('#errorModal').modal('show'); // Display the modal
+}
 
 document.getElementById('saveWeekBtn').addEventListener('click', function() {
+
+    const fileUpload = document.getElementById('edit-file-upload').files[0];
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+    const fileExtension = fileUpload.name.split('.').pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+        showErrorModal('Invalid file type. Only images and documents are allowed.');
+        return;
+    }
+    if (fileUpload && fileUpload.size > 5 * 1024 * 1024) { // 10 MB in bytes
+        showErrorModal('File size exceeds the 5 MB limit.');
+        return;
+    }
+    
+        
+
     const form = document.getElementById('editForm');
     const formData = new FormData(form);
     formData.append('action', 'edit_week');  // Add the action
