@@ -157,18 +157,6 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">Preferred Day</label>
-            <div class="col-sm-9">
-              <p class="form-control-static view-text" id="view_preferred_day"><?php echo isset($row['preferred_day']) ? $row['preferred_day'] : ''; ?></p>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Preferred Subject</label>
-            <div class="col-sm-9">
-              <p class="form-control-static view-text" id="view_preferred_subject"><?php echo isset($row['preferred_subject']) ? $row['preferred_subject'] : ''; ?></p>
-            </div>
-          </div>
-          <div class="form-group">
             <label class="col-sm-3 control-label">Professor ID</label>
             <div class="col-sm-9">
               <p class="form-control-static view-text" id="view_professor"><?php echo isset($row['professor']) ? $row['professor'] : ''; ?></p>
@@ -691,31 +679,6 @@
                   <option value="BSBAHRDM">BS Business Administration Major in Human Resource Development Management</option>
                   <option value="BSBAMM">BS Business Administration Major in Marketing Management</option>
                   <option value="BSPA">BS Public Administration</option>
-                </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="edit_preferred_day" class="col-sm-3 control-label">Preferred Day</label>
-              <div class="col-sm-9">
-                <select class="form-control" id="edit_preferred_day" name="preferred_day">
-                  <option disabled>Preferred Day</option>
-                  <option value="Monday">Monday</option>
-                  <option value="Tuesday">Tuesday</option>
-                  <option value="Wednesday">Wednesday</option>
-                  <option value="Thursday">Thursday</option>
-                  <option value="Friday">Friday</option>
-                  <option value="Saturday">Saturday</option>
-                  <option value="Sunday">Sunday</option>
-                </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="edit_preferred_subject" class="col-sm-3 control-label">Preferred Subject</label>
-              <div class="col-sm-9">
-                <select class="form-control" id="edit_preferred_subject" name="preferred_subject">
-                  <option selected disabled>Preferred Subject</option>
-                  <option value="Math">Math</option>
-                  <option value="Literacy">Literacy</option>
                 </select>
             </div>
           </div>
