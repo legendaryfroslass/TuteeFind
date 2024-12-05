@@ -14,7 +14,6 @@ $stmt->bindParam(":student_id", $tutorSession);
 $stmt->execute();
 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
 // Ensure $userData is not false before accessing its fields
 if ($userData) {
     $firstname = $userData['firstname'];
@@ -50,12 +49,21 @@ if ($userData) {
     $tutees = $tuteeStmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function removeTutee($tutee_id) {
+function removeTutee($tutee_id, $removal_reason, $tutor_id) {
     global $user_login;
     try {
         $stmt = $user_login->runQuery("UPDATE requests SET status = 'removed' WHERE tutee_id = :tutee_id");
         $stmt->bindParam(":tutee_id", $tutee_id);
         $stmt->execute();
+
+        // Insert a notification for the tutor about the removal
+        $notificationStmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status) 
+                                                  VALUES (:sender_id, :receiver_id, 'Your Tutor has removed you from being his/her Tutee.', :message, 'unread')");
+        $notificationStmt->bindParam(":sender_id", $tutor_id);
+        $notificationStmt->bindParam(":receiver_id", $tutee_id);
+        $notificationStmt->bindParam(":message", $removal_reason);
+        $notificationStmt->execute();
+
         return true;
     } catch (PDOException $ex) {
         echo "Error removing tutee: " . $ex->getMessage();
@@ -66,21 +74,8 @@ function removeTutee($tutee_id) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['remove_tutee'])) {
         $tutee_id = $_POST['tutee_id'];
-        if (removeTutee($tutee_id)) {
-            // Refresh the page to reflect the changes
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
-        }
-    }
-}
-
-
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['remove_tutee'])) {
-        $tutee_id = $_POST['tutee_id'];
-        if (removeTutee($tutee_id)) {
+        $removal_reason = $_POST['removal_reason'];
+        if (removeTutee($tutee_id, $removal_reason, $tutor_id)) {
             // Refresh the page to reflect the changes
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
@@ -266,7 +261,10 @@ if (isset($_POST['send_message'])) {
                                                             >
                                                         <i class='bx bx-message-square-dots'></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-outline-danger bx bx-user-x" data-toggle="modal" data-target="#removeTuteeModal" data-tutee-id="<?php echo htmlspecialchars($tutee['id']); ?>"></button>
+                                                    <button type="button" class="btn btn-outline-danger bx bx-user-x" 
+                                                    data-toggle="modal" data-target="#removeTuteeModal" 
+                                                    data-tutee-id="<?php echo htmlspecialchars($tutee['id']); ?>">
+                                                    </button>
                                                 </div>
                                             </div>
                                         </h5>
@@ -388,26 +386,29 @@ if (isset($_POST['send_message'])) {
     </div>
 
         <!-- Remove Tutee Modal -->
-        <div class="modal fade" id="removeTuteeModal" tabindex="-1" role="dialog" aria-labelledby="removeTuteeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
-                        <!-- Centered header content -->
-                        <img src="../assets/remove.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
+<div class="modal fade" id="removeTuteeModal" tabindex="-1" role="dialog" aria-labelledby="removeTuteeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
+                <img src="../assets/remove.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this tutee?</p>
+                <form id="removeTuteeForm" method="post">
+                    <div class="form-group">
+                        <label for="removal_reason">Reason for removal:</label>
+                        <textarea id="removal_reason" name="removal_reason" class="form-control" rows="3" required></textarea>
                     </div>
-                    <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
-                        <p>Are you sure you want to remove this tutee?</p>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center border-0">
-                        <form id="removeTuteeForm" method="post">
-                            <input type="hidden" name="tutee_id" id="tutee_id" value="">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="submit" name="remove_tutee" class="btn btn-danger">Remove</button>
-                        </form>
-                    </div>
-                </div>
+                    <input type="hidden" name="tutee_id" id="tutee_id" value="">
+            </div>
+            <div class="modal-footer d-flex justify-content-center border-0">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" name="remove_tutee" class="btn btn-danger">Remove</button>
+                </form>
             </div>
         </div>
+    </div>
+</div>
         <!-- end modal -->
 </div>
     <script>

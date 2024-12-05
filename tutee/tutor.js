@@ -30,6 +30,58 @@ document.addEventListener('show.bs.modal', function (event) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Handle removal of tutor logic (Button click)
+    const removeTutorButtons = document.querySelectorAll('#removeTutorBtn');
+    removeTutorButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const tutorId = this.getAttribute('data-tutor-id');
+            const tuteeId = this.getAttribute('data-tutee-id');
+
+            // Set tutor_id and tutee_id in the modal form
+            document.getElementById('modalTutorId').value = tutorId;
+            document.getElementById('tutee_id').value = tuteeId;
+        });
+    });
+
+    // Handle form submission for removing a tutor
+    document.getElementById('removeTuteeForm').addEventListener('submit', function (event) {
+        const removalReason = document.getElementById('removal_reason').value.trim();
+
+        // Check if the reason is provided
+        if (!removalReason) {
+            event.preventDefault(); // Prevent form submission
+            document.getElementById('reasonError').style.display = 'block'; // Show error message
+        } else {
+            document.getElementById('reasonError').style.display = 'none'; // Hide error message
+            
+            // Send AJAX request to remove tutor
+            const tutorId = document.getElementById('modalTutorId').value;
+            const tuteeId = document.getElementById('tutee_id').value;
+
+            fetch('', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'remove_tutor',
+                    tutor_id: tutorId,
+                    tutee_id: tuteeId,
+                    removal_reason: removalReason
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Refresh the page to reflect the changes
+                } else {
+                    alert("Error: " + data.message); // Show error message
+                }
+            })
+            .catch(error => console.error("AJAX request failed:", error));
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
     var removeButtons = document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#removeTuteeModal"]');
     removeButtons.forEach(function (button) {
         button.addEventListener('click', function () {
