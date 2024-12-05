@@ -306,28 +306,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-function removeTutor($tutor_id, $tutee_id) {
+function removeTutor($tutor_id, $tutee_id, $removal_reason) {
     global $user_login;
     try {
+        // Update the request status to removed
         $stmt = $user_login->runQuery("UPDATE requests SET status = 'removed' WHERE tutor_id = :tutor_id AND tutee_id = :tutee_id");
         $stmt->bindParam(":tutor_id", $tutor_id);
         $stmt->bindParam(":tutee_id", $tutee_id);
         $stmt->execute();
+
+        // Insert a notification for the tutor about the removal
+        $notificationStmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status) 
+                                                  VALUES (:sender_id, :receiver_id, 'Your Tutee has removed you from being his/her Tutor.', :message, 'unread')");
+        $notificationStmt->bindParam(":sender_id", $tutee_id); // Ensure tutor_id is passed
+        $notificationStmt->bindParam(":receiver_id", $tutor_id);
+        $notificationStmt->bindParam(":message", $removal_reason);
+        $notificationStmt->execute();
+
         return true;
     } catch (PDOException $ex) {
         echo "Error removing tutor: " . $ex->getMessage();
         return false;
     }
 }
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['remove_tutor'])) {
         $tutor_id = $_POST['tutor_id'];
-        removeTutor($tutor_id, $tutee_id); // Pass both tutor_id and tutee_id
-        // Refresh the page to reflect the changes
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
+        $tutee_id = $_POST['tutee_id'];
+        $removal_reason = $_POST['removal_reason']; // Get the reason if provided
+
+        if (removeTutor($tutor_id, $tutee_id, $removal_reason)) {
+            // Refresh the page to reflect the changes
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        }
     }
 }
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tutee_id = $_POST['tutee_id'] ?? null;
@@ -1008,30 +1024,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </div>
-    <!-- Remove Tutee Modal -->
-    <div class="modal fade modal-shake" id="removeTuteeModal" tabindex="-1" role="dialog" aria-labelledby="removeTuteeModalLabel" aria-hidden="true">
-        <div>
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
-                        <!-- Centered header content -->
-                        <img src="../assets/remove.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
-                    </div>
+
+<!-- Remove Tutor Modal -->
+<div class="modal fade modal-shake" id="removeTuteeModal" tabindex="-1" role="dialog" aria-labelledby="removeTuteeModalLabel" aria-hidden="true">
+    <div>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
+                    <img src="../assets/remove.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
+                </div>
+                <!-- Form is now enclosed correctly inside modal-content -->
+                <form id="removeTuteeForm" method="POST">
                     <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
                         <p>Are you sure you want to remove this tutor?</p>
+                        <textarea name="removal_reason" id="removal_reason" class="form-control" placeholder="Enter reason for removal" required></textarea>
+                        <div id="reasonError" style="color: red; display: none;">Reason is required.</div> <!-- Error message if not filled -->
                     </div>
                     <div class="modal-footer d-flex justify-content-center border-0">
-                        <form id="removeTuteeForm" method="POST">
-                            <input type="hidden" name="tutor_id" id="modalTutorId" value="">
-                            <input type="hidden" name="tutee_id" id="tutee_id" value="">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" id="confirmTutorRemove" name="remove_tutor" class="btn btn-danger">Remove</button>
-                        </form>
+                        <input type="hidden" name="tutor_id" id="modalTutorId" value="">
+                        <input type="hidden" name="tutee_id" id="tutee_id" value="">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" id="confirmTutorRemove" name="remove_tutor" class="btn btn-danger">Remove</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
     <!-- Thank You Modal -->
     <div class="modal fade" id="thankYouModal" tabindex="-1" aria-labelledby="thankYouModal" aria-hidden="true">
         <div>
@@ -1269,19 +1289,6 @@ document.getElementById('submitCommentButton').addEventListener('click', functio
         });
     });
 
-    // Handle removal of tutor logic
-    const removeTutorButtons = document.querySelectorAll('#removeTutorBtn');
-    removeTutorButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const tutorId = this.getAttribute('data-tutor-id');
-            const tuteeId = this.getAttribute('data-tutee-id');
-
-            // Set tutor_id and tutee_id in the modal form
-            document.getElementById('modalTutorId').value = tutorId;
-            document.getElementById('tutee_id').value = tuteeId;
-        });
-    });
-
     // Handling the rate tutor button's display logic
     document.getElementById('rateTutorBtn').addEventListener('click', function() {
         const targetModal = this.getAttribute('data-bs-target');
@@ -1326,5 +1333,59 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 });
         </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Handle removal of tutor logic (Button click)
+    const removeTutorButtons = document.querySelectorAll('#removeTutorBtn');
+    removeTutorButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const tutorId = this.getAttribute('data-tutor-id');
+            const tuteeId = this.getAttribute('data-tutee-id');
+
+            // Set tutor_id and tutee_id in the modal form
+            document.getElementById('modalTutorId').value = tutorId;
+            document.getElementById('tutee_id').value = tuteeId;
+        });
+    });
+
+    // Handle form submission for removing a tutor
+    document.getElementById('removeTuteeForm').addEventListener('submit', function (event) {
+        const removalReason = document.getElementById('removal_reason').value.trim();
+
+        // Check if the reason is provided
+        if (!removalReason) {
+            event.preventDefault(); // Prevent form submission
+            document.getElementById('reasonError').style.display = 'block'; // Show error message
+        } else {
+            document.getElementById('reasonError').style.display = 'none'; // Hide error message
+            
+            // Send AJAX request to remove tutor
+            const tutorId = document.getElementById('modalTutorId').value;
+            const tuteeId = document.getElementById('tutee_id').value;
+
+            fetch('', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'remove_tutor',
+                    tutor_id: tutorId,
+                    tutee_id: tuteeId,
+                    removal_reason: removalReason
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Refresh the page to reflect the changes
+                } else {
+                    alert("Error: " + data.message); // Show error message
+                }
+            })
+            .catch(error => console.error("AJAX request failed:", error));
+        }
+    });
+});
+</script>
     </body>
 </html>

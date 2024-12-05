@@ -85,26 +85,41 @@ $markAsReadQuery->execute();
     $tutors = [];
 }
 
-function removeTutor($tutor_id, $tutee_id) {
+function removeTutor($tutor_id, $tutee_id, $removal_reason) {
     global $user_login;
     try {
+        // Update the request status to removed
         $stmt = $user_login->runQuery("UPDATE requests SET status = 'removed' WHERE tutor_id = :tutor_id AND tutee_id = :tutee_id");
         $stmt->bindParam(":tutor_id", $tutor_id);
         $stmt->bindParam(":tutee_id", $tutee_id);
         $stmt->execute();
+
+        // Insert a notification for the tutor about the removal
+        $notificationStmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status) 
+                                                  VALUES (:sender_id, :receiver_id, 'Your Tutee has removed you from being his/her Tutor.', :message, 'unread')");
+        $notificationStmt->bindParam(":sender_id", $tutee_id); // Ensure tutor_id is passed
+        $notificationStmt->bindParam(":receiver_id", $tutor_id);
+        $notificationStmt->bindParam(":message", $removal_reason);
+        $notificationStmt->execute();
+
         return true;
     } catch (PDOException $ex) {
         echo "Error removing tutor: " . $ex->getMessage();
         return false;
     }
 }
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['remove_tutor'])) {
         $tutor_id = $_POST['tutor_id'];
-        removeTutor($tutor_id, $tutee_id); // Pass both tutor_id and tutee_id
-        // Refresh the page to reflect the changes
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
+        $tutee_id = $_POST['tutee_id'];
+        $removal_reason = $_POST['removal_reason']; // Get the reason if provided
+
+        if (removeTutor($tutor_id, $tutee_id, $removal_reason)) {
+            // Refresh the page to reflect the changes
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        }
     }
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -274,7 +289,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                     <button type="button" name="remove_tutor" id="removeTutorBtn" class="btn btn-outline-danger bx bx-user-x" 
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#removeTuteeModal"
-                                                            data-tutor-id="<?php echo htmlspecialchars($tutor['id']); ?>"> <!-- Ensure data attributes are set --> 
+                                                            data-tutor-id="<?php echo htmlspecialchars($tutor['id']); ?>"
+                                                            data-tutee-id="<?php echo htmlspecialchars($tutee_id); ?>"></button> <!-- Ensure data attributes are set --> 
                                                     </button>
                                                 </form>
                                             </div>
@@ -356,27 +372,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
         <!-- Remove Tutor Modal -->
-        <div class="modal fade modal-shake" id="removeTuteeModal" tabindex="-1" role="dialog" aria-labelledby="removeTuteeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
-                        <!-- Centered header content -->
-                        <img src="../assets/remove.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
-                    </div>
+<div class="modal fade modal-shake" id="removeTuteeModal" tabindex="-1" role="dialog" aria-labelledby="removeTuteeModalLabel" aria-hidden="true">
+    <div>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
+                    <img src="../assets/remove.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
+                </div>
+                <!-- Form is now enclosed correctly inside modal-content -->
+                <form id="removeTuteeForm" method="POST">
                     <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
                         <p>Are you sure you want to remove this tutor?</p>
+                        <textarea name="removal_reason" id="removal_reason" class="form-control" placeholder="Enter reason for removal" required></textarea>
+                        <div id="reasonError" style="color: red; display: none;">Reason is required.</div> <!-- Error message if not filled -->
                     </div>
-                    <div class="modal-footer">
-                    <form id="removeTuteeForm" method="POST">
-                        <input type="hidden" name="tutor_id" id="modalTutorId" value=""> <!-- Added hidden input for tutor_id -->
-                        <input type="hidden" name="tutee_id" id="tutee_id" value=""> <!-- Ensure tutee_id is here -->
-                        <button type="submit" id="confirmTutorRemove" name="remove_tutor" class="btn btn-outline-danger">Remove</button>
+                    <div class="modal-footer d-flex justify-content-center border-0">
+                        <input type="hidden" name="tutor_id" id="modalTutorId" value="">
+                        <input type="hidden" name="tutee_id" id="tutee_id" value="">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </form>
+                        <button type="submit" id="confirmTutorRemove" name="remove_tutor" class="btn btn-danger">Remove</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- Logout Confirmation Modal -->
         <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
