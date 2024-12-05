@@ -1581,7 +1581,7 @@ document.getElementById('saveChangesBtn').addEventListener('click', function (e)
     const file = fileInput.files[0];
 
     const allowedExtensions = ['jpg', 'jpeg', 'png'];
-    const fileExtension = fileInput.name.split('.').pop().toLowerCase();
+    const fileExtension = file.name.split('.').pop().toLowerCase();
     if (!allowedExtensions.includes(fileExtension)) {
         showErrorModal("Invalid file type. Please upload a JPG, JPEG, or PNG file.");
         return;
