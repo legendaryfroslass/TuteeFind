@@ -1705,7 +1705,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (fileUpload.size > maxFileSize) {
-            showErrorModal('File exceeds the maximum size limit of 1 MB.');
+            showErrorModal('File exceeds the maximum size limit of 5 MB.');
             return;
         }
     }
