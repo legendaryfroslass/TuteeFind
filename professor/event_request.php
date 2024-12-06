@@ -1,5 +1,7 @@
 <?php include 'includes/session.php'; ?>
-<?php include 'includes/header.php'; ?>
+<?php include 'includes/header.php'; 
+
+?>
 
 <style>
   .scrollable-table {
@@ -316,10 +318,10 @@ if ($stmt = $conn->prepare($sql)) {
         // Conditionally render Accept and Reject buttons
         if ($status === 'pending') {
             echo "
-                <button class='btn btn-success btn-sm accept' data-id='" . $row['event_id'] . "'>
+                <button class='btn btn-success btn-sm accept' data-id='" . $row['event_id'] . "' data-tutor-id='" . $row['tutor_id'] . "'>
                     <i class='fa fa-check-circle mr-2'></i> Accept
                 </button>
-                <button class='btn btn-danger btn-sm btn-flat reject' data-id='" . $row['event_id'] . "'>
+                <button class='btn btn-danger btn-sm btn-flat reject' data-id='" . $row['event_id'] . "' data-tutor-id='" . $row['tutor_id'] . "'>
                     <i class='fa fa-times-circle mr-2'></i> Reject
                 </button>";
         }
@@ -402,9 +404,11 @@ $(function() {
   $(document).on('click', '.accept', function(e) {
     e.preventDefault();
     var id = $(this).data('id');
+    var tutorId = $(this).data('tutor-id');
     $('#accept').modal('show');
     // Set the event_id in the hidden field when the modal is shown
     $('#event_id').val(id);
+    $('#tutor_id').val(tutorId);
     getViewRow(id); // Fetch event details
   });
 });
@@ -413,12 +417,14 @@ $(function() {
     $(document).on('click', '.reject', function(e) {
         e.preventDefault();
         
-        var id = $(this).data('id');  // Get the event ID from the button's data-id attribute
+        var id = $(this).data('id');
+        var tutorId = $(this).data('tutor-id');  // Get the event ID from the button's data-id attribute
         $('#reject').modal('show');   // Show the modal
         
         // Dynamically set the event_id in the hidden input
         $('#event_id2').val(id);       // Set the value of the hidden input
-
+        $('#tutor_id2').val(tutorId);
+        
         // Optionally, you can fetch additional details about the event if needed
         getViewRow(id);  // Call a function to get event details (if required)
     });
