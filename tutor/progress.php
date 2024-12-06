@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
                 $file = $_FILES['file'];
                 $fileSize = $file['size'];
-                $maxFileSize = 1 * 1024 * 1024; // 1 MB in bytes
+                $maxFileSize = 5 * 1024 * 1024; // 1 MB in bytes
                 $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $uploadDir = '../uploads/' . $tutorSession . '_week' . $_POST['week_number'] . $random_number = random_int(100000, 999999) . '.' . $fileExtension;
                 $targetPath = $uploadDir;
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
                 if ($fileSize > $maxFileSize) {
-                    echo json_encode(['success' => false, 'message' => 'File exceeds the maximum size limit of 1 MB.']);
+                    echo json_encode(['success' => false, 'message' => 'File exceeds the maximum size limit of 5 MB.']);
                     exit; // Stop further processing
                 }
 
@@ -165,8 +165,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             echo json_encode(['success' => false, 'message' => 'Invalid file type.']);
                             exit;
                         }
-                        if ($_FILES['file-upload']['size'] > 1 * 1024 * 1024) { // 1 MB in bytes
-                            echo json_encode(['success' => false, 'message' => 'File size exceeds the 1 MB limit.']);
+                        if ($_FILES['file-upload']['size'] > 5 * 1024 * 1024) { // 5 MB in bytes
+                            echo json_encode(['success' => false, 'message' => 'File size exceeds the 5 MB limit.']);
                             exit;
                         }
                     }
@@ -310,8 +310,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Check file type (allow only image formats)
                     if (in_array($file_ext, ['jpg', 'jpeg', 'png'])) {
-                        // Check file size (limit to 1MB)
-                        if ($file_size <= 1145728) {
+                        // Check file size (limit to 3MB)
+                        if ($file_size <= 3145728) {
                             // Move the file to your upload directory
                             $upload_dir = '../uploads/events/';
                             $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
@@ -336,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 echo json_encode(['success' => false, 'message' => 'File upload failed']);
                             }
                         } else {
-                            echo json_encode(['success' => false, 'message' => 'File size exceeds 4MB']);
+                            echo json_encode(['success' => false, 'message' => 'File size exceeds 3MB']);
                         }
                     } else {
                         echo json_encode(['success' => false, 'message' => 'Invalid file type. Only JPG, JPEG, PNG allowed']);
@@ -364,8 +364,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                     // Check file type (allow only image formats)
                     if (in_array($file_ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
-                        // Check file size (limit to 1MB)
-                        if ($file_size <= 1145728) {
+                        // Check file size (limit to 3MB)
+                        if ($file_size <= 3145728) {
                             // Set upload directory
                             $upload_dir = '../uploads/events/';
                             $upload_file = $upload_dir . $tutorSession . '_event_' . $random_number = random_int(100000, 999999) . '.' . $file_ext;
@@ -378,7 +378,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 exit;
                             }
                         } else {
-                            echo json_encode(['success' => false, 'message' => 'File size exceeds 4MB']);
+                            echo json_encode(['success' => false, 'message' => 'File size exceeds 3MB']);
                             exit;
                         }
                     } else {
@@ -1009,7 +1009,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         <input type="text" class="form-control" id="edit-subject" name="subject" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit-file-upload" class="form-label">Upload Tutoring Session File(Max 1 mb)</label>
+                        <label for="edit-file-upload" class="form-label">Upload Tutoring Session File(Max 5 mb)</label>
                         <input type="file" class="form-control" id="edit-file-upload" name="file-upload" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
                     </div>
                 </form>
@@ -1058,7 +1058,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             <textarea class="form-control" id="description-<?php echo $tutee['id']; ?>" placeholder="Describe the week..." required></textarea>
           </div>
           <div class="mb-3">
-            <label for="file-upload-<?php echo $tutee['id']; ?>" class="form-label">Upload Tutoring Session File(Max 1 mb)</label>
+            <label for="file-upload-<?php echo $tutee['id']; ?>" class="form-label">Upload Tutoring Session File(Max 5 mb)</label>
             <input type="file" class="form-control" id="file-upload-<?php echo $tutee['id']; ?>" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
           </div>
       </div>
@@ -1127,7 +1127,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="attachFileOther" class="form-label">Attach Event Image (Max 1mb)</label>
+                            <label for="attachFileOther" class="form-label">Attach Event Image (Max 3 mb)</label>
                             <input type="file" class="form-control" id="attachFileOther" name="attached_file" accept=".jpg,.jpeg,.png" required>
                         </div>
                     </div>
@@ -1186,7 +1186,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                         <input type="text" class="form-control" id="editDescription" name="description" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editAttachFile" class="form-label">Attach Image (Optional, Max 1 mb)</label>
+                        <label for="editAttachFile" class="form-label">Attach Image (Optional, Max 3 mb)</label>
                         <input type="file" class="form-control" id="editAttachFile" name="attached_file" accept=".jpg,.jpeg,.png">
                     </div>
                     <input type="hidden" name="event_id" id="editEventId">
@@ -1505,8 +1505,8 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
         return;
     }
     // Validate file size (limit: 3MB)
-    if (file.size > 1145728) { // 3 MB in bytes
-        showErrorModal("File size exceeds 1 MB. Please upload a smaller file.");
+    if (file.size > 3145728) { // 3 MB in bytes
+        showErrorModal("File size exceeds 3 MB. Please upload a smaller file.");
         return;
     }
 
@@ -1586,8 +1586,8 @@ document.getElementById('saveChangesBtn').addEventListener('click', function (e)
         showErrorModal("Invalid file type. Please upload a JPG, JPEG, or PNG file.");
         return;
     }
-    if (file.size > 1145728) { // 1MB limit
-        showErrorModal("File size exceeds 1 MB. Please upload a smaller file.");
+    if (file.size > 3145728) { // 3MB limit
+        showErrorModal("File size exceeds 3 MB. Please upload a smaller file.");
         return;
     }
 
@@ -1697,7 +1697,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (fileUpload) {
         const allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
         const fileExtension = fileUpload.name.split('.').pop().toLowerCase();
-        const maxFileSize = 1 * 1024 * 1024; // 5MB in bytes
+        const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
 
         if (!allowedExtensions.includes(fileExtension)) {
             showErrorModal('Invalid file type. Only images and documents are allowed.');
@@ -1824,8 +1824,8 @@ document.getElementById('saveWeekBtn').addEventListener('click', function() {
         showErrorModal('Invalid file type. Only images and documents are allowed.');
         return;
     }
-    if (fileUpload && fileUpload.size > 1 * 1024 * 1024) { // 10 MB in bytes
-        showErrorModal('File size exceeds the 1 MB limit.');
+    if (fileUpload && fileUpload.size > 5 * 1024 * 1024) { // 5 MB in bytes
+        showErrorModal('File size exceeds the 5 MB limit.');
         return;
     }
     
