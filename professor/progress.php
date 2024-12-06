@@ -252,6 +252,30 @@ $total_pages = ceil($total_rows / $limit);
 $professor_id = $_SESSION['professor_id'];
 $search = isset($_GET['search']) ? '%' . strtolower($_GET['search']) . '%' : '%%'; // Get the search term and prepare for LIKE query
 
+if (isset($_GET['id'])) {
+  $id = intval($_GET['id']); // Sanitize input
+  $sql = "SELECT pdf_content FROM tutor_ratings WHERE tutor_id = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("i", $id);
+  $stmt->execute();
+  $stmt->store_result();
+
+  if ($stmt->num_rows > 0) {
+      $stmt->bind_result($pdf_content);
+      $stmt->fetch();
+      
+      // Set headers to view the PDF in browser
+      header('Content-Type: application/pdf');
+      header('Content-Disposition: inline; filename="feedback.pdf"');
+      echo $pdf_content; // Stream the PDF content
+  } else {
+      echo "No PDF found for this ID.";
+  }
+  $stmt->close();
+} else {
+  echo "Invalid request.";
+}
+
 $sql = "
     WITH AggregatedProgress AS (
         SELECT 
@@ -315,17 +339,17 @@ while ($row = $result->fetch_assoc()) {
   $total_rendered_hours = isset($row['total_rendered_hours']) 
                           ? htmlspecialchars($row['total_rendered_hours']) 
                           : '0';
-  $pdf_content = isset($row['pdf_content']) && !empty($row['pdf_content']) 
-                 ? nl2br(htmlspecialchars($row['pdf_content'])) 
-                 : 'No Feedback Available';
-
-  echo "
-    <tr>
-       <td>{$name}</td>
-       <td>{$student_id}</td>
-       <td>{$course_year_section}</td>
-       <td>{$total_rendered_hours}</td>
-       <td>{$pdf_content}</td>
+                          $pdf_link = isset($row['pdf_content']) && !empty($row['pdf_content']) 
+                          ? "<a href='view_pdf?id=" . htmlspecialchars($row['tutor_id'] ?? '') . "' target='_blank'>View PDF</a>"
+                          : 'No Feedback Available';
+              
+              echo "
+              <tr>
+                 <td>{$name}</td>
+                 <td>{$student_id}</td>
+                 <td>{$course_year_section}</td>
+                 <td>{$total_rendered_hours}</td>
+                 <td>{$pdf_link}</td>
        <td>
            <button class='btn btn-primary btn-sm view btn-flat' 
                    data-id='".htmlspecialchars($row['id'] ?? '')."'

@@ -3,6 +3,15 @@ error_reporting(E_ALL); // Set error reporting to show all errors
 session_start();
 require_once '../tutee.php';
 
+require '../vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
+require '../vendor/phpmailer/phpmailer/src/Exception.php';
+require '../vendor/phpmailer/phpmailer/src/SMTP.php';
+require '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+
 $user_login = new TUTEE();
 if (!$user_login->is_logged_in()) {
     $user_login->redirect('login');
@@ -88,6 +97,35 @@ $markAsReadQuery->execute();
 function removeTutor($tutor_id, $tutee_id, $removal_reason) {
     global $user_login;
     try {
+        // Fetch the tutee's email
+        $stmt = $user_login->runQuery("SELECT emailaddress FROM tutor WHERE id = :tutor_id");
+        $stmt->bindParam(":tutor_id", $tutor_id);
+        $stmt->execute();
+        $tutorEmail = $stmt->fetchColumn();
+        
+        // Prepare and send the email using PHPMailer
+        $mail = new PHPMailer(true);
+            //Server settings
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'findtutee@gmail.com';
+            $mail->Password = 'tzbb qafz fhar ryzf';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
+            
+            $mail->setFrom('findtutee@gmail.com', 'TUTEEFIND');
+            $mail->addAddress($tutorEmail); // Set the recipient as the email entered in the form
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = 'You are been Removed as Tutor.';
+            $mail->Body    = "
+                <h3>Your Tutee has removed you from being his/her Tutor.</h3>
+                <p>Reason: $removal_reason.</p>
+            ";
+
+            $mail->send();
         // Update the request status to removed
         $stmt = $user_login->runQuery("UPDATE requests SET status = 'removed' WHERE tutor_id = :tutor_id AND tutee_id = :tutee_id");
         $stmt->bindParam(":tutor_id", $tutor_id);
@@ -96,7 +134,7 @@ function removeTutor($tutor_id, $tutee_id, $removal_reason) {
 
         // Insert a notification for the tutor about the removal
         $notificationStmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status) 
-                                                  VALUES (:sender_id, :receiver_id, 'Your Tutee has removed you from being his/her Tutor.', :message, 'unread')");
+                                                  VALUES (:sender_id, :receiver_id, 'Your Tutee has removed you from being his/her Tutor.', 'Reason: ' :message, 'unread')");
         $notificationStmt->bindParam(":sender_id", $tutee_id); // Ensure tutor_id is passed
         $notificationStmt->bindParam(":receiver_id", $tutor_id);
         $notificationStmt->bindParam(":message", $removal_reason);

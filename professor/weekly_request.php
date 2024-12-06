@@ -248,33 +248,33 @@ if (isset($_SESSION['professor_id'])) {
   $search = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '%%'; // Prepare search term for LIKE query
 
   $sql = "
-    SELECT 
-        t.id AS tutor_id,  -- Add this line
-        p.lastname AS proflast, 
-        t.firstname AS tutfirst, 
-        t.lastname AS tutlast, 
-        t.student_id, 
-        t.course, 
-        t.year_section, 
-        w.id AS weekly_id, 
-        w.rendered_hours, 
-        w.status, 
-        w.remarks,
-        tt.firstname AS tuteefirst, 
-        tt.lastname AS tuteelast,
-        CONCAT(tt.firstname, ' ', tt.lastname) AS tutee_fullname
-    FROM tutor t
-    INNER JOIN tutee_progress w ON t.id = w.tutor_id
-    INNER JOIN professor p ON t.professor = p.faculty_id
-    INNER JOIN tutee tt ON tt.id = w.tutee_id
-    WHERE p.id = ?
-      AND (
-          CONCAT(LOWER(t.firstname), ' ', LOWER(t.lastname)) LIKE ? OR
-          LOWER(t.student_id) LIKE ? OR
-          CONCAT(LOWER(t.course), ' ', LOWER(t.year_section)) LIKE ?
-      )
-    LIMIT ? OFFSET ?
-";
+  SELECT 
+      t.id AS tutor_id,  
+      p.lastname AS proflast, 
+      t.firstname AS tutfirst, 
+      t.lastname AS tutlast, 
+      t.student_id, 
+      t.course, 
+      t.year_section, 
+      w.id AS weekly_id, 
+      w.rendered_hours, 
+      w.status, 
+      w.remarks,
+      tt.firstname AS tuteefirst, 
+      tt.lastname AS tuteelast,
+      CONCAT(tt.firstname, ' ', tt.lastname) AS tutee_fullname
+  FROM tutor t
+  INNER JOIN tutee_progress w ON t.id = w.tutor_id
+  INNER JOIN professor p ON t.professor = p.faculty_id
+  INNER JOIN tutee tt ON tt.id = w.tutee_id
+  WHERE p.id = ?
+  AND (
+      CONCAT(LOWER(t.firstname), ' ', LOWER(t.lastname)) LIKE ? OR
+      LOWER(t.student_id) LIKE ? OR
+      CONCAT(LOWER(t.course), ' ', LOWER(t.year_section)) LIKE ?
+  )
+  LIMIT ? OFFSET ?
+  ";  
 
 if ($stmt = $conn->prepare($sql)) {
     $stmt->bind_param("isssii", $professor_id, $search_param, $search_param, $search_param, $limit, $offset);
@@ -340,12 +340,12 @@ if ($stmt = $conn->prepare($sql)) {
         // Conditionally render Accept and Reject buttons
         if ($status === 'pending') {
             echo "
-                <button class='btn btn-success btn-sm weeeklyProgressAccept' data-id='" . $row['weekly_id'] . "'>
+                <button class='btn btn-success btn-sm weeeklyProgressAccept' data-id='" . $row['weekly_id'] . "' data-tutor-id='" . $row['tutor_id'] . "'>
                     <i class='fa fa-check-circle mr-2'></i> Accept
                 </button>
-                <button class='btn btn-danger btn-sm btn-flat weeklyProgressReject' data-id='" . $row['weekly_id'] . "'>
+                <button class='btn btn-danger btn-sm btn-flat weeklyProgressReject' data-id='" . $row['weekly_id'] . "' data-tutor-id='" . $row['tutor_id'] . "'>
                     <i class='fa fa-times-circle mr-2'></i> Reject
-                </button>";
+                </button>"; 
         }
 
         echo "
@@ -411,7 +411,7 @@ $(function() {
 
         $('#viewWeeklyReport').modal('show'); // Open the modal
         var id = $(this).data('id'); // Get ID from button data attribute
-
+        var tutorId = $(this).data('tutor-id');
         $.ajax({
             type: 'POST',
             url: 'view_weeklyprogress.php',
@@ -448,16 +448,15 @@ $(function() {
     });
 });
 
-
-
 $(function() { 
   $(document).on('click', '.weeeklyProgressAccept', function(e) {
     e.preventDefault();
     var id = $(this).data('id');
+    var tutorId = $(this).data('tutor-id');
     $('#weeeklyProgressAccept').modal('show');
-    // Set the event_id in the hidden field when the modal is shown
-    $('#weekly_id').val(id);
-    getViewRow(id); // Fetch event details
+    $('#weekly_id3').val(id);
+    $('#tutor_id3').val(tutorId); // Check if this value is correct
+    getViewRow(id);
   });
 });
 
@@ -466,11 +465,12 @@ $(function() {
         e.preventDefault();
         
         var id = $(this).data('id');  // Get the event ID from the button's data-id attribute
+        var tutorId = $(this).data('tutor-id');
         $('#weeklyProgressReject').modal('show');   // Show the modal
         
         // Dynamically set the event_id in the hidden input
-        $('#weekly_id2').val(id);       // Set the value of the hidden input
-
+        $('#weekly_id4').val(id);       // Set the value of the hidden input
+        $('#tutor_id4').val(tutorId);
         // Optionally, you can fetch additional details about the event if needed
         getViewRow(id);  // Call a function to get event details (if required)
     });

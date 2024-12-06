@@ -368,7 +368,7 @@
                 <form action="accept_event.php" method="POST">
                     <!-- Event ID (Hidden Input) -->
                     <input type="hidden" id="event_id" name="event_id" value="">
-
+                    <input type="hidden" id="tutor_id" name="tutor_id" value="">
                     <!-- Remarks Section -->
                     <div class="form-group">
                         <label for="remarks" class="control-label" style="font-weight: bold;">Remarks</label>
@@ -406,7 +406,8 @@
                 <!-- Form for Remarks and Submission -->
                 <form action="accept_weeklyRequest.php" method="POST">
                     <!-- Event ID (Hidden Input) -->
-                    <input type="hidden" id="weekly_id" name="weekly_id" value="">
+                    <input type="hidden" id="weekly_id3" name="weekly_id" value="">
+                    <input type="hidden" id="tutor_id3" name="tutor_id" value="">
 
                     <!-- Remarks Section -->
                     <div class="form-group">
@@ -446,6 +447,7 @@
                 <form action="reject_event.php" method="POST">
                     <!-- Event ID (Hidden Input) -->
                     <input type="hidden" id="event_id2" name="event_id" value="">
+                    <input type="hidden" id="tutor_id2" name="tutor_id" value="">
 
                     <!-- Remarks Section -->
                     <div class="form-group">
@@ -484,7 +486,8 @@
                 <!-- Form for Remarks and Submission -->
                 <form action="reject_weeklyRequest.php" method="POST">
                     <!-- Event ID (Hidden Input) -->
-                    <input type="hidden" id="weekly_id2" name="weekly_id" value="">
+                    <input type="hidden" id="weekly_id4" name="weekly_id" value="">
+                    <input type="hidden" id="tutor_id4" name="tutor_id" value="">
 
                     <!-- Remarks Section -->
                     <div class="form-group">
