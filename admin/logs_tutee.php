@@ -209,20 +209,27 @@ while ($row = $query->fetch_assoc()) {
     $barangay = htmlspecialchars($row['barangay'], ENT_QUOTES);
     $status = "Inactive"; // Default status to Inactive
 
-    // Check for activity logs for the current tutee
-    $activitySql = "SELECT * FROM tutee_logs WHERE tutee_id = ?"; // Changed tutor_id to tutee_id for correctness
-    $activityStmt = $conn->prepare($activitySql);
-    $activityStmt->bind_param("i", $row['id']);
-    $activityStmt->execute();
-    $activityResult = $activityStmt->get_result();
+       // Check for activity logs for the current tutor
+$activitySql = "SELECT * FROM tutee_logs WHERE tutee_id = ?";
+$activityStmt = $conn->prepare($activitySql);
+$activityStmt->bind_param("i", $row['id']);
+$activityStmt->execute();
+$activityResult = $activityStmt->get_result();
 
-    // Update status if the last login is recent
-    if (!empty($row['last_login']) && $activityResult->num_rows > 0) {
-        $lastLoginDate = strtotime($row['last_login']);
-        if ($lastLoginDate >= strtotime('-2 weeks')) {
-            $status = "Active";
-        }
+// Default status
+$status = "Inactive";
+
+// Update status if there are any login logs
+if ($activityResult->num_rows > 0) {
+    // Check if the last login is within the past two weeks
+    $lastLoginDate = !empty($row['last_login']) ? strtotime($row['last_login']) : false;
+    if ($lastLoginDate && $lastLoginDate >= strtotime('-2 weeks')) {
+        $status = "Active";
+    } else {
+        // If there's no recent login but there are logs, still mark as "Active"
+        $status = "Active";
     }
+}
 
     // Check if the search term matches any of the relevant fields
     if (
@@ -265,9 +272,7 @@ foreach ($results as $row) {
             </td>
           </tr>";
 }
-
 ?>
-
    </tbody>
           </table>
         </div>
@@ -308,7 +313,7 @@ foreach ($results as $row) {
 </section>
 </div>
 <?php include 'includes/footer.php'; ?>
-<?php include 'includes/professor_modal.php'; ?>
+<?php include 'includes/tutee_modal.php'; ?>
 
 </div>
 <?php include 'includes/scripts.php'; ?>
@@ -324,7 +329,7 @@ foreach ($results as $row) {
 
                         // Fetch activity logs using AJAX
                         $.ajax({
-                            url: 'professorfetch_logs.php', // Create this file to fetch logs based on the professor ID
+                            url: 'tuteefetch_logs.php', // Create this file to fetch logs based on the professor ID
                             type: 'POST',
                             data: { id: id },
                             success: function(data){
@@ -345,7 +350,7 @@ $('.view').click(function() {
     $('#professorName').text(professorName);
 
     $.ajax({
-        url: 'professorfetch_logs.php',
+        url: 'tuteefetch_logs.php',
         type: 'POST',
         data: { id: id },
         success: function(data) {

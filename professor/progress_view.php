@@ -13,8 +13,9 @@ if (isset($_POST['tutor_id']) && isset($_POST['tutee_id'])) {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
+        
         echo '<table class="table table-bordered">
-                <thead class="thead-light">
+        <thead style="background-color: #17a2b8; color: black;">
                     <tr>
                         <th scope="col">Week Number</th>
                         <th scope="col">Date</th>
@@ -26,14 +27,15 @@ if (isset($_POST['tutor_id']) && isset($_POST['tutee_id'])) {
         while ($row = $result->fetch_assoc()) {
             $weekNumber = $row['week_number'];
             $date = $row['date'];
+            $formattedDate = date('F j, Y h:i:s A', strtotime($date));
             $description = $row['description'];
             $uploadedFiles = explode(',', $row['uploaded_files']);
             $collapseId = "collapseWeek" . htmlspecialchars($weekNumber);
 
             echo '<tr class="toggle-row" data-toggle="collapse" data-target="#' . $collapseId . '" aria-expanded="false" aria-controls="' . $collapseId . '" style="cursor: pointer;">
                     <td>Week ' . htmlspecialchars($weekNumber) . '</td>
-                    <td>' . htmlspecialchars($date) . '</td>
-                    <td><button class="btn btn-info btn-sm toggle-button" data-target="#' . $collapseId . '">View Details</button></td>
+                    <td>' . htmlspecialchars($formattedDate) . '</td>
+                    <td><button class="btn btn-primary btn-sm toggle-button" data-target="#' . $collapseId . '">View Details</button></td>
                   </tr>';
             
             // Collapsible details row
@@ -42,12 +44,14 @@ if (isset($_POST['tutor_id']) && isset($_POST['tutee_id'])) {
                         <div class="p-3">
                             <p><strong>Description:</strong></p>
                             <p class="text-muted">' . nl2br(htmlspecialchars($description)) . '</p>
-                            <h6 class="text-primary">Uploaded Files:</h6>
+                            <p><strong>Uploaded Files:</strong></p>
                             <ul class="list-group">';
             foreach ($uploadedFiles as $file) {
                 if (!empty($file)) {
-                    echo '<li class="list-group-item"><a href="../uploads/' . htmlspecialchars($file) . '" target="_blank">' . htmlspecialchars($file) . '</a></li>';
-                }
+                    echo '<li class="list-group-item">
+                    <a href="../uploads/' . htmlspecialchars($file) . '" target="_blank" class="btn btn-primary btn-sm">View File</a>
+                  </li>';
+                            }
             }
             echo '</ul>
                         </div>
@@ -57,7 +61,7 @@ if (isset($_POST['tutor_id']) && isset($_POST['tutee_id'])) {
 
         echo '</tbody></table>'; // Close table
     } else {
-        echo '<p class="text-danger">No progress available.</p>';
+        echo 'No progress available.</p>';
     }
 
     $stmt->close();

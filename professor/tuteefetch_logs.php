@@ -6,7 +6,7 @@ if (isset($_POST['id'])) {
     $logs = ''; // Initialize logs variable to store the fetched logs
 
     // Query to fetch the tutor's activity logs
-    $sql = "SELECT activity, datetime FROM tutor_logs WHERE tutor_id = ? ORDER BY datetime ASC";
+    $sql = "SELECT activity, datetime FROM tutee_logs WHERE tutee_id = ? ORDER BY datetime ASC";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();

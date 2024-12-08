@@ -272,9 +272,10 @@ if (isset($_GET['id'])) {
       echo "No PDF found for this ID.";
   }
   $stmt->close();
-} else {
-  echo "Invalid request.";
-}
+ } 
+//else {
+//   echo "Invalid request.";
+// }
 
 $sql = "
     WITH AggregatedProgress AS (
@@ -341,7 +342,7 @@ while ($row = $result->fetch_assoc()) {
                           : '0';
                           $pdf_link = isset($row['pdf_content']) && !empty($row['pdf_content']) 
                           ? "<a href='view_pdf?id=" . htmlspecialchars($row['tutor_id'] ?? '') . "' target='_blank'>View PDF</a>"
-                          : 'No Feedback Available';
+                          : 'Session In Progress';
               
               echo "
               <tr>

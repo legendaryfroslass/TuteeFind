@@ -20,28 +20,48 @@ class TUTOR
 		return $stmt;
 	}
 
-    public function login($student_id, $password) {
-        try {
-            $stmt1 = $this->conn->prepare("SELECT * FROM tutor WHERE student_id=:student_id");
-            $stmt1->execute(array(":student_id" => $student_id));
-            $userRow = $stmt1->fetch(PDO::FETCH_ASSOC);
-            if ($stmt1->rowCount() == 1) {
-                if (password_verify($password, $userRow['password'])) {
-                    $_SESSION['tutorSession'] = $userRow['student_id'];
-                    $_SESSION['tutorRole'] = 'tutor';
-                    return true;
-                } else {
-                    header("Location: login?notAvail");
-                    exit;
-                }
-            } else {
-                header("Location: login?error");
-                exit;
-            }
-        } catch (PDOException $ex) {
-            echo $ex->getMessage();
-        }
-    }
+	public function login($student_id, $password) {
+		try {
+			$stmt1 = $this->conn->prepare("SELECT * FROM tutor WHERE student_id=:student_id");
+			$stmt1->execute(array(":student_id" => $student_id));
+			$userRow = $stmt1->fetch(PDO::FETCH_ASSOC);
+	
+			if ($stmt1->rowCount() == 1) {
+				if (password_verify($password, $userRow['password'])) {
+					$_SESSION['tutorSession'] = $userRow['student_id'];
+					$_SESSION['tutorID'] = $userRow['id']; // Store tutor's ID in the session
+					$_SESSION['tutorRole'] = 'tutor';
+	
+					// Update the last_login timestamp
+					$tutor_id = $userRow['id'];
+					$currentTimestamp = date("Y-m-d H:i:s");
+					$updateLoginTime = $this->conn->prepare("UPDATE tutor SET last_login = :last_login WHERE id = :id");
+					$updateLoginTime->bindParam(':last_login', $currentTimestamp);
+					$updateLoginTime->bindParam(':id', $tutor_id);
+					$updateLoginTime->execute();
+	
+					// Log the login activity
+					$stmt2 = $this->conn->prepare("INSERT INTO tutor_logs (tutor_id, activity) VALUES (:tutor_id, 'Login')");
+					$stmt2->bindParam(':tutor_id', $tutor_id);
+					$stmt2->execute();
+	
+					return true;
+				} else {
+					header("Location: login?notAvail");
+					exit;
+				}
+			} else {
+				header("Location: login?error");
+				exit;
+			}
+		} catch (PDOException $ex) {
+			echo $ex->getMessage();
+		}
+	}
+	
+	
+	
+	
 	public	function is_logged_in() {
 		if ( isset( $_SESSION[ 'tutorSession' ] ) ) {
 			return true;
@@ -50,10 +70,27 @@ class TUTOR
 	public	function redirect( $url ) {
 		header( "Location: $url" );
 	}
-	public	function logout() {
+	
+	public function logout() {
+		// Log the logout activity
+		if (isset($_SESSION['tutorSession']) && isset($_SESSION['tutorID'])) {
+			$tutor_id = $_SESSION['tutorID'];  // Use the tutor's ID from session
+			$stmt = $this->conn->prepare("INSERT INTO tutor_logs (tutor_id, activity) VALUES (:tutor_id, 'Logout')");
+			$stmt->bindParam(':tutor_id', $tutor_id);  // Use the tutor's ID from session
+			$stmt->execute();
+		}
+	
+		// Destroy session
+		session_unset();
 		session_destroy();
-		$_SESSION[ 'tutorSession' ] = false;
+		$_SESSION['tutorSession'] = false;
+	
+		// Redirect to login page
+		header("Location: login");
+		exit;
 	}
+	
+	
     public function updateDetails($firstname, $lastname, $age, $sex, $number, $barangay, $student_id, $course, $year_section, $fblink, $emailaddress, $bio, $newPassword, $photo, $userData) {
 		try {
 			$query = "UPDATE tutor SET 
