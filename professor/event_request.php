@@ -188,12 +188,12 @@ Event Request
       <div class="row">
         <div class="col-xs-12">
           <div class="box">
-            <div class="box-header with-border">
+            <!-- <div class="box-header with-border">
             <button class='btn btn-success btn-sm eventAcceptAll btn-flat' data-id='".$row['event_id']."'><i class="fa fa-check-circle mr-2"></i> Accept All</button>
             <button class='btn btn-danger btn-sm btn-flat eventRejectAll' data-id='" . $row['event_id'] . "'>
                     <i class='fa fa-times-circle mr-2'></i> Reject All
                 </button>  
-            </div>
+            </div> -->
             
             <div class="box-body">
             

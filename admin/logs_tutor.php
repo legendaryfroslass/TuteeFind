@@ -221,20 +221,28 @@ while ($row = $query->fetch_assoc()) {
     $year_section = htmlspecialchars($row['year_section'], ENT_QUOTES);
     $status = "Inactive"; // Default status to Inactive
 
-    // Check for activity logs for the current tutor
-    $activitySql = "SELECT * FROM tutor_logs WHERE tutor_id = ?";
-    $activityStmt = $conn->prepare($activitySql);
-    $activityStmt->bind_param("i", $row['id']);
-    $activityStmt->execute();
-    $activityResult = $activityStmt->get_result();
+   // Check for activity logs for the current tutor
+$activitySql = "SELECT * FROM tutor_logs WHERE tutor_id = ?";
+$activityStmt = $conn->prepare($activitySql);
+$activityStmt->bind_param("i", $row['id']);
+$activityStmt->execute();
+$activityResult = $activityStmt->get_result();
 
-    // Update status if last login is recent
-    if (!empty($row['last_login']) && $activityResult->num_rows > 0) {
-        $lastLoginDate = strtotime($row['last_login']);
-        if ($lastLoginDate >= strtotime('-2 weeks')) {
-            $status = "Active";
-        }
+// Default status
+$status = "Inactive";
+
+// Update status if there are any login logs
+if ($activityResult->num_rows > 0) {
+    // Check if the last login is within the past two weeks
+    $lastLoginDate = !empty($row['last_login']) ? strtotime($row['last_login']) : false;
+    if ($lastLoginDate && $lastLoginDate >= strtotime('-2 weeks')) {
+        $status = "Active";
+    } else {
+        // If there's no recent login but there are logs, still mark as "Active"
+        $status = "Active";
     }
+}
+
 
     // Check if the search term matches the name, student_id, or status
 // Check if the search term matches the name, student_id, status, or combined course and year_section
@@ -325,7 +333,7 @@ foreach ($results as $row) {
 </section>
 </div>
 <?php include 'includes/footer.php'; ?>
-<?php include 'includes/professor_modal.php'; ?>
+<?php include 'includes/tutor_modal.php'; ?>
 
 </div>
 <?php include 'includes/scripts.php'; ?>
@@ -341,7 +349,7 @@ foreach ($results as $row) {
 
                         // Fetch activity logs using AJAX
                         $.ajax({
-                            url: 'professorfetch_logs.php', // Create this file to fetch logs based on the professor ID
+                            url: 'tutorfetch_logs.php', // Create this file to fetch logs based on the professor ID
                             type: 'POST',
                             data: { id: id },
                             success: function(data){
@@ -356,32 +364,25 @@ foreach ($results as $row) {
                 });
 
                 // Your existing code for viewing logs
-$('.view').click(function() {
-    var id = $(this).data('id');
-    var professorName = $(this).data('professor-name');
-    $('#professorName').text(professorName);
-
-    $.ajax({
-        url: 'professorfetch_logs.php',
-        type: 'POST',
-        data: { id: id },
-        success: function(data) {
-            $('#logsTable tbody').html(data);
-            
-            // Check if the logs are empty
-            if ($('#logsTable tbody tr').length === 0) {
-                $('#emptyLogsMessage').show(); // Show the empty message
-            } else {
-                $('#emptyLogsMessage').hide(); // Hide the empty message
+                function viewLogs(tutorId) {
+        $.ajax({
+            url: 'tutorfetch_logs.php', // The PHP file to fetch the logs
+            method: 'POST',
+            data: { id: tutorId },
+            success: function(response) {
+                // Check if any logs were returned and show them in the modal
+                if (response.trim() != '') {
+                    $('#logsTable tbody').html(response);
+                    $('#emptyLogsMessage').hide(); // Hide the 'No logs found' message
+                } else {
+                    $('#logsTable tbody').html('');
+                    $('#emptyLogsMessage').show(); // Show the empty logs message
+                }
+                // Show the modal
+                $('#viewLogsModal').modal('show');
             }
-
-            $('#viewLogsModal').modal('show');
-        },
-        error: function() {
-            alert('Error retrieving logs.');
-        }
-    });
-});
+        });
+    }
 </script>
 <script>
   let sortDirection = false;

@@ -2,18 +2,14 @@
 session_start();
 require_once '../tutor.php';
 $user = new TUTOR();
-session_start();
- if(isset($_SESSION["tutorSession"])){
-	  session_unset();
-// Destroying session
-session_destroy();
-	header( "Location:login");
- }
-if($user->is_logged_in()!="")
-{
-	$_SESSION[ 'tutorSession' ];
-	session_unset();
-	$user->logout();	
-	$user->redirect('login');
+
+// If the user is logged in, log out and redirect
+if (isset($_SESSION['tutorSession'])) {
+    $user->logout();  // This will log the logout activity and destroy the session
+    $user->redirect('login');  // Redirect to login page after logout
+} else {
+    // If no session exists, just redirect to login page
+    header("Location: login");
+    exit;
 }
 ?>

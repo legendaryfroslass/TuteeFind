@@ -243,7 +243,8 @@ if (isset($_SESSION['professor_id'])) {
             t.lastname, 
             t.student_id, 
             t.course, 
-            t.year_section
+            t.year_section, 
+            t.last_login  -- Make sure last_login is included in your query
         FROM tutor t
         INNER JOIN professor p ON t.professor = p.faculty_id
         WHERE p.id = ?
@@ -273,16 +274,28 @@ if (isset($_SESSION['professor_id'])) {
             $name = htmlspecialchars($row['firstname'] . ' ' . $row['lastname'], ENT_QUOTES);
             $student_id = htmlspecialchars($row['student_id'], ENT_QUOTES);
             $course_section = htmlspecialchars($row['course'] . ' ' . $row['year_section'], ENT_QUOTES);
-            $statusClass = "btn-danger"; // Default status class
-            $statusText = "Inactive"; // Default status text
 
-            // Output each row
+            // Default status
+            $status = "Inactive";
+            $statusClass = "btn-danger"; // Default status class
+
+            // Check for activity logs or last login to determine the status
+            if (!empty($row['last_login'])) {
+                $lastLoginDate = strtotime($row['last_login']);
+                // Check if the last login is within the past two weeks
+                if ($lastLoginDate && $lastLoginDate >= strtotime('-2 weeks')) {
+                    $status = "Active";
+                    $statusClass = "btn-success"; // Change button color to green for active tutors
+                }
+            }
+
+            // Output each row with the status
             echo "<tr>
                     <td>{$name}</td>
                     <td>{$student_id}</td>
                     <td>{$course_section}</td>
                     <td style='text-align: center;'>
-                        <button class='btn {$statusClass} btn-sm' style='border-radius: 10px; padding: 1px 10px; width: 100px;'>{$statusText}</button>
+                        <button class='btn {$statusClass} btn-sm' style='border-radius: 10px; padding: 1px 10px; width: 100px;'>{$status}</button>
                     </td>
                     <td>
                         <button class='btn btn-primary btn-sm btn-flat view' data-id='" . htmlspecialchars($row['id'], ENT_QUOTES) . "'>
@@ -296,6 +309,7 @@ if (isset($_SESSION['professor_id'])) {
     $stmt->close();
 }
 ?>
+
 
    </tbody>
           </table>
@@ -353,7 +367,7 @@ if (isset($_SESSION['professor_id'])) {
 
                         // Fetch activity logs using AJAX
                         $.ajax({
-                            url: 'professorfetch_logs.php', // Create this file to fetch logs based on the professor ID
+                            url: 'tutorfetch_logs.php', // Create this file to fetch logs based on the professor ID
                             type: 'POST',
                             data: { id: id },
                             success: function(data){
@@ -374,7 +388,7 @@ $('.view').click(function() {
     $('#professorName').text(professorName);
 
     $.ajax({
-        url: 'professorfetch_logs.php',
+        url: 'tutorfetch_logs.php',
         type: 'POST',
         data: { id: id },
         success: function(data) {
