@@ -13,7 +13,7 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
             $stmt_archive = $conn->prepare("INSERT INTO archive_tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio) 
                                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-            // Prepare a check for existing student_id in the archive_tutor table
+            // Prepare check for existing student_id in the archive_tutor table
             $stmt_check = $conn->prepare("SELECT student_id FROM archive_tutor WHERE student_id = ?");
 
             // Arrays to store duplicated student IDs and successfully archived tutor IDs
@@ -60,6 +60,101 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                         );
 
                         if ($stmt_archive->execute()) {
+                            // Archive related tables here
+                            // Archive requests
+                            $sql_request = "INSERT INTO archive_requests (request_id, tutor_id, tutee_id, status)
+                                            SELECT request_id, tutor_id, tutee_id, status FROM requests WHERE tutor_id = ?";
+                            $stmt_request = $conn->prepare($sql_request);
+                            $stmt_request->bind_param("i", $id);
+                            $stmt_request->execute();
+                            $sql_delete_request = "DELETE FROM requests WHERE tutor_id = ?";
+                            $stmt_delete_request = $conn->prepare($sql_delete_request);
+                            $stmt_delete_request->bind_param("i", $id);
+                            $stmt_delete_request->execute();
+
+                            // Archive tutee_progress
+                            $sql_progress = "INSERT INTO archive_tutee_progress (id, tutee_id, tutor_id, week_number, uploaded_files, description, date)
+                                            SELECT id, tutee_id, tutor_id, week_number, uploaded_files, description, date FROM tutee_progress WHERE tutor_id = ?";
+                            $stmt_progress = $conn->prepare($sql_progress);
+                            $stmt_progress->bind_param("i", $id);
+                            $stmt_progress->execute();
+                            $sql_delete_progress = "DELETE FROM tutee_progress WHERE tutor_id = ?";
+                            $stmt_delete_progress = $conn->prepare($sql_delete_progress);
+                            $stmt_delete_progress->bind_param("i", $id);
+                            $stmt_delete_progress->execute();
+
+                            // Archive tutor_ratings
+                            $sql_ratings = "INSERT INTO archive_tutor_ratings (id, tutee_id, tutor_id, rating, comment, pdf_content)
+                                            SELECT id, tutee_id, tutor_id, rating, comment, pdf_content FROM tutor_ratings WHERE tutor_id = ?";
+                            $stmt_ratings = $conn->prepare($sql_ratings);
+                            $stmt_ratings->bind_param("i", $id);
+                            $stmt_ratings->execute();
+                            $sql_delete_ratings = "DELETE FROM tutor_ratings WHERE tutor_id = ?";
+                            $stmt_delete_ratings = $conn->prepare($sql_delete_ratings);
+                            $stmt_delete_ratings->bind_param("i", $id);
+                            $stmt_delete_ratings->execute();
+
+                            // Archive tutor_sessions
+                            $sql_sessions = "INSERT INTO archive_tutor_sessions (id, tutor_id, tutee_id, status)
+                                            SELECT id, tutor_id, tutee_id, status FROM tutor_sessions WHERE tutor_id = ?";
+                            $stmt_sessions = $conn->prepare($sql_sessions);
+                            $stmt_sessions->bind_param("i", $id);
+                            $stmt_sessions->execute();
+                            $sql_delete_sessions = "DELETE FROM tutor_sessions WHERE tutor_id = ?";
+                            $stmt_delete_sessions = $conn->prepare($sql_delete_sessions);
+                            $stmt_delete_sessions->bind_param("i", $id);
+                            $stmt_delete_sessions->execute();
+
+                            // Archive tutee_summary
+                            $sql_summary = "INSERT INTO archive_tutee_summary (tutee_id, tutor_id, completed_weeks, registered_weeks)
+                                            SELECT tutee_id, tutor_id, completed_weeks, registered_weeks FROM tutee_summary WHERE tutor_id = ?";
+                            $stmt_summary = $conn->prepare($sql_summary);
+                            $stmt_summary->bind_param("i", $id);
+                            $stmt_summary->execute();
+                            $sql_delete_summary = "DELETE FROM tutee_summary WHERE tutor_id = ?";
+                            $stmt_delete_summary = $conn->prepare($sql_delete_summary);
+                            $stmt_delete_summary->bind_param("i", $id);
+                            $stmt_delete_summary->execute();
+
+                            // Archive events
+                            $sql_events = "INSERT INTO archive_events (id, tutor_id, event_name, rendered_hours, description, attached_file, created_at, status, remarks)
+                                           SELECT id, tutor_id, event_name, rendered_hours, description, attached_file, created_at, status, remarks FROM events WHERE tutor_id = ?";
+                            $stmt_events = $conn->prepare($sql_events);
+                            $stmt_events->bind_param("i", $id);
+                            $stmt_events->execute();
+                            $sql_delete_events = "DELETE FROM events WHERE tutor_id = ?";
+                            $stmt_delete_events = $conn->prepare($sql_delete_events);
+                            $stmt_delete_events->bind_param("i", $id);
+                            $stmt_delete_events->execute();
+
+                            // Archive messages
+                            $sql_messages = "INSERT INTO archive_messages (id, tutor_id, tutee_id, sender_type, message, created_at, is_read)
+                                             SELECT id, tutor_id, tutee_id, sender_type, message, created_at, is_read FROM messages WHERE tutor_id = ?";
+                            $stmt_messages = $conn->prepare($sql_messages);
+                            $stmt_messages->bind_param("i", $id);
+                            $stmt_messages->execute();
+                            $sql_delete_messages = "DELETE FROM messages WHERE tutor_id = ?";
+                            $stmt_delete_messages = $conn->prepare($sql_delete_messages);
+                            $stmt_delete_messages->bind_param("i", $id);
+                            $stmt_delete_messages->execute();
+
+                            // Archive notifications
+                            $sql_notifications = "INSERT INTO archive_notifications (id, sender_id, receiver_id, title, message, status, date_sent, sent_for)
+                                                 SELECT id, sender_id, receiver_id, title, message, status, date_sent, sent_for FROM notifications WHERE receiver_id = ? AND sent_for = 'tutor'";
+                            $stmt_notifications = $conn->prepare($sql_notifications);
+                            $stmt_notifications->bind_param("i", $id);
+                            $stmt_notifications->execute();
+                            $sql_delete_notifications = "DELETE FROM notifications WHERE sender_id = ? OR receiver_id = ?";
+                            $stmt_delete_notifications = $conn->prepare($sql_delete_notifications);
+                            $stmt_delete_notifications->bind_param("ii", $id, $id);
+                            $stmt_delete_notifications->execute();
+
+                            // Delete the tutor from the tutor table after archiving
+                            $sql_delete_tutor = "DELETE FROM tutor WHERE id = ?";
+                            $stmt_delete_tutor = $conn->prepare($sql_delete_tutor);
+                            $stmt_delete_tutor->bind_param("i", $id);
+                            $stmt_delete_tutor->execute();
+
                             // Keep track of successfully archived tutor IDs
                             $archived_tutor_ids[] = $id;
                         } else {
@@ -73,49 +168,22 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                 $stmt_select->close();
             }
 
-            // Check if any tutors were archived
-            if (!empty($archived_tutor_ids)) {
-                // Delete only tutors who were successfully archived
-                $ids_to_delete = implode(",", $archived_tutor_ids);
-                $sql_delete = "DELETE FROM tutor WHERE id IN ($ids_to_delete)";
+            // Commit the transaction
+            $conn->commit();
 
-                if ($conn->query($sql_delete)) {
-                    // Commit the transaction
-                    $conn->commit();
-
-                    // Success message, including warning if there were duplicates
-                    $success_message = "Selected tutors were archived successfully.";
-                    if (!empty($duplicate_student_ids)) {
-                        $success_message .= " However, the following student IDs were already archived: " . implode(", ", $duplicate_student_ids);
-                    }
-                    $_SESSION['success'] = $success_message;
-                } else {
-                    throw new Exception("Error in deleting tutors: " . $conn->error);
-                }
-            } else {
-                // No tutors were archived due to duplicates
-                if (!empty($duplicate_student_ids)) {
-                    $_SESSION['error'] = "No tutors were archived because the student IDs were already in the archive: " . implode(", ", $duplicate_student_ids);
-                } else {
-                    $_SESSION['error'] = "No tutors selected for archiving.";
-                }
-            }
-
-            $stmt_check->close();
-            $stmt_archive->close();
         } catch (Exception $e) {
-            // Rollback the transaction if there was an error
+            // Rollback the transaction in case of any errors
             $conn->rollback();
-            $_SESSION['error'] = $e->getMessage();
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
+
+        // Close prepared statements
+        $stmt_archive->close();
+        $stmt_check->close();
     } else {
-        $_SESSION['error'] = 'No tutors selected for archiving.';
+        echo json_encode(['status' => 'error', 'message' => 'No tutors selected']);
     }
-} else {
-    $_SESSION['error'] = 'Action not specified or no tutors selected.';
 }
 
-// Redirect to tutor.php
-header('location: tutor.php');
-exit();
+header('location:tutor');
 ?>

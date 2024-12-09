@@ -22,29 +22,24 @@ $imagePath = !empty($userData['photo']) ? $userData['photo'] : '../assets/TuteeF
 
 
 // Fetch unread notifications count for the current tutor
-$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutor_id AND status = 'unread'");
+$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutor_id AND sent_for = 'tutor' AND status = 'unread'");
 $unreadNotifQuery->bindParam(":tutor_id", $tutor_id);
 $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
 $unreadNotifCount = $unreadNotifData['unread_count'];
 
 // Fetch notifications for the current tutor
-$notifQuery = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutor_id ORDER BY date_sent DESC");
+$notifQuery = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutor_id and sent_for = 'tutor' ORDER BY date_sent DESC");
 $notifQuery->bindParam(":tutor_id", $tutor_id);
 $notifQuery->execute();
 
 // Mark unread notifications as read when the notifications page is visited
-$markReadQuery = $user_login->runQuery("UPDATE notifications SET status = 'read' WHERE receiver_id = :tutor_id AND status = 'unread'");
+$markReadQuery = $user_login->runQuery("UPDATE notifications SET status = 'read' WHERE receiver_id = :tutor_id AND sent_for = 'tutor' AND status = 'unread'");
 $markReadQuery->bindParam(":tutor_id", $tutor_id);
 $markReadQuery->execute();
 
 // Set unreadNotifCount to 0 for immediate reset in PHP
 $unreadNotifCount = 0;
-
-// Fetch notifications for the current tutor
-$notifQuery = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutor_id ORDER BY date_sent DESC");
-$notifQuery->bindParam(":tutor_id", $tutor_id);
-$notifQuery->execute();
 
 // Fetch the results as an associative array or set as an empty array if no notifications found
 $notifications = $notifQuery->fetchAll(PDO::FETCH_ASSOC) ?? [];

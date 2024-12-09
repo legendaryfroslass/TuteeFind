@@ -23,25 +23,20 @@ $tutee_id = $userData['id'];
 $imagePath = !empty($userData['photo']) ? $userData['photo'] : '../assets/TuteeFindLogoName.jpg';
 
 // Fetch notifications for the tutee based on the new table structure
-$stmt = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutee_id ORDER BY date_sent DESC");
+$stmt = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutee_id AND sent_for = 'tutee' ORDER BY date_sent DESC");
 $stmt->bindParam(":tutee_id", $tutee_id);
 $stmt->execute();
 $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch unread notifications count for the current tutee
-$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND status = 'unread'");
+$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND sent_for = 'tutee' AND status = 'unread'");
 $unreadNotifQuery->bindParam(":tutee_id", $tutee_id);
 $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
 $unreadNotifCount = $unreadNotifData['unread_count'];
 
-// Fetch notifications for the tutee
-$notifQuery = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutee_id ORDER BY date_sent DESC");
-$notifQuery->bindParam(":tutee_id", $tutee_id);
-$notifQuery->execute();
-
 // Mark unread notifications as read when the notifications page is visited
-$markReadQuery = $user_login->runQuery("UPDATE notifications SET status = 'read' WHERE receiver_id = :tutee_id AND status = 'unread'");
+$markReadQuery = $user_login->runQuery("UPDATE notifications SET status = 'read' WHERE receiver_id = :tutee_id AND sent_for = 'tutee' AND status = 'unread'");
 $markReadQuery->bindParam(":tutee_id", $tutee_id);
 $markReadQuery->execute();
 
@@ -62,7 +57,7 @@ $markAsReadQuery->execute();
 $unreadNotifCount = 0;
 
 // Fetch notifications for the tutee again
-$notifQuery = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutee_id ORDER BY date_sent DESC");
+$notifQuery = $user_login->runQuery("SELECT * FROM notifications WHERE receiver_id = :tutee_id AND sent_for = 'tutee' ORDER BY date_sent DESC");
 $notifQuery->bindParam(":tutee_id", $tutee_id);
 $notifQuery->execute();
 

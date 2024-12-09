@@ -30,7 +30,7 @@ $barangay = $userData['barangay'];
 $tutee_id = $userData['id'];
 
 // Fetch unread notifications count for the current tutee
-$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND status = 'unread'");
+$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND sent_for = 'tutee' AND status = 'unread'");
 $unreadNotifQuery->bindParam(":tutee_id", $tutee_id);
 $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);
@@ -157,8 +157,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Insert notification into notifications table
                 $title = "Finish Tutoring Feed Back";
                 $message = "Your tutee $tuteeName already validated you request.";
-                $stmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, date_sent) 
-                    VALUES (:tutee_id, :tutor_id, :title, :message, 'unread', NOW())");
+                $stmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, date_sent, sent_for) 
+                    VALUES (:tutee_id, :tutor_id, :title, :message, 'unread', NOW(), 'tutor')");
                 $stmt->bindParam(":tutor_id", $tutor_id);
                 $stmt->bindParam(":tutee_id", $tutee_id);
                 $stmt->bindParam(":title", $title, PDO::PARAM_STR);
@@ -346,8 +346,8 @@ function removeTutor($tutor_id, $tutee_id, $removal_reason) {
         $stmt->execute();
 
         // Insert a notification for the tutor about the removal
-        $notificationStmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status) 
-                                                  VALUES (:sender_id, :receiver_id, 'Your Tutee has removed you from being his/her Tutor.', 'Reason: ' :message, 'unread')");
+        $notificationStmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, sent_for) 
+                                                  VALUES (:sender_id, :receiver_id, 'Your Tutee has removed you from being his/her Tutor.', 'Reason: ' :message, 'unread', 'tutor')");
         $notificationStmt->bindParam(":sender_id", $tutee_id); // Ensure tutor_id is passed
         $notificationStmt->bindParam(":receiver_id", $tutor_id);
         $notificationStmt->bindParam(":message", $removal_reason);

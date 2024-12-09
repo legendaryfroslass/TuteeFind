@@ -35,8 +35,8 @@ if (isset($_POST['accept'])) {
             header('Location: weekly_request');
             exit();
         }
-        $sql = "INSERT INTO notifications (sender_id, receiver_id, title, message, status) 
-        VALUES (NULL, ?, 'Your professor accepted your weekly progress. Keep up the good work!', CONCAT('Reason: ', ?), 'unread')";
+        $sql = "INSERT INTO notifications (sender_id, receiver_id, title, message, status, sent_for) 
+        VALUES (NULL, ?, 'Your professor accepted your weekly progress. Keep up the good work!', CONCAT('Reason: ', ?), 'unread', 'tutor')";
         
         // Insert a notification for the tutor about the acceptance
         $notificationStmt = $conn->prepare($sql);

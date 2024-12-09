@@ -39,7 +39,7 @@ if (isset($_POST['restoreAll']) && isset($_POST['selected_ids'])) {
                     $stmt_check->store_result();
 
                     if ($stmt_check->num_rows === 0) {
-                        // If faculty_id does not exist, proceed to restore
+                        // If faculty_id does not exist, proceed to restore the professor data
                         $stmt_restore->bind_param(
                             "issssisss",
                             $row['id'],
@@ -56,6 +56,32 @@ if (isset($_POST['restoreAll']) && isset($_POST['selected_ids'])) {
                         if ($stmt_restore->execute()) {
                             // Track successfully restored professor IDs
                             $restored_professor_ids[] = $row['id'];
+
+                            // Now restore the professor's logs from archive_professor_logs
+                            $sql_logs = "SELECT * FROM archive_professor_logs WHERE professor_id = ?";
+                            $stmt_logs = $conn->prepare($sql_logs);
+                            $stmt_logs->bind_param("i", $row['id']);
+                            $stmt_logs->execute();
+                            $logs_result = $stmt_logs->get_result();
+
+                            // Insert logs into professor_logs table
+                            while ($log = $logs_result->fetch_assoc()) {
+                                $sql_restore_log = "INSERT INTO professor_logs (id, professor_id, activity, datetime) 
+                                                    VALUES (?, ?, ?, ?)";
+                                $stmt_insert_log = $conn->prepare($sql_restore_log);
+                                $stmt_insert_log->bind_param("iiss", $log['id'], $log['professor_id'], $log['activity'], $log['datetime']);
+                                $stmt_insert_log->execute();
+                                $stmt_insert_log->close();
+                            }
+
+                            // Delete the logs from the archive_professor_logs table after successful insert
+                            $sql_delete_logs = "DELETE FROM archive_professor_logs WHERE professor_id = ?";
+                            $stmt_delete_logs = $conn->prepare($sql_delete_logs);
+                            $stmt_delete_logs->bind_param("i", $row['id']);
+                            $stmt_delete_logs->execute();
+                            $stmt_delete_logs->close();
+
+                            $stmt_logs->close();
                         } else {
                             throw new Exception("Error restoring professor with Faculty ID " . $faculty_id . ": " . $conn->error);
                         }
@@ -78,7 +104,7 @@ if (isset($_POST['restoreAll']) && isset($_POST['selected_ids'])) {
                     $conn->commit();
 
                     // Success message, including warning if there were duplicates
-                    $success_message = "Selected professors were restored successfully.";
+                    $success_message = "Selected professors and their logs were restored successfully.";
                     if (!empty($duplicate_faculty_ids)) {
                         $success_message .= " However, the following faculty IDs were already in the professor table: " . implode(", ", $duplicate_faculty_ids);
                     }

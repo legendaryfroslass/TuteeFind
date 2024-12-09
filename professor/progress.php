@@ -343,9 +343,10 @@ while ($row = $result->fetch_assoc()) {
   $total_rendered_hours = isset($row['total_rendered_hours']) 
                           ? htmlspecialchars($row['total_rendered_hours']) 
                           : '0';
-  $pdf_link = isset($row['pdf_content']) && !empty($row['pdf_content']) 
-              ? "<a href='view_pdf?id=" . htmlspecialchars($row['tutee_id'] ?? '') . "' target='_blank'>View PDF</a>"
-              : 'Session In Progress';
+                          $pdf_link = (isset($row['pdf_content']) && !empty($row['pdf_content'])) 
+                          ? "<a href='view_pdf?id=" . htmlspecialchars($row['tutee_id'] ?? '') . "' target='_blank'>View PDF</a>"
+                          : 'No PDF Available';
+                      
 
   // Tutee name
   $tutee_name = isset($row['tutee_name']) ? htmlspecialchars($row['tutee_name']) : 'N/A';

@@ -35,8 +35,8 @@ if (isset($_POST['reject'])) {
             header('Location: weekly_request.php');
             exit();
         }
-        $sql = "INSERT INTO notifications (sender_id, receiver_id, title, message, status) 
-        VALUES (NULL, ?, 'Your professor has rejected your weekly progress submission.', CONCAT('Reason: ', ?), 'unread')";
+        $sql = "INSERT INTO notifications (sender_id, receiver_id, title, message, status, sent_for) 
+        VALUES (NULL, ?, 'Your professor has rejected your weekly progress submission.', CONCAT('Reason: ', ?), 'unread', 'tutor')";
         
         $notificationStmt = $conn->prepare($sql);
         $notificationStmt->bind_param("is", $tutor_id, $remarks); // "i" for integer, "s" for string
