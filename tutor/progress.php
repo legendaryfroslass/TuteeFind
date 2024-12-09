@@ -181,9 +181,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $weekExists = $checkStmt->fetchColumn();
 
                     if ($weekExists > 0) {
-                    // Week number already exists, show error
-                    echo json_encode(['success' => false, 'message' => 'Week number already exists']);
-                    exit;
+                        // Week number already exists, show error
+                        echo json_encode(['success' => false, 'message' => 'Week number already exists']);
+                        exit;
                     }
 
                     // Handle file upload if provided
@@ -1896,10 +1896,12 @@ document.getElementById('saveWeekBtn').addEventListener('click', function() {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            location.reload(); // Reload to reflect changes
+        if (!data.success) {
+            // If the week number already exists, show error modal
+            showErrorModal(data.message || 'Error updating the record');
         } else {
-            showErrorModal(data.message || 'Error updating the record.');
+            // If successful, reload the page or handle the success
+            location.reload(); // Reload to reflect changes
         }
     })
     .catch(error => console.error('Error:', error));
