@@ -170,6 +170,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $file_path = null;
                     $status = 'pending';
 
+                    // Check if the week number already exists
+                    $checkStmt = $user_login->runQuery("
+                    SELECT COUNT(*) FROM tutee_progress 
+                    WHERE tutee_id = :tutee_id AND week_number = :week_number
+                    ");
+                    $checkStmt->bindParam(':tutee_id', $_POST['tutee_id']);
+                    $checkStmt->bindParam(':week_number', $_POST['week_number']);
+                    $checkStmt->execute();
+                    $weekExists = $checkStmt->fetchColumn();
+
+                    if ($weekExists > 0) {
+                    // Week number already exists, show error
+                    echo json_encode(['success' => false, 'message' => 'Week number already exists']);
+                    exit;
+                    }
+
                     // Handle file upload if provided
                     if (isset($_FILES['file-upload']) && $_FILES['file-upload']['error'] === UPLOAD_ERR_OK) {
                         $file = $_FILES['file-upload'];
@@ -1764,9 +1780,12 @@ document.addEventListener("DOMContentLoaded", function () {
             success: function(response) {
                 const res = JSON.parse(response);
                     if (!res.success) {
-                        $('#weekExistsModal').modal('show');
+                        showErrorModal(res.message);
+                        return;
                     }
-                showSpinner();
+                    else {
+                        showSpinner();
+                    }
             },
             error: function(xhr, status, error) {
                 // Handle error
