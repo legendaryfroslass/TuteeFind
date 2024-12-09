@@ -1008,7 +1008,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <div class="page" id="page-9" style="display: none;">
                                     <h5 class="mt-4">Comments</h5>
                                     <div class="form-group">
-                                        <textarea class="form-control mb-5" id="commentText-1" rows="5" placeholder="Enter your comment here"></textarea>
+                                        <textarea class="form-control mb-5" id="commentText-1" rows="5" placeholder="Enter your comment here" required></textarea>
                                     </div>
                                     <div class="d-flex justify-content-between mt-4">
                                         <button type="button" class="btn btn-secondary" id="prevBtn-9">Back</button>
