@@ -1059,7 +1059,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
           </div>
           <div class="mb-3">
             <label for="file-upload-<?php echo $tutee['id']; ?>" class="form-label">Upload Tutoring Session File(Max 5 mb)</label>
-            <input type="file" class="form-control" id="file-upload-<?php echo $tutee['id']; ?>" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+            <input type="file" class="form-control" id="file-upload-<?php echo $tutee['id']; ?>" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" required>
           </div>
       </div>
       <div class="modal-footer d-flex justify-content-center border-0">
@@ -1378,7 +1378,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
             $.ajax({
                 url: 'delete_week', // Adjust the URL to your actual server-side script
                 type: 'POST',
-                data: { tutee_id: tuteeId, weekId: weekId },
+                data: { tutee_id: tuteeId, id: weekId },
                 success: function(response) {
                     const res = JSON.parse(response);
                     if (res.success) {
@@ -1390,7 +1390,6 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                     
                 }
             });
-
             // Hide the modal after the deletion attempt
             $('#deleteModal').modal('hide');
             hideSpinner();
