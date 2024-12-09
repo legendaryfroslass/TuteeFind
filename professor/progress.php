@@ -307,6 +307,7 @@ $sql = "
         MAX(r.tutee_id) AS tutee_id,
         COALESCE(MAX(ap.total_tutee_hours), 0) + COALESCE(MAX(ae.total_event_hours), 0) AS total_rendered_hours, -- Use MAX to aggregate
         MAX(rt.pdf_content) AS pdf_content
+        CONCAT(tutee.firstname, ' ', tutee.lastname) AS tutee_name
     FROM tutor t
     INNER JOIN professor p ON t.professor = p.faculty_id
     LEFT JOIN requests r ON t.id = r.tutor_id
