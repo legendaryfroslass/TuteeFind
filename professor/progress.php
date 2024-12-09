@@ -276,7 +276,6 @@ if (isset($_GET['id'])) {
 //else {
 //   echo "Invalid request.";
 // }
-
 $sql = "
     WITH AggregatedProgress AS (
         SELECT 
@@ -303,7 +302,7 @@ $sql = "
         COALESCE(MAX(rt.rating), 'No Rating') AS rating,
         COALESCE(MAX(rt.comment), 'No Comment') AS comment,
         MAX(r.tutor_id) AS tutor_id, 
-        MAX(r.tutee_id) AS tutee_id,
+        GROUP_CONCAT(CONCAT(tutee.firstname, ' ', tutee.lastname) ORDER BY tutee.lastname) AS tutee_names, -- Get all tutee names for the tutor
         COALESCE(MAX(ap.total_tutee_hours), 0) + COALESCE(MAX(ae.total_event_hours), 0) AS total_rendered_hours, -- Use MAX to aggregate
         MAX(rt.pdf_content) AS pdf_content
     FROM tutor t
@@ -313,6 +312,7 @@ $sql = "
     LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
     LEFT JOIN AggregatedProgress ap ON t.id = ap.tutor_id
     LEFT JOIN AggregatedEvents ae ON t.id = ae.tutor_id
+    LEFT JOIN tutee tutee ON r.tutee_id = tutee.id -- Join to get tutee names
     WHERE p.id = ? 
     AND (
         LOWER(t.lastname) LIKE CONCAT('%', LOWER(?), '%') OR
@@ -340,26 +340,28 @@ while ($row = $result->fetch_assoc()) {
   $total_rendered_hours = isset($row['total_rendered_hours']) 
                           ? htmlspecialchars($row['total_rendered_hours']) 
                           : '0';
-                          $pdf_link = isset($row['pdf_content']) && !empty($row['pdf_content']) 
-                          ? "<a href='view_pdf?id=" . htmlspecialchars($row['tutor_id'] ?? '') . "' target='_blank'>View PDF</a>"
-                          : 'Session In Progress';
+  $tutee_names = isset($row['tutee_names']) ? htmlspecialchars($row['tutee_names']) : 'No Tutee';
+  $pdf_link = isset($row['pdf_content']) && !empty($row['pdf_content']) 
+              ? "<a href='view_pdf?id=" . htmlspecialchars($row['tutor_id'] ?? '') . "' target='_blank'>View PDF</a>"
+              : 'Session In Progress';
               
-              echo "
-              <tr>
-                 <td>{$name}</td>
-                 <td>{$student_id}</td>
-                 <td>{$course_year_section}</td>
-                 <td>{$total_rendered_hours}</td>
-                 <td>{$pdf_link}</td>
-       <td>
-           <button class='btn btn-primary btn-sm view btn-flat' 
-                   data-id='".htmlspecialchars($row['id'] ?? '')."'
-                   data-tutor-id='".htmlspecialchars($row['tutor_id'] ?? '')."'
-                   data-tutee-id='".htmlspecialchars($row['tutee_id'] ?? '')."' >
-               <i class='fa fa-eye'></i> View
-           </button>
-       </td>
-    </tr>
+  echo "
+  <tr>
+     <td>{$name}</td>
+     <td>{$student_id}</td>
+     <td>{$course_year_section}</td>
+     <td>{$total_rendered_hours}</td>
+     <td>{$pdf_link}</td>
+     <td>{$tutee_names}</td> <!-- Display tutee names -->
+     <td>
+         <button class='btn btn-primary btn-sm view btn-flat' 
+                 data-id='".htmlspecialchars($row['id'] ?? '')."'
+                 data-tutor-id='".htmlspecialchars($row['tutor_id'] ?? '')."'
+                 data-tutee-id='".htmlspecialchars($row['tutee_id'] ?? '')."' >
+             <i class='fa fa-eye'></i> View
+         </button>
+     </td>
+  </tr>
   ";
 }
 ?>
