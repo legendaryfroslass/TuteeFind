@@ -310,7 +310,7 @@ $sql = "
         CONCAT(tutee.firstname, ' ', tutee.lastname) AS tutee_name
     FROM tutor t
     INNER JOIN professor p ON t.professor = p.faculty_id
-    LEFT JOIN requests r ON t.id = r.tutor_id
+    LEFT JOIN requests r ON t.id = r.tutor_id AND r.status = 'accepted'
     LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
     LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
     LEFT JOIN AggregatedProgress ap ON t.id = ap.tutor_id
