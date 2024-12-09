@@ -244,6 +244,7 @@ $total_pages = ceil($total_rows / $limit);
                 <th onclick="sortTable(2)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(3)">Rendered Hours <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th>Evaluation</th>
+                <th onclick="sortTable(3)">Tutee Name <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th>Actions</th>
               </tr>
             </thead>
