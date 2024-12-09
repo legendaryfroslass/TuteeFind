@@ -239,13 +239,13 @@ $total_pages = ceil($total_rows / $limit);
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
           <thead>
             <tr role="row">
-                <th onclick="sortTable(0)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(1)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(2)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th onclick="sortTable(3)">Rendered Hours <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th>Evaluation</th>
-                <th onclick="sortTable(4)">Tutee Name <i class="fa fa-sort" aria-hidden="true"></i></th>
-                <th>Actions</th>
+              <th onclick="sortTable(0)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(1)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(2)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(3)">Rendered Hours <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th>Tutee Name</th> <!-- New column for Tutee Name -->
+              <th>Evaluation</th>
+              <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -277,53 +277,56 @@ if (isset($_GET['id'])) {
 //else {
 //   echo "Invalid request.";
 // }
+
 $sql = "
     WITH AggregatedProgress AS (
+        SELECT 
+            tutor_id, 
+            SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_tutee_hours
+        FROM tutee_progress
+        GROUP BY tutor_id
+    ),
+    AggregatedEvents AS (
+        SELECT 
+            tutor_id, 
+            SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_event_hours
+        FROM events
+        GROUP BY tutor_id
+    )
     SELECT 
-        tutor_id, 
-        SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_tutee_hours
-    FROM tutee_progress
-    GROUP BY tutor_id
-),
-AggregatedEvents AS (
-    SELECT 
-        tutor_id, 
-        SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_event_hours
-    FROM events
-    GROUP BY tutor_id
-)
-SELECT 
-    t.id, 
-    t.lastname, 
-    t.firstname, 
-    t.student_id, 
-    t.course, 
-    t.year_section, 
-    COALESCE(MAX(ts.completed_weeks), 0) AS completed_weeks,
-    COALESCE(MAX(rt.rating), 'No Rating') AS rating,
-    COALESCE(MAX(rt.comment), 'No Comment') AS comment,
-    r.tutor_id, 
-    tutee.firstname AS tutee_firstname, 
-    tutee.lastname AS tutee_lastname, 
-    COALESCE(MAX(ap.total_tutee_hours), 0) + COALESCE(MAX(ae.total_event_hours), 0) AS total_rendered_hours, 
-    MAX(rt.pdf_content) AS pdf_content
-FROM tutor t
-INNER JOIN professor p ON t.professor = p.faculty_id
-LEFT JOIN requests r ON t.id = r.tutor_id
-LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
-LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
-LEFT JOIN AggregatedProgress ap ON t.id = ap.tutor_id
-LEFT JOIN AggregatedEvents ae ON t.id = ae.tutor_id
-LEFT JOIN tutee tutee ON r.tutee_id = tutee.id
-WHERE p.id = ? 
-AND (
-    LOWER(t.lastname) LIKE CONCAT('%', LOWER(?), '%') OR
-    LOWER(t.firstname) LIKE CONCAT('%', LOWER(?), '%') OR
-    LOWER(t.course) LIKE CONCAT('%', LOWER(?), '%') OR
-    LOWER(t.year_section) LIKE CONCAT('%', LOWER(?), '%')
-)
-GROUP BY t.id, r.tutee_id
-
+        t.id, 
+        t.lastname, 
+        t.firstname, 
+        t.student_id, 
+        t.course, 
+        t.year_section, 
+        COALESCE(MAX(ts.completed_weeks), 0) AS completed_weeks,
+        COALESCE(MAX(rt.rating), 'No Rating') AS rating,
+        COALESCE(MAX(rt.comment), 'No Comment') AS comment,
+        MAX(r.tutor_id) AS tutor_id, 
+        MAX(r.tutee_id) AS tutee_id,
+        COALESCE(SUM(tp.rendered_hours), 0) AS total_rendered_hours,
+        COALESCE(SUM(e.rendered_hours), 0) AS event_rendered_hours,
+        MAX(rt.pdf_content) AS pdf_content,
+        -- Add tutee's name here
+        CONCAT(tutee.firstname, ' ', tutee.lastname) AS tutee_name
+    FROM tutor t
+    INNER JOIN professor p ON t.professor = p.faculty_id
+    LEFT JOIN requests r ON t.id = r.tutor_id
+    LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
+    LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
+    LEFT JOIN tutee_progress tp ON t.id = tp.tutor_id
+    LEFT JOIN events e ON t.id = e.tutor_id
+    LEFT JOIN tutee ON r.tutee_id = tutee.id  -- Assuming tutee table exists
+    WHERE p.id = ? 
+    AND (
+        LOWER(t.lastname) LIKE LOWER(?) OR
+        LOWER(t.firstname) LIKE LOWER(?) OR
+        LOWER(t.course) LIKE LOWER(?) OR
+        LOWER(t.year_section) LIKE LOWER(?)
+    )
+    GROUP BY t.id
+    LIMIT $limit OFFSET $offset;
 ";
 
 $stmt = $conn->prepare($sql);
@@ -342,29 +345,29 @@ while ($row = $result->fetch_assoc()) {
   $total_rendered_hours = isset($row['total_rendered_hours']) 
                           ? htmlspecialchars($row['total_rendered_hours']) 
                           : '0';
-  $tutee_name = isset($row['tutee_firstname']) && isset($row['tutee_lastname']) 
-                ? htmlspecialchars($row['tutee_firstname'] . ' ' . $row['tutee_lastname']) 
-                : 'No Tutee';
   $pdf_link = isset($row['pdf_content']) && !empty($row['pdf_content']) 
               ? "<a href='view_pdf?id=" . htmlspecialchars($row['tutor_id'] ?? '') . "' target='_blank'>View PDF</a>"
               : 'Session In Progress';
 
+  // Tutee name
+  $tutee_name = isset($row['tutee_name']) ? htmlspecialchars($row['tutee_name']) : 'N/A';
+            
   echo "
   <tr>
-      <td>{$name}</td>
-      <td>{$student_id}</td>
-      <td>{$course_year_section}</td>
-      <td>{$total_rendered_hours}</td>
-      <td>{$pdf_link}</td>
-      <td>{$tutee_name}</td>
-      <td>
-          <button class='btn btn-primary btn-sm view btn-flat' 
-                  data-id='".htmlspecialchars($row['id'] ?? '')."'
-                  data-tutor-id='".htmlspecialchars($row['tutor_id'] ?? '')."'
-                  data-tutee-id='".htmlspecialchars($row['tutee_id'] ?? '')."'>
-              <i class='fa fa-eye'></i> View
-          </button>
-      </td>
+     <td>{$name}</td>
+     <td>{$student_id}</td>
+     <td>{$course_year_section}</td>
+     <td>{$total_rendered_hours}</td>
+     <td>{$tutee_name}</td> <!-- Display the tutee name -->
+     <td>{$pdf_link}</td>
+     <td>
+         <button class='btn btn-primary btn-sm view btn-flat' 
+                 data-id='".htmlspecialchars($row['id'] ?? '')."'
+                 data-tutor-id='".htmlspecialchars($row['tutor_id'] ?? '')."'
+                 data-tutee-id='".htmlspecialchars($row['tutee_id'] ?? '')."' >
+             <i class='fa fa-eye'></i> View
+         </button>
+     </td>
   </tr>
   ";
 }
