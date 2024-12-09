@@ -61,6 +61,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if (isset($_POST['action'])) {
             if ($_POST['action'] === 'add_week') {
+            
+            // Check if the week number already exists
+            $checkStmt = $user_login->runQuery("
+            SELECT COUNT(*) FROM tutee_progress 
+            WHERE tutee_id = :tutee_id AND week_number = :week_number
+            ");
+            $checkStmt->bindParam(':tutee_id', $_POST['tutee_id']);
+            $checkStmt->bindParam(':week_number', $_POST['week_number']);
+            $checkStmt->execute();
+            $weekExists = $checkStmt->fetchColumn();
+
+            if ($weekExists > 0) {
+            // Week number already exists, show error
+            echo json_encode(['success' => false, 'message' => 'Week number already exists']);
+            exit;
+            }
+
             // Add a new week if description is saved successfully
             $stmt = $user_login->runQuery("
                 INSERT INTO tutee_progress (tutee_id, week_number, uploaded_files, tutor_id, description, rendered_hours, location, subject, status) 
@@ -1072,6 +1089,23 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 </div>
 <?php endforeach; ?>
 
+<div class="modal fade" id="weekExistsModal" tabindex="-1" aria-labelledby="weekExistsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="weekExistsModalLabel">Week Number Already Exists</h5>
+      </div>
+      <div class="modal-body">
+        The week number you have entered already exists for this tutee.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- Confirmation Delete Event Modal -->
 <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
@@ -1719,6 +1753,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (fileUpload) {
             formData.append('file', fileUpload); // Append file if exists
         }
+        
 
         $.ajax({
             url: '', // Adjust the URL to your server-side script
@@ -1727,8 +1762,10 @@ document.addEventListener("DOMContentLoaded", function () {
             processData: false,
             contentType: false,
             success: function(response) {
-                // Handle success (e.g., update the UI, close the modal, etc.)
-                
+                const res = JSON.parse(response);
+                    if (!res.success) {
+                        $('#weekExistsModal').modal('show');
+                    }
                 showSpinner();
             },
             error: function(xhr, status, error) {
