@@ -1899,7 +1899,7 @@ document.getElementById('saveWeekBtn').addEventListener('click', function() {
         if (data.success) {
             location.reload(); // Reload to reflect changes
         } else {
-            alert('Error updating the record: ' + (data.error || 'Unknown error'));
+            showErrorModal(data.message || 'Error updating the record.');
         }
     })
     .catch(error => console.error('Error:', error));
