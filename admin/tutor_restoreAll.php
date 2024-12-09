@@ -19,7 +19,7 @@ if (isset($_POST['restoreAllTutor'])) {
             while ($row = $query->fetch_assoc()) {
                 // Insert tutor data
                 $stmt_restore->bind_param(
-                    "ississsssssssss",
+                    "ississssssssssss",
                     $row['id'],
                     $row['lastname'],
                     $row['firstname'],

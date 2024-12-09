@@ -18,7 +18,7 @@ if (isset($_POST['restoreTutor'])) {
             $stmt_restoreTutor = $conn->prepare("INSERT INTO tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio, last_login) 
                                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt_restoreTutor->bind_param(
-                "ississsssssssss",
+                "ississssssssssss",
                 $row['id'],
                 $row['lastname'],
                 $row['firstname'],
