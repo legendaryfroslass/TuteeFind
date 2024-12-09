@@ -4,7 +4,7 @@ $user_login = new TUTOR();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tutee_id = $_POST['tutee_id'];
-    $week_number = $_POST['week_number'];
+    $week_id = $_POST['week_id'];
 
     try {
         // Begin transaction
@@ -14,10 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $checkStmt = $user_login->runQuery("
             SELECT uploaded_files 
             FROM tutee_progress 
-            WHERE tutee_id = :tutee_id AND week_number = :week_number
+            WHERE tutee_id = :tutee_id AND id = :week_id
         ");
         $checkStmt->bindParam(':tutee_id', $tutee_id);
-        $checkStmt->bindParam(':week_number', $week_number);
+        $checkStmt->bindParam(':week_id', $week_id);
         $checkStmt->execute();
         $weekData = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -26,10 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Delete the week record
         $stmt = $user_login->runQuery("
             DELETE FROM tutee_progress 
-            WHERE tutee_id = :tutee_id AND week_number = :week_number
+            WHERE tutee_id = :tutee_id AND id = :week_id
         ");
         $stmt->bindParam(':tutee_id', $tutee_id);
-        $stmt->bindParam(':week_number', $week_number);
+        $stmt->bindParam(':week_id', $week_id);
         $stmt->execute();
 
         // Check if any rows were affected by the delete operation
