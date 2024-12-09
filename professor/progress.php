@@ -323,7 +323,7 @@ $sql = "
         LOWER(t.year_section) LIKE CONCAT('%', LOWER(?), '%')
     )
     GROUP BY 
-        t.id, t.lastname, t.firstname, t.student_id, t.course, t.year_section
+        t.id, t.lastname, t.firstname, t.student_id, t.course, t.year_section, r.tutee_id
 ";
 
 $stmt = $conn->prepare($sql);

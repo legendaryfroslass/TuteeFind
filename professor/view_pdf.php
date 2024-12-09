@@ -3,7 +3,7 @@ include 'includes/session.php';
 
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']); // Sanitize input
-    $sql = "SELECT pdf_content FROM tutor_ratings WHERE tutor_id = ?";
+    $sql = "SELECT pdf_content FROM tutor_ratings WHERE tutee_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();
