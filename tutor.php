@@ -34,6 +34,7 @@ class TUTOR
 	
 					// Update the last_login timestamp
 					$tutor_id = $userRow['id'];
+					date_default_timezone_set("Asia/Manila"); // Set timezone to the Philippines
 					$currentTimestamp = date("Y-m-d H:i:s");
 					$updateLoginTime = $this->conn->prepare("UPDATE tutor SET last_login = :last_login WHERE id = :id");
 					$updateLoginTime->bindParam(':last_login', $currentTimestamp);
