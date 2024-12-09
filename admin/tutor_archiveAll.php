@@ -74,8 +74,8 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                             $stmt_delete_request->execute();
 
                             // Archive tutee_progress
-                            $sql_progress = "INSERT INTO archive_tutee_progress (id, tutee_id, tutor_id, week_number, uploaded_files, description, date)
-                                            SELECT id, tutee_id, tutor_id, week_number, uploaded_files, description, date FROM tutee_progress WHERE tutor_id = ?";
+                            $sql_progress = "INSERT INTO archive_tutee_progress (id, tutee_id, tutor_id, week_number, uploaded_files, description, date, rendered_hours, location, subject, status, remarks)
+                                            SELECT id, tutee_id, tutor_id, week_number, uploaded_files, description, date, rendered_hours, location, subject, status, remarks FROM tutee_progress WHERE tutor_id = ?";
                             $stmt_progress = $conn->prepare($sql_progress);
                             $stmt_progress->bind_param("i", $id);
                             $stmt_progress->execute();
