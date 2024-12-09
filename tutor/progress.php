@@ -1855,25 +1855,33 @@ function showErrorModal(message) {
 }
 
 document.getElementById('saveWeekBtn').addEventListener('click', function() {
-
     const fileUpload = document.getElementById('edit-file-upload').files[0];
     const allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
-    const fileExtension = fileUpload.name.split('.').pop().toLowerCase();
-    if (!allowedExtensions.includes(fileExtension)) {
-        showErrorModal('Invalid file type. Only images and documents are allowed.');
-        return;
-    }
-    if (fileUpload && fileUpload.size > 5 * 1024 * 1024) { // 5 MB in bytes
-        showErrorModal('File size exceeds the 5 MB limit.');
-        return;
-    }
-    
-        
-
     const form = document.getElementById('editForm');
     const formData = new FormData(form);
     formData.append('action', 'edit_week');  // Add the action
 
+    // If a file is uploaded, validate it
+    if (fileUpload) {
+        const fileExtension = fileUpload.name.split('.').pop().toLowerCase();
+
+        // Validate file type
+        if (!allowedExtensions.includes(fileExtension)) {
+            showErrorModal('Invalid file type. Only images and documents are allowed.');
+            return;
+        }
+
+        // Validate file size
+        if (fileUpload.size > 5 * 1024 * 1024) { // 5 MB in bytes
+            showErrorModal('File size exceeds the 5 MB limit.');
+            return;
+        }
+
+        // Append the file to the formData
+        formData.append('file-upload', fileUpload);
+    }
+
+    // Send the form data to the server
     fetch('', {
         method: 'POST',
         body: formData
