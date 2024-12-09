@@ -42,8 +42,9 @@ class TUTOR
 					$updateLoginTime->execute();
 	
 					// Log the login activity
-					$stmt2 = $this->conn->prepare("INSERT INTO tutor_logs (tutor_id, activity) VALUES (:tutor_id, 'Login')");
+					$stmt2 = $this->conn->prepare("INSERT INTO tutor_logs (tutor_id, activity, datetime) VALUES (:tutor_id, 'Login', :currentTimestamp)");
 					$stmt2->bindParam(':tutor_id', $tutor_id);
+					$stmt2->bindParam(':currentTimestamp', $currentTimestamp);
 					$stmt2->execute();
 	
 					return true;
