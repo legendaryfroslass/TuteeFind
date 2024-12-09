@@ -24,9 +24,25 @@ if (isset($_POST['deleteArchive'])) {
         $sql4 = "DELETE FROM archive_tutor_sessions WHERE tutor_id = '$id'";
         $conn->query($sql4);
 
-        // Delete from archive_tutor table
+        // Delete from archive_tutor table where id matches
         $sql5 = "DELETE FROM archive_tutor WHERE id = '$id'";
         $conn->query($sql5);
+
+        // Delete from archive_events table where tutor_id matches
+        $sql6 = "DELETE FROM archive_events WHERE tutor_id = '$id'";
+        $conn->query($sql6);
+
+        // Delete from archive_messages table where tutor_id matches
+        $sql7 = "DELETE FROM archive_messages WHERE tutor_id = '$id'";
+        $conn->query($sql7);
+
+        // Delete from archive_notifications table where tutor_id matches
+        $sql8 = "DELETE FROM archive_notifications WHERE receiver_id = '$id' AND sent_for = 'tutor'";
+        $conn->query($sql8);
+
+        // Delete from archive_tutor_logs table where tutor_id matches
+        $sql9 = "DELETE FROM archive_tutor_logs WHERE tutor_id = '$id'";
+        $conn->query($sql9);
 
         // Commit transaction
         $conn->commit();
@@ -41,5 +57,5 @@ if (isset($_POST['deleteArchive'])) {
     $_SESSION['error'] = 'Select item to delete first';
 }
 
-header('location:archive_tutor.php');
+header('location: archive_tutor.php');
 ?>

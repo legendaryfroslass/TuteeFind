@@ -40,8 +40,8 @@ if (isset($_POST['reject'])) {
             header('Location: event_request');
             exit();
         }
-        $sql = "INSERT INTO notifications (sender_id, receiver_id, title, message, status) 
-        VALUES (NULL, ?, 'Your professor has rejected your event request submission.', CONCAT('Reason: ', ?), 'unread')";
+        $sql = "INSERT INTO notifications (sender_id, receiver_id, title, message, status, sent_for) 
+        VALUES (NULL, ?, 'Your professor has rejected your event request submission.', CONCAT('Reason: ', ?), 'unread', 'tutor')";
         
         // Insert a notification for the tutor about the acceptance
         $notificationStmt = $conn->prepare($sql);

@@ -164,8 +164,8 @@ function acceptTutorRequest($request_id, $tutee_id) {
         // Insert a notification into the notifications table
         $title = "Request Accepted";
         $message = "Your tutor request has been accepted by $tuteeName.";
-        $stmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, date_sent) 
-                    VALUES (:tutee_id, :tutor_id, :title, :message, 'unread', NOW())");
+        $stmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, date_sent, sent_for) 
+                    VALUES (:tutee_id, :tutor_id, :title, :message, 'unread', NOW(), 'tutor')");
         $stmt->bindParam(":tutee_id", $tutee_id);
         $stmt->bindParam(":tutor_id", $tutor_id);
         $stmt->bindParam(":title", $title);
@@ -208,8 +208,8 @@ function rejectTutorRequest($request_id, $tutee_id) {
         // Insert a notification into the notifications table
         $title = "Request Rejected";
         $message = "Your tutor request has been rejected by $tuteeName.";
-        $stmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, date_sent) 
-                    VALUES (:tutee_id, :tutor_id, :title, :message, 'unread', NOW())");
+        $stmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, date_sent, sent_for) 
+                    VALUES (:tutee_id, :tutor_id, :title, :message, 'unread', NOW(), 'tutor')");
         $stmt->bindParam(":tutee_id", $tutee_id);
         $stmt->bindParam(":tutor_id", $tutor_id);
         $stmt->bindParam(":title", $title);
@@ -240,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Fetch unread notifications count for the current tutee
-$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND status = 'unread'");
+$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND sent_for = 'tutee' AND status = 'unread'");
 $unreadNotifQuery->bindParam(":tutee_id", $tutee_id);
 $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);

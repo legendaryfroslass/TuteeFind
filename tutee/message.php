@@ -23,7 +23,7 @@ $tutee_id = $userData['id'];
 $imagePath = !empty($userData['photo']) ? $userData['photo'] : '../assets/TuteeFindLogoName.jpg';
 
 // Fetch unread notifications count for the current tutee
-$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND status = 'unread'");
+$unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND sent_for = 'tutee' AND status = 'unread'");
 $unreadNotifQuery->bindParam(":tutee_id", $tutee_id);
 $unreadNotifQuery->execute();
 $unreadNotifData = $unreadNotifQuery->fetch(PDO::FETCH_ASSOC);

@@ -1,7 +1,7 @@
 <?php
 include 'includes/session.php';
 
-if(isset($_POST['archiveTutee'])){
+if (isset($_POST['archiveTutee'])) {
     $id = $_POST['id'];
 
     // Start transaction
@@ -12,7 +12,7 @@ if(isset($_POST['archiveTutee'])){
         $sql = "SELECT * FROM tutee WHERE id = '$id'";
         $query = $conn->query($sql);
 
-        if($query->num_rows > 0){
+        if ($query->num_rows > 0) {
             $row = $query->fetch_assoc();
 
             // Insert tutee data into the archive_tutee table
@@ -20,21 +20,26 @@ if(isset($_POST['archiveTutee'])){
                             VALUES ('".$row['id']."','".$row['firstname']."', '".$row['lastname']."', '".$row['age']."', '".$row['sex']."', '".$row['number']."', '".$row['guardianname']."', '".$row['fblink']."', '".$row['barangay']."', '".$row['tutee_bday']."', '".$row['school']."', '".$row['grade']."', '".$row['emailaddress']."', '".$row['photo']."', '".$row['password']."', '".$row['bio']."', '".$row['address']."')";
             $conn->query($sql_archive);
 
-            // Delete related records
-            $sql1 = "DELETE FROM requests WHERE tutee_id = '$id'";
-            $conn->query($sql1);
-            $sql2 = "DELETE FROM tutee_progress WHERE tutee_id = '$id'";
-            $conn->query($sql2);
-            $sql3 = "DELETE FROM tutee_summary WHERE tutee_id = '$id'";
-            $conn->query($sql3);
-            $sql4 = "DELETE FROM tutor_ratings WHERE tutee_id = '$id'";
-            $conn->query($sql4);
-            $sql5 = "DELETE FROM tutor_sessions WHERE tutee_id = '$id'";
-            $conn->query($sql5);
+            // Delete related records from all relevant tables
+            $related_tables = [
+                "requests" => "tutee_id",
+                "tutee_progress" => "tutee_id",
+                "tutee_summary" => "tutee_id",
+                "tutor_ratings" => "tutee_id",
+                "tutor_sessions" => "tutee_id",
+                "messages" => "tutee_id",
+                "notifications" => "receiver_id", // Corrected to use `receiver_id`
+                "tutee_logs" => "tutee_id"
+            ];
 
-            // Delete from the tutee table after archiving
-            $sql_delete = "DELETE FROM tutee WHERE id = '$id'";
-            $conn->query($sql_delete);
+            foreach ($related_tables as $table => $column) {
+                $sql_delete_related = "DELETE FROM $table WHERE $column = '$id'";
+                $conn->query($sql_delete_related);
+            }
+
+            // Delete the tutee from the tutee table after archiving
+            $sql_delete_tutee = "DELETE FROM tutee WHERE id = '$id'";
+            $conn->query($sql_delete_tutee);
 
             // Commit transaction
             $conn->commit();
@@ -42,14 +47,15 @@ if(isset($_POST['archiveTutee'])){
         } else {
             throw new Exception('Tutee not found.');
         }
-    } catch (mysqli_sql_exception $exception) {
+    } catch (Exception $e) {
         // Rollback transaction if an error occurs
         $conn->rollback();
-        $_SESSION['error'] = $exception->getMessage();
+        $_SESSION['error'] = $e->getMessage();
     }
 } else {
     $_SESSION['error'] = 'Select item to archive first';
 }
 
 header('location: tutee.php');
+exit();
 ?>

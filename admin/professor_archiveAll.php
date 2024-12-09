@@ -3,7 +3,7 @@ include 'includes/session.php';
 
 if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
     $selected_ids = json_decode($_POST['selected_ids'], true); // Decode the JSON array
-   
+    
     if (count($selected_ids) > 0) {
         // Begin a transaction to ensure data integrity
         $conn->begin_transaction();
@@ -56,6 +56,21 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                         if ($stmt_archive->execute()) {
                             // Keep track of successfully archived professor IDs
                             $archived_professor_ids[] = $id;
+
+                            // Archive the professor's logs
+                            $sql_archive_logs = "INSERT INTO archive_professor_logs (id, professor_id, activity, datetime)
+                                                 SELECT id, professor_id, activity, datetime FROM professor_logs WHERE professor_id = '$id'";
+
+                            if ($conn->query($sql_archive_logs)) {
+                                // After successfully archiving logs, delete them from professor_logs
+                                $sql_delete_logs = "DELETE FROM professor_logs WHERE professor_id = ?";
+                                $stmt_delete_logs = $conn->prepare($sql_delete_logs);
+                                $stmt_delete_logs->bind_param("i", $id);
+                                $stmt_delete_logs->execute();
+                                $stmt_delete_logs->close();
+                            } else {
+                                throw new Exception("Error archiving professor logs for professor with ID " . $id . ": " . $conn->error);
+                            }
                         } else {
                             throw new Exception("Error archiving professor with ID " . $id . ": " . $conn->error);
                         }
@@ -72,7 +87,7 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                 // Delete only professors who were successfully archived
                 $ids_to_delete = implode(",", $archived_professor_ids);
                 $sql_delete = "DELETE FROM professor WHERE id IN ($ids_to_delete)";
-
+                
                 if ($conn->query($sql_delete)) {
                     // Commit the transaction
                     $conn->commit();
@@ -84,7 +99,7 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                     }
                     $_SESSION['success'] = $success_message;
                 } else {
-                    throw new Exception("Error in deleting professors: " . $conn->error);
+                    throw new Exception("Error deleting professors: " . $conn->error);
                 }
             } else {
                 // No professors were archived due to duplicates
