@@ -487,7 +487,7 @@ function archiveAllSelected() {
   // Add a hidden field to indicate the archive action
   const archiveAction = document.createElement('input');
   archiveAction.type = 'hidden';
-  archiveAction.name = 'archiveAll';
+  archiveAction.name = 'archiveAllTutee';
   archiveAction.value = 'true';
   form.appendChild(archiveAction);
 
@@ -511,14 +511,14 @@ function archiveAllSelected() {
             </div>
             <div class="modal-body">
               <div class="text-center">
-                  <p>ARCHIVING LIST OF ALL PROFESSORS</p>
+                  <p>ARCHIVING LIST OF ALL TUTEE</p>
                   <h4>This will archive all data and counting back to 0.</h4>
               </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
               <form action="tutee_archiveAll.php" method="POST">
-                <button type="submit" name="archiveAll" class="btn btn-warning btn-sm btn-flat"><i class="fa fa-archive"></i> Archive</button>
+                <button type="submit" name="archiveAllTutee" class="btn btn-warning btn-sm btn-flat"><i class="fa fa-archive"></i> Archive</button>
               </form>
             </div>
         </div>
