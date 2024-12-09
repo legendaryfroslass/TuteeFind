@@ -242,7 +242,7 @@ $total_pages = ceil($total_rows / $limit);
               <th onclick="sortTable(0)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(1)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(2)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
-              <th onclick="sortTable(3)">Rendered Hours <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(3)">Rendered Hours(Total, Not Per Tutee) <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th>Tutee Name</th> <!-- New column for Tutee Name -->
               <th>Evaluation</th>
               <th>Actions</th>
@@ -310,7 +310,7 @@ $sql = "
         CONCAT(tutee.firstname, ' ', tutee.lastname) AS tutee_name
     FROM tutor t
     INNER JOIN professor p ON t.professor = p.faculty_id
-    LEFT JOIN requests r ON t.id = r.tutor_id AND r.status = 'accepted'
+    LEFT JOIN requests r ON t.id = r.tutor_id AND (r.status = 'accepted' OR r.status = 'removed')
     LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
     LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
     LEFT JOIN AggregatedProgress ap ON t.id = ap.tutor_id
