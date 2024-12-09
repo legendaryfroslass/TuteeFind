@@ -16,8 +16,8 @@ if (isset($_POST['restore'])) {
             $row = $query->fetch_assoc();
 
             // Insert back into the tutor table
-            $sql_restore = "INSERT INTO tutor (INSERT INTO tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio, last_login 
-                            VALUES ('".$row['id']."', '".$row['lastname']."', '".$row['firstname']."', '".$row['age']."', '".$row['sex']."', '".$row['number']."', '".$row['barangay']."', '".$row['student_id']."', '".$row['course']."', '".$row['year_section']."', '".$row['professor']."', '".$row['fblink']."', '".$row['emailaddress']."', '".$row['password']."', '".$row['bio']."', '".$row['last_login']."')";
+            $sql_restore = "INSERT INTO tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio, last_login) 
+                VALUES ('".$row['id']."', '".$row['lastname']."', '".$row['firstname']."', '".$row['age']."', '".$row['sex']."', '".$row['number']."', '".$row['barangay']."', '".$row['student_id']."', '".$row['course']."', '".$row['year_section']."', '".$row['professor']."', '".$row['fblink']."', '".$row['emailaddress']."', '".$row['password']."', '".$row['bio']."', '".$row['last_login']."')";
 
             if ($conn->query($sql_restore)) {
                 // Restore related data from each table manually
