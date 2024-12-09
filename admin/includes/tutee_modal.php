@@ -48,7 +48,7 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Birthday</label>
             <div class="col-sm-9">
-              <p class="form-control-static view-text" id="view_tutee_birthday"><?php echo isset($row['tutee_birthday']) ? $row['tutee_birthday'] : ''; ?></p>
+              <p class="form-control-static view-text" id="view_tutee_bday"><?php echo isset($row['tutee_birthday']) ? $row['tutee_bday'] : ''; ?></p>
             </div>
           </div>
           <div class="form-group">

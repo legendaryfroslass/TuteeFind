@@ -480,7 +480,7 @@ if (isset($_POST['send_message'])) {
                                         <thead>
                                             <tr>
                                                 <th class="text-center">Photo</th>
-                                                <th class="text-center">Name</th>
+                                                <th class="text-center">Tutee's Name</th>
                                                 <th class="text-center">Barangay</th>
                                                 <th class="text-center">Status</th>
                                                 <th></th>

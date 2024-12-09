@@ -467,7 +467,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                 <thead>
                                                     <tr class="tutee-trow">
                                                         <th class="text-center">Photo</th>
-                                                        <th class="text-center">Name</th>
+                                                        <th class="text-center">Tutor's Name</th>
                                                         <th class="text-center">Barangay</th>
                                                         <th class="text-center">Actions</th>
                                                     </tr>
