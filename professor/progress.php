@@ -244,7 +244,7 @@ $total_pages = ceil($total_rows / $limit);
                 <th onclick="sortTable(2)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th onclick="sortTable(3)">Rendered Hours <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th>Evaluation</th>
-                <th onclick="sortTable(3)">Tutee Name <i class="fa fa-sort" aria-hidden="true"></i></th>
+                <th onclick="sortTable(4)">Tutee Name <i class="fa fa-sort" aria-hidden="true"></i></th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -279,50 +279,51 @@ if (isset($_GET['id'])) {
 // }
 $sql = "
     WITH AggregatedProgress AS (
-        SELECT 
-            tutor_id, 
-            SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_tutee_hours
-        FROM tutee_progress
-        GROUP BY tutor_id
-    ),
-    AggregatedEvents AS (
-        SELECT 
-            tutor_id, 
-            SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_event_hours
-        FROM events
-        GROUP BY tutor_id
-    )
     SELECT 
-        t.id, 
-        t.lastname, 
-        t.firstname, 
-        t.student_id, 
-        t.course, 
-        t.year_section, 
-        COALESCE(MAX(ts.completed_weeks), 0) AS completed_weeks,
-        COALESCE(MAX(rt.rating), 'No Rating') AS rating,
-        COALESCE(MAX(rt.comment), 'No Comment') AS comment,
-        MAX(r.tutor_id) AS tutor_id, 
-        GROUP_CONCAT(CONCAT(tutee.firstname, ' ', tutee.lastname) ORDER BY tutee.lastname) AS tutee_names, -- Get all tutee names for the tutor
-        COALESCE(MAX(ap.total_tutee_hours), 0) + COALESCE(MAX(ae.total_event_hours), 0) AS total_rendered_hours, -- Use MAX to aggregate
-        MAX(rt.pdf_content) AS pdf_content
-    FROM tutor t
-    INNER JOIN professor p ON t.professor = p.faculty_id
-    LEFT JOIN requests r ON t.id = r.tutor_id
-    LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
-    LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
-    LEFT JOIN AggregatedProgress ap ON t.id = ap.tutor_id
-    LEFT JOIN AggregatedEvents ae ON t.id = ae.tutor_id
-    LEFT JOIN tutee tutee ON r.tutee_id = tutee.id -- Join to get tutee names
-    WHERE p.id = ? 
-    AND (
-        LOWER(t.lastname) LIKE CONCAT('%', LOWER(?), '%') OR
-        LOWER(t.firstname) LIKE CONCAT('%', LOWER(?), '%') OR
-        LOWER(t.course) LIKE CONCAT('%', LOWER(?), '%') OR
-        LOWER(t.year_section) LIKE CONCAT('%', LOWER(?), '%')
-    )
-    GROUP BY 
-        t.id, t.lastname, t.firstname, t.student_id, t.course, t.year_section
+        tutor_id, 
+        SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_tutee_hours
+    FROM tutee_progress
+    GROUP BY tutor_id
+),
+AggregatedEvents AS (
+    SELECT 
+        tutor_id, 
+        SUM(CASE WHEN status = 'accepted' THEN rendered_hours ELSE 0 END) AS total_event_hours
+    FROM events
+    GROUP BY tutor_id
+)
+SELECT 
+    t.id, 
+    t.lastname, 
+    t.firstname, 
+    t.student_id, 
+    t.course, 
+    t.year_section, 
+    COALESCE(MAX(ts.completed_weeks), 0) AS completed_weeks,
+    COALESCE(MAX(rt.rating), 'No Rating') AS rating,
+    COALESCE(MAX(rt.comment), 'No Comment') AS comment,
+    r.tutor_id, 
+    tutee.firstname AS tutee_firstname, 
+    tutee.lastname AS tutee_lastname, 
+    COALESCE(MAX(ap.total_tutee_hours), 0) + COALESCE(MAX(ae.total_event_hours), 0) AS total_rendered_hours, 
+    MAX(rt.pdf_content) AS pdf_content
+FROM tutor t
+INNER JOIN professor p ON t.professor = p.faculty_id
+LEFT JOIN requests r ON t.id = r.tutor_id
+LEFT JOIN tutor_ratings rt ON t.id = rt.tutor_id
+LEFT JOIN tutee_summary ts ON r.tutee_id = ts.tutee_id
+LEFT JOIN AggregatedProgress ap ON t.id = ap.tutor_id
+LEFT JOIN AggregatedEvents ae ON t.id = ae.tutor_id
+LEFT JOIN tutee tutee ON r.tutee_id = tutee.id
+WHERE p.id = ? 
+AND (
+    LOWER(t.lastname) LIKE CONCAT('%', LOWER(?), '%') OR
+    LOWER(t.firstname) LIKE CONCAT('%', LOWER(?), '%') OR
+    LOWER(t.course) LIKE CONCAT('%', LOWER(?), '%') OR
+    LOWER(t.year_section) LIKE CONCAT('%', LOWER(?), '%')
+)
+GROUP BY t.id, r.tutee_id
+
 ";
 
 $stmt = $conn->prepare($sql);
@@ -341,27 +342,29 @@ while ($row = $result->fetch_assoc()) {
   $total_rendered_hours = isset($row['total_rendered_hours']) 
                           ? htmlspecialchars($row['total_rendered_hours']) 
                           : '0';
-  $tutee_names = isset($row['tutee_names']) ? htmlspecialchars($row['tutee_names']) : 'No Tutee';
+  $tutee_name = isset($row['tutee_firstname']) && isset($row['tutee_lastname']) 
+                ? htmlspecialchars($row['tutee_firstname'] . ' ' . $row['tutee_lastname']) 
+                : 'No Tutee';
   $pdf_link = isset($row['pdf_content']) && !empty($row['pdf_content']) 
               ? "<a href='view_pdf?id=" . htmlspecialchars($row['tutor_id'] ?? '') . "' target='_blank'>View PDF</a>"
               : 'Session In Progress';
-              
+
   echo "
   <tr>
-     <td>{$name}</td>
-     <td>{$student_id}</td>
-     <td>{$course_year_section}</td>
-     <td>{$total_rendered_hours}</td>
-     <td>{$pdf_link}</td>
-     <td>{$tutee_names}</td> <!-- Display tutee names -->
-     <td>
-         <button class='btn btn-primary btn-sm view btn-flat' 
-                 data-id='".htmlspecialchars($row['id'] ?? '')."'
-                 data-tutor-id='".htmlspecialchars($row['tutor_id'] ?? '')."'
-                 data-tutee-id='".htmlspecialchars($row['tutee_id'] ?? '')."' >
-             <i class='fa fa-eye'></i> View
-         </button>
-     </td>
+      <td>{$name}</td>
+      <td>{$student_id}</td>
+      <td>{$course_year_section}</td>
+      <td>{$total_rendered_hours}</td>
+      <td>{$pdf_link}</td>
+      <td>{$tutee_name}</td>
+      <td>
+          <button class='btn btn-primary btn-sm view btn-flat' 
+                  data-id='".htmlspecialchars($row['id'] ?? '')."'
+                  data-tutor-id='".htmlspecialchars($row['tutor_id'] ?? '')."'
+                  data-tutee-id='".htmlspecialchars($row['tutee_id'] ?? '')."'>
+              <i class='fa fa-eye'></i> View
+          </button>
+      </td>
   </tr>
   ";
 }
