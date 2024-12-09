@@ -11,8 +11,7 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
         try {
             // Prepare the insert statement for the archive
             $stmt_archive = $conn->prepare("INSERT INTO archive_tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio, last_login) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                            ");
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Prepare check for existing student_id in the archive_tutor table
             $stmt_check = $conn->prepare("SELECT student_id FROM archive_tutor WHERE student_id = ?");
@@ -41,25 +40,25 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
 
                     if ($stmt_check->num_rows === 0) {
                         // If student_id does not exist, proceed to archive
-                        $stmt_archive->bind_param("ississssssssssss", 
-                        $row['id'],
-                        $row['lastname'],
-                        $row['firstname'],
-                        $row['age'],
-                        $row['sex'],
-                        $row['number'],
-                        $row['barangay'],
-                        $row['student_id'],
-                        $row['course'],
-                        $row['year_section'],
-                        $row['professor'],
-                        $row['fblink'],
-                        $row['emailaddress'],
-                        $row['password'],
-                        $row['bio'],
-                        $row['last_login']
-                    );
-
+                        $stmt_archive->bind_param(
+                            "ississssssssssss",
+                            $row['id'],
+                            $row['lastname'],
+                            $row['firstname'],
+                            $row['age'],
+                            $row['sex'],
+                            $row['number'],
+                            $row['barangay'],
+                            $row['student_id'],
+                            $row['course'],
+                            $row['year_section'],
+                            $row['professor'],
+                            $row['fblink'],
+                            $row['emailaddress'],
+                            $row['password'],
+                            $row['bio'],
+                            $row['last_login']
+                        );
 
                         if ($stmt_archive->execute()) {
                             // Archive related tables here
