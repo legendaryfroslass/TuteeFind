@@ -12,8 +12,8 @@ if (isset($_POST['restoreAllTutor'])) {
 
         if ($query->num_rows > 0) {
             // Prepare the insert statement for the tutor table
-            $stmt_restore = $conn->prepare("INSERT INTO tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt_restore = $conn->prepare("INSERT INTO tutor (id, lastname, firstname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio, last_login) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Loop through each archived tutor and insert into tutor table
             while ($row = $query->fetch_assoc()) {
@@ -34,7 +34,8 @@ if (isset($_POST['restoreAllTutor'])) {
                     $row['fblink'],
                     $row['emailaddress'],
                     $row['password'],
-                    $row['bio']
+                    $row['bio'],
+                    $row['last_login']
                 );
 
                 if (!$stmt_restore->execute()) {
