@@ -16,8 +16,8 @@ if (isset($_POST['archiveTutor'])) {
         $conn->query($sql_delete1);
 
         // Archive and delete from tutee_progress table where tutor_id matches
-        $sql2 = "INSERT INTO archive_tutee_progress (id, tutee_id, tutor_id, week_number, uploaded_files, description, date)
-                 SELECT id, tutee_id, tutor_id, week_number, uploaded_files, description, date FROM tutee_progress WHERE tutor_id = '$id'";
+        $sql2 = "INSERT INTO archive_tutee_progress (id, tutee_id, tutor_id, week_number, uploaded_files, description, date, rendered_hours, location, subject, status, remarks)
+                 SELECT id, tutee_id, tutor_id, week_number, uploaded_files, description, date, rendered_hours, location, subject, status, remarks FROM tutee_progress WHERE tutor_id = '$id'";
         $conn->query($sql2);
         $sql_delete2 = "DELETE FROM tutee_progress WHERE tutor_id = '$id'";
         $conn->query($sql_delete2);

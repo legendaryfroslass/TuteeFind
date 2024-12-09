@@ -60,8 +60,8 @@ if (isset($_POST['restore'])) {
             }
 
             // Restore tutee progress
-            $sql_restoreProgress = "INSERT INTO tutee_progress (id, tutee_id, tutor_id, week_number, uploaded_files, description, date)
-                                    SELECT id, tutee_id, tutor_id, week_number, uploaded_files, description, date FROM archive_tutee_progress WHERE tutor_id = '$tutor_id'";
+            $sql_restoreProgress = "INSERT INTO tutee_progress (id, tutee_id, tutor_id, week_number, uploaded_files, description, date, rendered_hours, location, subject, status, remarks)
+                                    SELECT id, tutee_id, tutor_id, week_number, uploaded_files, description, date, rendered_hours, location, subject, status, remarks FROM archive_tutee_progress WHERE tutor_id = '$tutor_id'";
             if (!$conn->query($sql_restoreProgress)) {
                 throw new Exception('Error restoring tutee_progress: ' . $conn->error);
             }
