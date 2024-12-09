@@ -888,7 +888,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#deleteModal"
                                                     data-tutee-id="<?php echo $tutee['id']; ?>" 
-                                                    data-week-number="<?php echo $progress['week_number']; ?>">
+                                                    data-week-id="<?php echo $progress['id']; ?>">
                                                     <i class='bx bx-trash'></i>
                                                 </button>
                                             </td>
@@ -1356,15 +1356,15 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
     <script>
 
             // Variable to store the row and data to be deleted
-            let deleteData = { row: null, tuteeId: null, weekNumber: null };
+            let deleteData = { row: null, tuteeId: null, weekId: null };
 
             // Show the modal when the delete button is clicked
             $(document).on('click', '.delete-btn', function() {
                 const tuteeId = $(this).data('tutee-id');
-                const weekNumber = $(this).data('week-number');
+                const weekId = $(this).data('week-id');
 
                 // Set the data to be deleted
-                deleteData = { tuteeId: tuteeId, weekNumber: weekNumber };
+                deleteData = { tuteeId: tuteeId, weekId: weekId };
 
                 // Show the modal
                 $('#deleteModal').modal('show');
@@ -1373,12 +1373,12 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
 
             // Handle confirmation of deletion
             $(document).on('click', '#confirmDeleteBtn', function() {
-            const { tuteeId, weekNumber } = deleteData;
+            const { tuteeId, weekId } = deleteData;
 
             $.ajax({
                 url: 'delete_week', // Adjust the URL to your actual server-side script
                 type: 'POST',
-                data: { tutee_id: tuteeId, week_number: weekNumber },
+                data: { tutee_id: tuteeId, weekId: weekId },
                 success: function(response) {
                     const res = JSON.parse(response);
                     if (res.success) {
