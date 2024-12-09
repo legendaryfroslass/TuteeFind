@@ -64,6 +64,7 @@ if (isset($_POST['restore'])) {
                     throw new Exception('Error restoring messages: ' . $conn->error);
                 }
 
+                // Restore notifications table
                 $sql_restore_notifications = "INSERT INTO notifications SELECT * FROM archive_notifications WHERE receiver_id = '$id' AND sent_for = 'tutor'";
                 if (!$conn->query($sql_restore_notifications)) {
                     throw new Exception('Error restoring notifications: ' . $conn->error);
