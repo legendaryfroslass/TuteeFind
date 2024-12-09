@@ -4,7 +4,7 @@ $user_login = new TUTOR();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tutee_id = $_POST['tutee_id'];
-    $week_id = $_POST['week_id'];
+    $week_id = $_POST['id'];
 
     try {
         // Begin transaction
