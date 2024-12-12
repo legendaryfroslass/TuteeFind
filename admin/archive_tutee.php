@@ -160,8 +160,9 @@ $total_pages = ceil($total_rows / $limit);
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header with-border">
-            <button type="button" class="btn btn-warning btn-sm archiveAllTutee btn-flat" onclick="archiveAllSelected()"><i class="fa fa-archive"></i> Archive All</button>
-              <a href="tutee_pdf.php?search=<?php echo urlencode($search); ?>" class="btn btn-primary btn-sm btn-flat" target="_blank">
+            <button type="button" class="btn btn-warning btn-sm restoreAll btn-flat" onclick="restoreAllSelected()"><i class="fa fa-refresh"></i> Restore All</button>
+            <button type="button" class="btn btn-danger btn-sm deleteAll btn-flat" onclick="deleteAllSelected()"><i class="fa fa-trash"></i> Delete All</button>
+              <a href="archive_tutee_pdf.php?search=<?php echo urlencode($search); ?>" class="btn btn-primary btn-sm btn-flat" target="_blank">
                 <i class="fa fa-file-pdf-o"></i> Export to PDF
               </a>
             </div>
@@ -314,21 +315,14 @@ $(function(){
     getRow(id);
   });
 
-  
 
-  $(document).on('click', '.restoreAllTutee', function(e) {
+  $(document).on('click', '.restoreAll', function(e) {
     e.preventDefault();
-    $('#restoreAllTutee').modal('show');
+    $('#restoreAll').modal('show');
     var id = $(this).data('id');
     getRow(id);
   });
 
-  $(document).on('click', '.deleteAllTutee', function(e) {
-    e.preventDefault();
-    $('#deleteAllTutee').modal('show');
-    var id = $(this).data('id');
-    getRow(id);
-  });
 
   $(function(){
   $(document).on('click', '.restoreTutee', function(e){
@@ -483,16 +477,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Submit the selected IDs for archiving
-function archiveAllSelected() {
+function deleteAllSelected() {
   if (selectedRows.length === 0) {
-    alert('No tutee selected for archiving.');
+    alert('No tutee selected for Deletion.');
     return;
   }
 
   // Create a form to submit the selected IDs
   const form = document.createElement('form');
   form.method = 'POST';
-  form.action = 'tutee_archiveAll.php';
+  form.action = 'tutee_deleteAll.php';
 
   // Add the selected IDs as a hidden input
   const input = document.createElement('input');
@@ -502,42 +496,72 @@ function archiveAllSelected() {
   form.appendChild(input);
 
   // Add a hidden field to indicate the archive action
-  const archiveAction = document.createElement('input');
-  archiveAction.type = 'hidden';
-  archiveAction.name = 'archiveAll';
-  archiveAction.value = 'true';
-  form.appendChild(archiveAction);
+  const deleteAction = document.createElement('input');
+  deleteAction.type = 'hidden';
+  deleteAction.name = 'deleteAll';
+  deleteAction.value = 'true';
+  form.appendChild(deleteAction);
 
   // Submit the form
   document.body.appendChild(form);
   form.submit();
 }
 
+// Submit the selected IDs for restoration
+function restoreAllSelected() {
+  if (selectedRows.length === 0) {
+    alert('No Tutee selected for restoration.');
+    return;
+  }
+
+  // Create a form to submit the selected IDs
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'tutee_restoreAll.php';
+
+  // Add the selected IDs as a hidden input
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'selected_ids';
+  input.value = JSON.stringify(selectedRows);
+  form.appendChild(input);
+
+  // Add a hidden field to indicate the delete action
+  const restoreAction = document.createElement('input');
+  restoreAction.type = 'hidden';
+  restoreAction.name = 'restoreAll';
+  restoreAction.value = 'true';
+  form.appendChild(restoreAction);
+
+  // Submit the form
+  document.body.appendChild(form);
+  form.submit();
+}
   </script>
 </body>
 </html>
 
 <!-- Archive All -->
-<div class="modal fade" id="archiveAllTutee">
+<!-- <div class="modal fade" id="restoreAll">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title"><b>Archiving All...</b></h4>
+              <h4 class="modal-title"><b>Restoring All...</b></h4>
             </div>
             <div class="modal-body">
               <div class="text-center">
-                  <p>ARCHIVING LIST OF ALL PROFESSORS</p>
-                  <h4>This will archive all data and counting back to 0.</h4>
+                  <p>RESTORE LIST OF ALL PROFESSORS</p>
+                  <h4>This will restore all data and counting back to 0.</h4>
               </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
-              <form action="tutee_archiveAll.php" method="POST">
-                <button type="submit" name="archiveAll" class="btn btn-warning btn-sm btn-flat"><i class="fa fa-archive"></i> Archive</button>
+              <form action="tutee_restoreAll.php" method="POST">
+                <button type="submit" name="restoreAll" class="btn btn-warning btn-sm btn-flat"><i class="fa fa-archive"></i> Restore</button>
               </form>
             </div>
         </div>
     </div>
-</div>
+</div> -->

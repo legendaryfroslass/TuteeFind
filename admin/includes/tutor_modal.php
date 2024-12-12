@@ -128,9 +128,8 @@
         </div>
     </div>
 </div>
-
-<!-- Restore All -->
-<div class="modal fade" id="restoreAllTutor">
+<!-- 
+<div class="modal fade" id="restoreAll">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -149,15 +148,14 @@
                   <i class="fa fa-close"></i> Close
               </button>
               <form method="post" action="tutor_restoreAll.php">
-                  <button type="submit" name="restoreAllTutor" class="btn btn-warning btn-sm btn-flat">
+                  <button type="submit" name="restoreAll" class="btn btn-warning btn-sm btn-flat">
                       <i class="fa fa-refresh"></i> Restore All
                   </button>
               </form>
             </div>
         </div>
     </div>
-</div>
-
+</div> -->
 <!-- Add New Tutor Modal -->
 <div id="add" class="modal fade">
   <div class="modal-dialog">
@@ -180,29 +178,6 @@
       </form>
     </div>
   </div>
-</div>
-
-<!-- Reset -->
-<div class="modal fade" id="resett">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title"><b>Reseting...</b></h4>
-            </div>
-            <div class="modal-body">
-              <div class="text-center">
-                  <p>RESET LIST OF TUTORS</p>
-                  <h4>This will delete all data and counting back to 0.</h4>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
-              <a href="tutor_reset.php" class="btn btn-danger btn-flat"><i class="fa fa-refresh"></i> Reset</a>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- Delete Archive -->

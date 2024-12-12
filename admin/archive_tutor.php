@@ -155,8 +155,8 @@ $total_pages = ceil($total_rows / $limit);
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header with-border">
-            <button type="button" class="btn btn-warning btn-sm restoreAllTutor btn-flat" onclick="restoreAllSelected()"><i class="fa fa-refresh"></i> Restore All</button>
-            <button type="button" class="btn btn-danger btn-sm resett btn-flat" onclick="deleteAllSelected()"><i class="fa fa-trash"></i> Delete All</button>
+            <button type="button" class="btn btn-warning btn-sm restoreAll btn-flat" onclick="restoreAllSelected()"><i class="fa fa-refresh"></i> Restore All</button>
+            <button type="button" class="btn btn-danger btn-sm deleteAll btn-flat" onclick="deleteAllSelected()"><i class="fa fa-trash"></i> Delete All</button>
               <a href="archive_tutorpdf.php?search=<?php echo urlencode($search); ?>" class="btn btn-primary btn-sm btn-flat" target="_blank">
                 <i class="fa fa-file-pdf-o"></i> Export to PDF
               </a>
@@ -275,9 +275,9 @@ $total_pages = ceil($total_rows / $limit);
       getRow(id);
     });
 
-    $(document).on('click', '.restoreAllTutor', function(e) {
+    $(document).on('click', '.restoreAll', function(e) {
       e.preventDefault();
-      $('#restoreAllTutor').modal('show');
+      $('#restoreAll').modal('show');
       var id = $(this).data('id');
       getRow(id);
     });
@@ -288,6 +288,30 @@ $total_pages = ceil($total_rows / $limit);
       var id = $(this).data('id');
       getRow(id);
     });
+
+    function getRow(id) {
+      $.ajax({
+        type: 'POST',
+        url: 'tutor_view.php',
+        data: {id: id},
+        dataType: 'json',
+        success: function(response) {
+          $('.id').val(response.id);
+          $('#edit_firstname').val(response.firstname);
+          $('#edit_lastname').val(response.lastname);
+          $('#edit_student_id').val(response.student_id);
+          $('#edit_course').val(response.course);
+          $('#edit_year_section').val(response.year_section);
+          $('#edit_preferred_day').val(response.preferred_day);
+          $('#edit_preferred_subject').val(response.preferred_subject);
+          $('#edit_professor').val(response.professor);
+          $('#edit_fblink').val(response.fblink);
+          $('#edit_emailaddress').val(response.emailaddress);
+
+          $('.fullname').html(response.firstname + ' ' + response.lastname);
+        }
+      });
+    }
 
     function getRow(id) {
       $.ajax({
@@ -421,16 +445,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Submit the selected IDs for archiving
-function archiveAllSelected() {
+function deleteAllSelected() {
   if (selectedRows.length === 0) {
-    alert('No tutor selected for archiving.');
+    alert('No tutor selected for Deletion.');
     return;
   }
 
   // Create a form to submit the selected IDs
   const form = document.createElement('form');
   form.method = 'POST';
-  form.action = 'tutor_archiveAll.php';
+  form.action = 'tutor_deleteAll.php';
 
   // Add the selected IDs as a hidden input
   const input = document.createElement('input');
@@ -440,24 +464,54 @@ function archiveAllSelected() {
   form.appendChild(input);
 
   // Add a hidden field to indicate the archive action
-  const archiveAction = document.createElement('input');
-  archiveAction.type = 'hidden';
-  archiveAction.name = 'archiveAll';
-  archiveAction.value = 'true';
-  form.appendChild(archiveAction);
+  const deleteAction = document.createElement('input');
+  deleteAction.type = 'hidden';
+  deleteAction.name = 'deleteAll';
+  deleteAction.value = 'true';
+  form.appendChild(deleteAction);
 
   // Submit the form
   document.body.appendChild(form);
   form.submit();
 }
 
+// Submit the selected IDs for restoration
+function restoreAllSelected() {
+  if (selectedRows.length === 0) {
+    alert('No Tutor selected for restoration.');
+    return;
+  }
+
+  // Create a form to submit the selected IDs
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'tutor_restoreAll.php';
+
+  // Add the selected IDs as a hidden input
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'selected_ids';
+  input.value = JSON.stringify(selectedRows);
+  form.appendChild(input);
+
+  // Add a hidden field to indicate the delete action
+  const restoreAction = document.createElement('input');
+  restoreAction.type = 'hidden';
+  restoreAction.name = 'restoreAll';
+  restoreAction.value = 'true';
+  form.appendChild(restoreAction);
+
+  // Submit the form
+  document.body.appendChild(form);
+  form.submit();
+}
   </script>
 
 </body>
 </html>
 
 <!-- Archive All -->
-<div class="modal fade" id="archiveAll">
+<!-- <div class="modal fade" id="archiveAll">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -479,5 +533,5 @@ function archiveAllSelected() {
             </div>
         </div>
     </div>
-</div>
+</div> -->
 

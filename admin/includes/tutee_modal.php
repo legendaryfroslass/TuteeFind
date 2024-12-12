@@ -134,7 +134,7 @@
     </div>
 </div>
 
-<!-- Restore All -->
+<!-- 
 <div class="modal fade" id="restoreAllTutee">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -161,7 +161,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Archive -->
 <div class="modal fade" id="archiveTutee">
