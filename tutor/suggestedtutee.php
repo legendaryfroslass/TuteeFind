@@ -409,8 +409,8 @@ if (isset($_POST['send_message'])) {
         </div>
         <div class="container-lg px-3">
             <form id="filter-form" action="" class="career-form headings d-flex justify-content-start mb-2" method="post">
-                            <div class="row">
-                                <div class="col-12 my-1">
+                            <div class="row me-1 my-1">
+                                <div class="col-12 ">
                                     <div class="select-container">
                                     <select class="custom-select" id="barangay" name="barangay" onchange="submitForm()">
                                         <option value="" disabled selected hidden>All Barangay</option>
@@ -451,8 +451,8 @@ if (isset($_POST['send_message'])) {
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-12 my-1">
+                            <div class="row my-1">
+                                <div class="col-12">
                                     <div class="select-container">
                                         <select class="custom-select" id="status" name="status" onchange="submitForm()">
                                             <option value="" disabled selected hidden>Status</option>
@@ -487,7 +487,8 @@ if (isset($_POST['send_message'])) {
                                             </tr>
                                         </thead>
                                             <tbody>
-                                                <?php foreach ($current_items as $tutee):  ?>
+                                                    <?php foreach ($current_items as $tutee): ?>
+                                                    
                                                     <tr class="clickable-row" 
                                                         data-name="<?php echo htmlspecialchars($tutee['firstname'] . ' ' . $tutee['lastname']); ?>"
                                                         data-photo="<?php echo !empty($tutee['photo']) ? htmlspecialchars($tutee['photo']) : '../assets/TuteeFindLogoName.jpg'; ?>"
@@ -516,8 +517,27 @@ if (isset($_POST['send_message'])) {
                                                             <?php echo $tutee['barangay']; ?>
                                                         </td>
                                                         <td class="text-center">
+                                                        <span 
+                                                            class="status-bubble"
+                                                            style="padding: 5px 10px;
+                                                                border-radius: 15px;
+                                                                display: inline-block;
+                                                                font-size: 0.9em;  
+                                                                <?php
+                                                                    if ($tutee['request_status'] == 'pending') {
+                                                                        echo 'background-color: yellow; color: black;'; 
+                                                                    } elseif ($tutee['request_status'] == 'rejected') {
+                                                                        echo 'background-color: red; color: white;'; 
+                                                                    } elseif ($tutee['request_status'] == 'removed') {
+                                                                        echo 'background-color: orangeRed; color: white;'; 
+                                                                    } else {
+                                                                        echo 'background-color: gray; color: white;'; // Default for "No Request Sent"
+                                                                    }
+                                                                ?>
+                                                                ">
                                                             <?php echo !empty($tutee['request_status']) ? htmlspecialchars(ucfirst($tutee['request_status'])) : "No Request Sent"; ?>
-                                                        </td>
+                                                        </span>
+                                                    </td>
                                                         <td>
                                                             <form method="post" class="text-center">
                                                                 <button type="button" 
