@@ -432,9 +432,9 @@ if (isset($_POST['send_message'])) {
                 <img src="../assets/remove.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to remove this tutee?</p>
                 <form id="removeTuteeForm" method="post">
                     <div class="form-group">
+                        <p>Are you sure you want to remove this tutee?</p>
                         <label for="removal_reason">Reason for removal:</label>
                         <textarea id="removal_reason" name="removal_reason" class="form-control" rows="3" required></textarea>
                     </div>

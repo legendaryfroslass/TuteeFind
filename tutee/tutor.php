@@ -419,7 +419,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <!-- Form is now enclosed correctly inside modal-content -->
                 <form id="removeTuteeForm" method="POST">
-                    <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
+                    <div class="modal-body text-center">
                         <p>Are you sure you want to remove this tutor?</p>
                         <textarea name="removal_reason" id="removal_reason" class="form-control" placeholder="Enter reason for removal" required></textarea>
                         <div id="reasonError" style="color: red; display: none;">Reason is required.</div> <!-- Error message if not filled -->
