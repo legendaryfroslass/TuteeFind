@@ -248,6 +248,7 @@ $sql = "
     $stmt->execute();
     $result = $stmt->get_result();
 
+    $results = [];
 // Loop through the query result
 while ($row = $result->fetch_assoc()) {
     // Sanitize fields from the query

@@ -78,7 +78,7 @@ $professor_id = $_SESSION['professor_id'];
             <div class="icon">
               <i class="fa fa-code-fork"></i>
             </div>
-            <a href="matches.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="matches" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
 
@@ -88,21 +88,34 @@ $professor_id = $_SESSION['professor_id'];
           <div class="small-box bg-green">
             <div class="inner">
 
-              <?php
-               $sql = "SELECT * FROM tutor";
-                $query = $conn->query($sql);
+            <?php
+// Query to count rows with status 'pending' in both tables
+$sql = "
+    SELECT COUNT(*) as pending_count 
+    FROM (
+        SELECT status FROM events WHERE status = 'pending'
+        UNION ALL
+        SELECT status FROM tutee_progress WHERE status = 'pending'
+    ) as combined_status";
 
-                echo "<h3>".$query->num_rows."</h3>";
-              ?>
-          
-              <p>No. of Request</p>
-            </div>
-            <div class="icon">
-              <i class="fa fa-user"></i>
-            </div>
-            <a href="rendered_request.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
+$query = $conn->query($sql);
+
+// Fetch the count result
+if ($row = $query->fetch_assoc()) {
+    echo "<h3>" . $row['pending_count'] . "</h3>";
+} else {
+    echo "<h3>0</h3>";
+}
+?>
+<p>No. of Requests</p>
+</div>
+<div class="icon">
+    <i class="fa fa-paper-plane"></i>
+</div>
+<a href="event_request" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+</div>
+</div>
+
 
         <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
@@ -128,7 +141,7 @@ $professor_id = $_SESSION['professor_id'];
             <div class="icon">
               <i class="fa fa-users"></i>
             </div>
-            <a href="tutor.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="tutor" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -158,7 +171,7 @@ $professor_id = $_SESSION['professor_id'];
             <div class="icon">
               <i class="fa fa-child"></i>
             </div>
-            <a href="tutee.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="tutee" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -167,7 +180,7 @@ $professor_id = $_SESSION['professor_id'];
       <div class="row">
       <div class="col-xs-12" style="display: flex; justify-content: space-between; align-items: center;">
       <h4><strong>Barangay Tally</strong></h4>
-          <a href="home_pdf.php" class="btn btn-primary btn-sm btn-flat" target="_blank">
+          <a href="home_pdf" class="btn btn-primary btn-sm btn-flat" target="_blank">
     <i class="fa fa-file-pdf-o"></i> Export PDF</a>
         </div>
       </div>

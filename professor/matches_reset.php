@@ -9,6 +9,6 @@
 		$_SESSION['error'] = "Something went wrong in reseting";
 	}
 
-	header('location: matches.php');
+	header('location: matches');
 
 ?>

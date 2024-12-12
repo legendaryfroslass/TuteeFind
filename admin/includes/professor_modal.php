@@ -25,7 +25,7 @@
               <h4 class="modal-title"><b>Deleting...</b></h4>
             </div>
             <div class="modal-body">
-              <form class="form-horizontal" method="POST" action="professor_delete.php">
+              <form class="form-horizontal" method="POST" action="professor_delete">
                 <input type="hidden" class="id" name="id">
                 <div class="text-center">
                     <p>DELETE PROFESSOR</p>
@@ -51,7 +51,7 @@
               <h4 class="modal-title"><b>Archiving...</b></h4>
             </div>
             <div class="modal-body">
-              <form class="form-horizontal" method="POST" action="professor_archive.php">
+              <form class="form-horizontal" method="POST" action="professor_archive">
                 <input type="hidden" class="id" name="id">
                 <div class="text-center">
                     <p>ARCHIVE PROFESSOR</p>
@@ -77,7 +77,7 @@
               <h4 class="modal-title"><b>Restoring...</b></h4>
             </div>
             <div class="modal-body">
-              <form class="form-horizontal" method="POST" action="restore_professor.php">
+              <form class="form-horizontal" method="POST" action="restore_professor">
                 <input type="hidden" class="id" name="id">
                 <div class="text-center">
                     <p>RESTORE PROFESSOR</p>
@@ -112,7 +112,7 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
               <!-- Change the anchor to a form that submits POST data -->
-              <form action="professor_restoreAll.php" method="POST">
+              <form action="professor_restoreAll" method="POST">
                   <input type="hidden" name="restoreAll" value="1">
                   <button type="submit" class="btn btn-warning btn-flat"><i class="fa fa-refresh"></i> Restore All</button>
               </form>
@@ -126,7 +126,7 @@
 <div id="addnew" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form action="professor_upload.php" method="post" enctype="multipart/form-data">
+      <form action="professor_upload" method="post" enctype="multipart/form-data">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4 class="modal-title">Upload Excel File</h4>
@@ -247,7 +247,7 @@
 <div class="modal fade" id="edit">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form class="form-horizontal" method="POST" action="professor_edit.php" onsubmit="return validateForm()">
+      <form class="form-horizontal" method="POST" action="professor_edit" onsubmit="return validateForm()">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span></button>
@@ -305,7 +305,7 @@ $(document).ready(function() {
     $('.edit-button').click(function() {
         var id = $(this).data('id');
         $.ajax({
-            url: 'professor_row.php',
+            url: 'professor_row',
             type: 'POST',
             data: { id: id },
             dataType: 'json',

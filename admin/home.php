@@ -66,7 +66,7 @@
             <div class="icon">
               <i class="fa fa-code-fork"></i>
             </div>
-            <a href="matches.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="matches" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -87,7 +87,7 @@
             <div class="icon">
               <i class="fa fa-user"></i>
             </div>
-            <a href="professor.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="professor" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -110,7 +110,7 @@
             <div class="icon">
               <i class="fa fa-users"></i>
             </div>
-            <a href="tutor.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="tutor" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -133,7 +133,7 @@
             <div class="icon">
               <i class="fa fa-child"></i>
             </div>
-            <a href="tutee.php" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="tutee" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
