@@ -788,7 +788,27 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                             <span>No file uploaded</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?php echo htmlspecialchars($event['status']); ?></td>
+                                    <td>
+                                    <span 
+                                                            class="status-bubble"
+                                                            style="padding: 5px 10px;
+                                                                border-radius: 15px;
+                                                                display: inline-block;
+                                                                font-size: 0.9em;  
+                                                                <?php
+                                                                    if ($event['status'] == 'pending') {
+                                                                        echo 'background-color: yellow; color: black;'; 
+                                                                    } elseif ($event['status'] == 'accepted') {
+                                                                        echo 'background-color: green; color: white;'; 
+                                                                    } elseif ($event['status'] == 'rejected') {
+                                                                        echo 'background-color: red; color: white;'; 
+                                                                    } else {
+                                                                        echo 'background-color: gray; color: white;';
+                                                                    }
+                                                                ?>
+                                                                ">
+                                        <?php echo htmlspecialchars($event['status']); ?>
+                                    </td>
                                     <td class="justify-content-center">
                                         <button 
                                         <?php if ($event['status'] === 'accepted'): ?> disabled <?php endif; ?>
@@ -874,7 +894,28 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                             <td><?php echo htmlspecialchars($progress['location'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($progress['subject'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($progress['date'] ?? ''); ?></td>
-                                            <td><?php echo htmlspecialchars($progress['status'] ?? ''); ?></td>
+                                            <td>
+                                                            <span 
+                                                            class="status-bubble"
+                                                            style="padding: 5px 10px;
+                                                                border-radius: 15px;
+                                                                display: inline-block;
+                                                                font-size: 0.9em;  
+                                                                <?php
+                                                                    if ($progress['status'] == 'pending') {
+                                                                        echo 'background-color: yellow; color: black;'; 
+                                                                    } elseif ($progress['status'] == 'accepted') {
+                                                                        echo 'background-color: green;'; 
+                                                                    } elseif ($progress['status'] == 'rejected') {
+                                                                        echo 'background-color: red; color: white;'; 
+                                                                    } else {
+                                                                        echo 'background-color: gray; color: white;'; // Default for "No Request Sent"
+                                                                    }
+                                                                ?>
+                                                                ">
+                                                <?php echo htmlspecialchars($progress['status'] ?? ''); ?>
+                                                </span>
+                                            </td>
                                             <td class="text-center">
                                             <?php
                                             // Check if the tutee is removed
