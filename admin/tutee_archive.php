@@ -16,26 +16,24 @@ if (isset($_POST['archiveTutee'])) {
             $row = $query->fetch_assoc();
 
             // Insert tutee data into the archive_tutee table
-            $sql_archive = "INSERT INTO archive_tutee (id, firstname, lastname, age, sex, number, guardianname, fblink, barangay, tutee_bday, school, grade, emailaddress, photo, password, bio, address) 
-                            VALUES ('".$row['id']."','".$row['firstname']."', '".$row['lastname']."', '".$row['age']."', '".$row['sex']."', '".$row['number']."', '".$row['guardianname']."', '".$row['fblink']."', '".$row['barangay']."', '".$row['tutee_bday']."', '".$row['school']."', '".$row['grade']."', '".$row['emailaddress']."', '".$row['photo']."', '".$row['password']."', '".$row['bio']."', '".$row['address']."')";
+            $sql_archive = "INSERT INTO archive_tutee (id, firstname, lastname, age, sex, number, guardianname, fblink, barangay, tutee_bday, school, grade, emailaddress, photo, password, bio, address, last_login) 
+                            VALUES ('".$row['id']."', '".$row['firstname']."', '".$row['lastname']."', '".$row['age']."', '".$row['sex']."', '".$row['number']."', '".$row['guardianname']."', '".$row['fblink']."', '".$row['barangay']."', '".$row['tutee_bday']."', '".$row['school']."', '".$row['grade']."', '".$row['emailaddress']."', '".$row['photo']."', '".$row['password']."', '".$row['bio']."', '".$row['address']."', '".$row['last_login']."')";
             $conn->query($sql_archive);
 
-            // Delete related records from all relevant tables
-            $related_tables = [
-                "requests" => "tutee_id",
-                "tutee_progress" => "tutee_id",
-                "tutee_summary" => "tutee_id",
-                "tutor_ratings" => "tutee_id",
-                "tutor_sessions" => "tutee_id",
-                "messages" => "tutee_id",
-                "notifications" => "receiver_id", // Corrected to use `receiver_id`
-                "tutee_logs" => "tutee_id"
-            ];
+            // Archive and delete related records from notifications table
+            $sql_notifications_archive = "INSERT INTO archive_notifications (id, sender_id, receiver_id, title, message, status, date_sent, sent_for)
+                                          SELECT id, sender_id, receiver_id, title, message, status, date_sent, sent_for 
+                                          FROM notifications WHERE receiver_id = '$id'";
+            $conn->query($sql_notifications_archive);
+            $sql_notifications_delete = "DELETE FROM notifications WHERE receiver_id = '$id' AND sent_for = 'tutee'";
+            $conn->query($sql_notifications_delete);
 
-            foreach ($related_tables as $table => $column) {
-                $sql_delete_related = "DELETE FROM $table WHERE $column = '$id'";
-                $conn->query($sql_delete_related);
-            }
+            // Archive and delete related records from tutee_logs table
+            $sql_logs_archive = "INSERT INTO archive_tutee_logs (id, tutee_id, activity, datetime)
+                                 SELECT id, tutee_id, activity, datetime FROM tutee_logs WHERE tutee_id = '$id'";
+            $conn->query($sql_logs_archive);
+            $sql_logs_delete = "DELETE FROM tutee_logs WHERE tutee_id = '$id'";
+            $conn->query($sql_logs_delete);
 
             // Delete the tutee from the tutee table after archiving
             $sql_delete_tutee = "DELETE FROM tutee WHERE id = '$id'";
@@ -56,6 +54,6 @@ if (isset($_POST['archiveTutee'])) {
     $_SESSION['error'] = 'Select item to archive first';
 }
 
-header('location: tutee.php');
+header('location: tutee');
 exit();
 ?>

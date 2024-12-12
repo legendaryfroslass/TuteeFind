@@ -2,36 +2,24 @@
 include 'includes/session.php';
 
 if (isset($_POST['restoreAllTutee'])) {
-    // Start transaction
+    // Begin a transaction to ensure data integrity
     $conn->begin_transaction();
 
     try {
-        // Fetch all tutees from archive_tutee
-        $sql = "SELECT * FROM archive_tutee";
-        $query = $conn->query($sql);
+        // Fetch all tutees from archive_tutee table
+        $sql_select = "SELECT * FROM archive_tutee";
+        $query = $conn->query($sql_select);
 
         if ($query->num_rows > 0) {
-            // Prepare the insert statement for tutee table
-            $stmt_restore = $conn->prepare("INSERT INTO tutee (id, firstname, lastname, age, sex, number, guardianname, fblink, barangay, tutee_bday, school, grade, emailaddress, photo, password, bio, address) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            // Prepare the insert statement for the tutee table
+            $stmt_restore = $conn->prepare("INSERT INTO tutee (id, firstname, lastname, age, sex, number, guardianname, fblink, barangay, tutee_bday, school, grade, emailaddress, photo, password, bio, address, last_login) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-            // Archive to active table mapping
-            $tables = [
-                'archive_messages' => 'messages',
-                'archive_notifications' => 'notifications',
-                'archive_requests' => 'requests',
-                'archive_tutee_progress' => 'tutee_progress',
-                'archive_tutee_summary' => 'tutee_summary',
-                'archive_tutor_ratings' => 'tutor_ratings',
-                'archive_tutor_sessions' => 'tutor_sessions',
-                'archive_tutee_logs' => 'tutee_logs'
-            ];
-
-            // Loop through each archived tutee
+            // Loop through each archived tutee and insert into tutee table
             while ($row = $query->fetch_assoc()) {
-                // Restore tutee to active table
+                // Insert tutee data
                 $stmt_restore->bind_param(
-                    "ississsssssssssss",
+                    "ississssssssssssss",
                     $row['id'],
                     $row['firstname'],
                     $row['lastname'],
@@ -48,48 +36,52 @@ if (isset($_POST['restoreAllTutee'])) {
                     $row['photo'],
                     $row['password'],
                     $row['bio'],
-                    $row['address']
+                    $row['address'],
+                    $row['last_login']
                 );
 
                 if (!$stmt_restore->execute()) {
                     throw new Exception("Error restoring tutee with ID " . $row['id'] . ": " . $conn->error);
                 }
 
-                // Restore related data for the current tutee
-                foreach ($tables as $archive_table => $main_table) {
-                    $sql_restore_related = "INSERT INTO $main_table SELECT * FROM $archive_table WHERE tutee_id = ?";
-                    $stmt_restore_related = $conn->prepare($sql_restore_related);
-                    $stmt_restore_related->bind_param("i", $row['id']);
-                    $stmt_restore_related->execute();
+                $tutee_id = $row['id']; // Store the tutee's ID for restoring related data
 
-                    $sql_delete_related = "DELETE FROM $archive_table WHERE tutee_id = ?";
-                    $stmt_delete_related = $conn->prepare($sql_delete_related);
-                    $stmt_delete_related->bind_param("i", $row['id']);
-                    $stmt_delete_related->execute();
-                }
+                // Restore related data for this tutee
 
-                // Delete the restored tutee from archive_tutee
-                $sql_delete_tutee = "DELETE FROM archive_tutee WHERE id = ?";
-                $stmt_delete_tutee = $conn->prepare($sql_delete_tutee);
-                $stmt_delete_tutee->bind_param("i", $row['id']);
-                $stmt_delete_tutee->execute();
+                // Restore notifications
+                $sql_restoreNotifications = "INSERT INTO notifications (id, sender_id, receiver_id, title, message, status, date_sent, sent_for)
+                                             SELECT id, sender_id, receiver_id, title, message, status, date_sent, sent_for FROM archive_notifications WHERE receiver_id = '$tutee_id' AND sent_for = 'tutee'";
+                $conn->query($sql_restoreNotifications);
+                $sql_deleteNotifications = "DELETE FROM archive_notifications WHERE receiver_id = '$tutee_id' AND sent_for = 'tutee'";
+                $conn->query($sql_deleteNotifications);
+
+                // Restore tutee logs
+                $sql_restoreLogs = "INSERT INTO tutee_logs (id, tutee_id, activity, datetime)
+                                   SELECT id, tutee_id, activity, datetime FROM archive_tutee_logs WHERE tutee_id = '$tutee_id'";
+                $conn->query($sql_restoreLogs);
+                $sql_deleteLogs = "DELETE FROM archive_tutee_logs WHERE tutee_id = '$tutee_id'";
+                $conn->query($sql_deleteLogs);
+
+                // Delete the tutee from archive_tutee table after restoring
+                $sql_deleteTutee = "DELETE FROM archive_tutee WHERE id = '$tutee_id'";
+                $conn->query($sql_deleteTutee);
             }
 
-            // Commit transaction
+            // Commit the transaction
             $conn->commit();
-            $_SESSION['success'] = 'All tutees and their related data restored successfully.';
+            $_SESSION['success'] = "All archived tutees restored successfully";
         } else {
-            throw new Exception('No tutees found in the archive.');
+            $_SESSION['error'] = "No archived tutees found to restore";
         }
     } catch (Exception $e) {
-        // Rollback transaction if an error occurs
+        // Rollback the transaction if there was an error
         $conn->rollback();
         $_SESSION['error'] = $e->getMessage();
     }
-} else {
-    $_SESSION['error'] = 'No action specified to restore tutees.';
+} else { 
+    $_SESSION['error'] = 'Action not specified';
 }
 
-header('location: archive_tutee.php');
+header('location: archive_tutee');
 exit();
 ?>

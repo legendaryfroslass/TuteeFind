@@ -128,16 +128,16 @@ if (isset($_POST['archiveAll']) && isset($_POST['selected_ids'])) {
                             $stmt_delete_events->bind_param("i", $id);
                             $stmt_delete_events->execute();
 
-                            // Archive messages
-                            $sql_messages = "INSERT INTO archive_messages (id, tutor_id, tutee_id, sender_type, message, created_at, is_read)
-                                             SELECT id, tutor_id, tutee_id, sender_type, message, created_at, is_read FROM messages WHERE tutor_id = ?";
-                            $stmt_messages = $conn->prepare($sql_messages);
-                            $stmt_messages->bind_param("i", $id);
-                            $stmt_messages->execute();
-                            $sql_delete_messages = "DELETE FROM messages WHERE tutor_id = ?";
-                            $stmt_delete_messages = $conn->prepare($sql_delete_messages);
-                            $stmt_delete_messages->bind_param("i", $id);
-                            $stmt_delete_messages->execute();
+                            // Archive tutor_logs
+                            $sql_logs = "INSERT INTO archive_tutor_logs (id, tutor_id, activity, datetime)
+                                         SELECT id, tutor_id, activity, datetime FROM tutor_logs WHERE tutor_id = ?";
+                            $stmt_logs = $conn->prepare($sql_logs);
+                            $stmt_logs->bind_param("i", $id);
+                            $stmt_logs->execute();
+                            $sql_delete_logs = "DELETE FROM tutor_logs WHERE tutor_id = ?";
+                            $stmt_delete_logs = $conn->prepare($sql_delete_logs);
+                            $stmt_delete_logs->bind_param("i", $id);
+                            $stmt_delete_logs->execute();
 
                             // Archive notifications
                             $sql_notifications = "INSERT INTO archive_notifications (id, sender_id, receiver_id, title, message, status, date_sent, sent_for)
