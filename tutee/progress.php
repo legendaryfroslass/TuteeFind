@@ -613,14 +613,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         data-bs-target="#confirmationModal" 
                                         data-tutor-id="<?php echo $tutor['id']; ?>" 
                                         data-tutee-id="<?php echo htmlspecialchars($tutee_id); ?>" 
-                                        <?php echo $statusData[$tutor['id']]['status'] === 'requested' ? '' : 'disabled'; ?>>
+                                        <?php echo $statusData[$tutor['id']]['status'] === 'requested' ? '' : 'style="display:none;"'; ?>>
                                         Confirm Finish
                                     </button>
                                     <button type="button" class="btn btn-primary my-2" 
                                             id="rateTutorBtn-<?php echo $tutor['id']; ?>" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#rateTutorModal-<?php echo $tutor['id']; ?>"
-                                            <?php echo $statusData[$tutor['id']]['status'] === 'completed' && !$statusData[$tutor['id']]['rating_exists'] ? '' : 'disabled'; ?>>
+                                            <?php echo $statusData[$tutor['id']]['status'] === 'completed' && !$statusData[$tutor['id']]['rating_exists'] ? '' : 'style="display:none;"'; ?>>
                                         Rate Tutor
                                     </button>
                                 </div>
@@ -1065,7 +1065,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <!-- Form is now enclosed correctly inside modal-content -->
                 <form id="removeTuteeForm" method="POST">
-                    <div class="modal-body d-flex justify-content-center align-items-center" id="modalBody">
+                    <div class="modal-body text-center">
                         <p>Are you sure you want to remove this tutor?</p>
                         <textarea name="removal_reason" id="removal_reason" class="form-control" placeholder="Enter reason for removal" required></textarea>
                         <div id="reasonError" style="color: red; display: none;">Reason is required.</div> <!-- Error message if not filled -->
