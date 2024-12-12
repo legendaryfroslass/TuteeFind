@@ -501,7 +501,7 @@ function restoreAllSelected() {
 
 
 <!-- Reset -->
-<div class="modal fade" id="resett">
+<!-- <div class="modal fade" id="resett">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -521,7 +521,7 @@ function restoreAllSelected() {
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 
 

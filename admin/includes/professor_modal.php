@@ -93,8 +93,7 @@
     </div>
 </div>
 
-
-<!-- RestoreAll -->
+<!-- 
 <div class="modal fade" id="restoreAll">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -111,7 +110,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
-              <!-- Change the anchor to a form that submits POST data -->
+
               <form action="professor_restoreAll" method="POST">
                   <input type="hidden" name="restoreAll" value="1">
                   <button type="submit" class="btn btn-warning btn-flat"><i class="fa fa-refresh"></i> Restore All</button>
@@ -119,7 +118,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 
 <!-- Add New Professor Modal -->
