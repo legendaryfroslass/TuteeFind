@@ -18,6 +18,6 @@ if (isset($_SESSION['professor_id'])) {
 }
 
 session_destroy();
-header('location: landingpage.php');
+header('location: landingpage');
 exit();
 ?>

@@ -27,4 +27,4 @@
 		$_SESSION['error'] = 'Input admin credentials first';
 	}
 
-	header('location: landingpage.php');
+	header('location: landingpage');
