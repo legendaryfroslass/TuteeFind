@@ -114,17 +114,6 @@ if (isset($_POST['restore'])) {
                 throw new Exception("Error deleting events from archive: " . $conn->error);
             }
 
-            // Restore messages
-            $sql_restoreMessages = "INSERT INTO messages (id, tutor_id, tutee_id, sender_type, message, created_at, is_read)
-                                    SELECT id, tutor_id, tutee_id, sender_type, message, created_at, is_read FROM archive_messages WHERE tutor_id = '$tutor_id'";
-            if (!$conn->query($sql_restoreMessages)) {
-                throw new Exception('Error restoring messages: ' . $conn->error);
-            }
-            $sql_deleteMessages = "DELETE FROM archive_messages WHERE tutor_id = '$tutor_id'";
-            if (!$conn->query($sql_deleteMessages)) {
-                throw new Exception("Error deleting messages from archive: " . $conn->error);
-            }
-
             // Restore notifications
             $sql_restoreNotifications = "INSERT INTO notifications (id, sender_id, receiver_id, title, message, status, date_sent, sent_for)
                                          SELECT id, sender_id, receiver_id, title, message, status, date_sent, sent_for FROM archive_notifications WHERE receiver_id = '$tutor_id' AND sent_for = 'tutor'";

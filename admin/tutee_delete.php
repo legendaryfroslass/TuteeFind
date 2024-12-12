@@ -1,45 +1,37 @@
 <?php
 include 'includes/session.php';
 
-if (isset($_POST['delete'])) {
+if (isset($_POST['deleteArchive'])) {
     $id = $_POST['id'];
+
     // Start transaction
     $conn->begin_transaction();
 
     try {
-        // Define the archive tables and their corresponding field for tutee_id
-        $archive_tables = [
-            "archive_messages" => "tutee_id",
-            "archive_notifications" => "receiver_id",
-            "archive_requests" => "tutee_id",
-            "archive_tutee_progress" => "tutee_id",
-            "archive_tutee_summary" => "tutee_id",
-            "archive_tutor_ratings" => "tutee_id",
-            "archive_tutor_sessions" => "tutee_id",
-            "archive_tutee_logs" => "tutee_id",
-            "archive_tutee" => "id"
-        ];
+        // Delete from archive_notifications table where receiver_id matches and sent_for is 'tutee'
+        $sql1 = "DELETE FROM archive_notifications WHERE receiver_id = '$id' AND sent_for = 'tutee'";
+        $conn->query($sql1);
 
-        // Loop through each table and delete records where tutee_id matches
-        foreach ($archive_tables as $table => $field) {
-            $sql_delete = "DELETE FROM $table WHERE $field = '$id'";
-            if (!$conn->query($sql_delete)) {
-                throw new Exception("Error deleting from $table: " . $conn->error);
-            }
-        }
+        // Delete from archive_tutee_logs table where tutee_id matches
+        $sql2 = "DELETE FROM archive_tutee_logs WHERE tutee_id = '$id'";
+        $conn->query($sql2);
+
+        // Delete from archive_tutee table where id matches
+        $sql3 = "DELETE FROM archive_tutee WHERE id = '$id'";
+        $conn->query($sql3);
 
         // Commit transaction
         $conn->commit();
-        $_SESSION['success'] = 'Tutee and related records deleted successfully';
-    } catch (Exception $e) {
+
+        $_SESSION['success'] = 'Archived tutee and related records deleted successfully';
+    } catch (mysqli_sql_exception $exception) {
         // Rollback transaction if an error occurs
         $conn->rollback();
-        $_SESSION['error'] = $e->getMessage();
+        $_SESSION['error'] = $exception->getMessage();
     }
 } else {
     $_SESSION['error'] = 'Select item to delete first';
 }
 
 header('location: archive_tutee.php');
-exit();
 ?>

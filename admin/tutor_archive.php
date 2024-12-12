@@ -50,12 +50,6 @@ if (isset($_POST['archiveTutor'])) {
         $sql_delete7 = "DELETE FROM events WHERE tutor_id = '$id'";
         $conn->query($sql_delete7);
 
-        // Archive and delete from archive_messages table where tutor_id matches
-        $sql8 = "INSERT INTO archive_messages (id, tutor_id, tutee_id, sender_type, message, created_at, is_read)
-                 SELECT id, tutor_id, tutee_id, sender_type, message, created_at, is_read FROM messages WHERE tutor_id = '$id'";
-        $conn->query($sql8);
-        $sql_delete8 = "DELETE FROM messages WHERE tutor_id = '$id'";
-        $conn->query($sql_delete8);
 
         // Archive and delete from archive_notifications table where tutor_id matches
         $sql9 = "INSERT INTO archive_notifications (id, sender_id, receiver_id, title, message, status, date_sent, sent_for)

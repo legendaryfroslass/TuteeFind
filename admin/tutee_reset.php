@@ -8,13 +8,7 @@ if (isset($_POST['deleteAllTutee'])) {
     try {
         // Define the archive tables to delete from
         $archive_tables = [
-            "archive_messages",
             "archive_notifications",
-            "archive_requests",
-            "archive_tutee_progress",
-            "archive_tutee_summary",
-            "archive_tutor_ratings",
-            "archive_tutor_sessions",
             "archive_tutee_logs",
             "archive_tutee"
         ];
