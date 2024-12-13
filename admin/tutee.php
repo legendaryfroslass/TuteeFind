@@ -232,32 +232,60 @@ $total_pages = ceil($total_rows / $limit);
 </div>
     </div>
   </div>
-              <div class="row">
-                <div class="col-sm-5">
-                  <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
-                    Showing <?php echo ($offset + 1) . ' to ' . min($offset + $limit, $total_rows) . ' of ' . $total_rows . ' entries'; ?>
-                  </div>
-                </div>
-                <div class="col-sm-7">
-                  <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
-                    <ul class="pagination">
-                      <li class="paginate_button previous <?php if ($page <= 1) echo 'disabled'; ?>" id="example1_previous">
-                        <a href="?search=<?php echo urlencode($search); ?>&page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a>
-                      </li>
+  <div class="row">
+    <div class="col-sm-5">
+        <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+            Showing <?php echo ($offset + 1) . ' to ' . min($offset + $limit, $total_rows) . ' of ' . $total_rows . ' entries'; ?>
+        </div>
+    </div>
+    <div class="col-sm-7">
+        <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
+            <ul class="pagination">
+                <!-- Disable Previous button if on the first page -->
+                <li class="paginate_button previous <?php if ($page <= 1) echo 'disabled'; ?>" id="example1_previous">
+                    <a href="<?php echo ($page > 1) ? '?search=' . urlencode($search) . '&page=' . ($page - 1) . '&limit=' . $limit : '#'; ?>" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a>
+                </li>
 
-                      <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                        <li class="paginate_button <?php if ($page == $i) echo 'active'; ?>">
-                          <a href="?search=<?php echo urlencode($search); ?>&page=<?php echo $i; ?>&limit=<?php echo $limit; ?>" aria-controls="example1" data-dt-idx="<?php echo $i; ?>" tabindex="0"><?php echo $i; ?></a>
-                        </li>
-                      <?php endfor; ?>
+                <?php
+                // Display the first page
+                if ($page > 3) {
+                    echo '<li class="paginate_button"><a href="?search=' . urlencode($search) . '&page=1&limit=' . $limit . '" aria-controls="example1" data-dt-idx="1" tabindex="0">1</a></li>';
+                }
 
-                      <li class="paginate_button next <?php if ($page >= $total_pages) echo 'disabled'; ?>" id="example1_next">
-                        <a href="?search=<?php echo urlencode($search); ?>&page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>" aria-controls="example1" data-dt-idx="7" tabindex="0">Next</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+                // Display the first ellipsis if needed
+                if ($page > 4) {
+                    echo '<li class="paginate_button disabled"><span>...</span></li>';
+                }
+
+                // Loop through pages, showing only a range of pages around the current page
+                $start = max(2, $page - 2);
+                $end = min($total_pages - 1, $page + 2);
+
+                for ($i = $start; $i <= $end; $i++) {
+                    echo '<li class="paginate_button ' . ($page == $i ? 'active' : '') . '">
+                            <a href="?search=' . urlencode($search) . '&page=' . $i . '&limit=' . $limit . '" aria-controls="example1" data-dt-idx="' . $i . '" tabindex="0">' . $i . '</a>
+                          </li>';
+                }
+
+                // Display the last ellipsis if needed
+                if ($page < $total_pages - 3) {
+                    echo '<li class="paginate_button disabled"><span>...</span></li>';
+                }
+
+                // Display the last page
+                if ($page < $total_pages - 2) {
+                    echo '<li class="paginate_button"><a href="?search=' . urlencode($search) . '&page=' . $total_pages . '&limit=' . $limit . '" aria-controls="example1" data-dt-idx="' . $total_pages . '" tabindex="0">' . $total_pages . '</a></li>';
+                }
+                ?>
+
+                <!-- Disable Next button if on the last page -->
+                <li class="paginate_button next <?php if ($page >= $total_pages) echo 'disabled'; ?>" id="example1_next">
+                    <a href="<?php echo ($page < $total_pages) ? '?search=' . urlencode($search) . '&page=' . ($page + 1) . '&limit=' . $limit : '#'; ?>" aria-controls="example1" data-dt-idx="7" tabindex="0">Next</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
             </div>
           </div>
         </div>
