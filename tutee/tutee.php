@@ -110,12 +110,8 @@ function acceptTutorRequest($request_id, $tutee_id) {
 
     // Check if the tutee has already accepted a tutor
     if (hasAcceptedTutor($tutee_id)) {
-        echo "<script>
-                $(document).ready(function() {
-                    $('#tuteeLimitModal').modal('show');
-                });
-              </script>";
-        return false;
+        echo json_encode(['status' => 'error', 'modal' => 'tuteeLimitModal']);
+        return;
     }
 
     try {
@@ -125,12 +121,8 @@ function acceptTutorRequest($request_id, $tutee_id) {
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$result) {
-            echo "<script>
-                    $(document).ready(function() {
-                        $('#invalidRequestModal').modal('show');
-                    });
-                  </script>";
-            return false;
+            echo json_encode(['status' => 'error', 'modal' => 'invalidRequestModal']);
+            return;
         }
         $tutor_id = $result['tutor_id'];
 
@@ -140,12 +132,8 @@ function acceptTutorRequest($request_id, $tutee_id) {
         $stmt->execute();
         $count = $stmt->fetch(PDO::FETCH_ASSOC)['tutee_count'];
         if ($count >= 2) {
-            echo "<script>
-                    $(document).ready(function() {
-                        $('#tutorLimitModal').modal('show');
-                    });
-                  </script>";
-            return false;
+            echo json_encode(['status' => 'error', 'modal' => 'tutorLimitModal']);
+            return;
         }
 
         // Update the request status to accepted
@@ -191,14 +179,10 @@ function acceptTutorRequest($request_id, $tutee_id) {
         $stmt->bindParam(":message", $message);
         $stmt->execute();
 
-        return true;
+        echo json_encode(['status' => 'success', 'modal' => 'uploadSuccessModal']);
+        
     } catch (PDOException $ex) {
-        echo "<script>
-                $(document).ready(function() {
-                    $('#errorModal').modal('show');
-                });
-              </script>";
-        return false;
+        echo json_encode(['status' => 'error', 'modal' => 'errorModal', 'message' => $ex->getMessage()]);
     }
 }
 
@@ -259,8 +243,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $request_id = $_POST['request_id'];
         rejectTutorRequest($request_id, $userData['id']);
     }
-    header("Location: " . $_SERVER['PHP_SELF'] . "?clearError");
+    header("Location: tutee?error");
 }
+
+// // Check if login failed via URL parameter
+// if (isset($_GET['error']) || isset($_GET['notAvail'])) {
+//     echo '<script>
+//             document.addEventListener("DOMContentLoaded", function() {
+//                 var errorModalModal = new bootstrap.Modal(document.getElementById("errorModal"));
+//                 errorModalModal.show();
+//             });
+//             </script>';
+// }
 
 // Fetch unread notifications count for the current tutee
 $unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutee_id AND sent_for = 'tutee' AND status = 'unread'");
@@ -708,33 +702,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
 
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-            <div id="toasttwoTutee" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
-                <div class="toast-header">
-                    <!-- <img src="..." class="rounded me-2" alt="..."> -->
-                    <strong class="me-auto">TuteeFind</strong>
-                    <small>Just now</small>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    Tutor has already 2 Tutees, You can't accept anymore
-                </div>
-            </div>
-        </div>
-
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-            <div id="toasthaveTutee" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
-                <div class="toast-header">
-                    <!-- <img src="..." class="rounded me-2" alt="..."> -->
-                    <strong class="me-auto">TuteeFind</strong>
-                    <small>Just now</small>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    You have already accepted a Tutor.
-                </div>
-            </div>
-        </div>
 
         <!-- Accept Request Modal -->
         <div class="modal fade" id="acceptRequestModal" tabindex="-1" aria-labelledby="acceptRequestModalLabel" aria-hidden="true" data-bs-backdrop="static">
@@ -821,31 +788,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
 
-        <!-- Error Upload Modal -->
-        <div class="modal fade" id="uploadErrorModal1" tabindex="-1" aria-labelledby="uploadErrorModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                <div class="modal-header d-flex justify-content-center align-items-center border-0 mt-2">
-                    <!-- SVG Circular Swipe Error Icon -->
-                    <div class="error-icon-container">
-                    <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                        <circle class="error-icon__circle" cx="26" cy="26" r="25" fill="none"/>
-                        <path class="error-icon__cross" fill="none" d="M16 16 L36 36 M36 16 L16 36"/>
-                    </svg>
-                    </div>
-                </div>
-                <div class="modal-body" id="errorMessage1">
-                    <!-- Error message will be dynamically added here -->
-                    An error occurred while uploading the file.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Tutee Limit Modal -->
+<!-- Tutee Limit Modal -->
 <div class="modal fade" id="tuteeLimitModal" tabindex="-1" aria-labelledby="tuteeLimitLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -899,7 +843,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                An error occurred while processing your request. Please try again later.
+                The tutor you accepting might have already 2 tutees, also check if you have already a tutor.
             </div>
         </div>
     </div>
