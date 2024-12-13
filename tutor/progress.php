@@ -905,7 +905,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                                                                     if ($progress['status'] == 'pending') {
                                                                         echo 'background-color: yellow; color: black;'; 
                                                                     } elseif ($progress['status'] == 'accepted') {
-                                                                        echo 'background-color: green;'; 
+                                                                        echo 'background-color: green; color: white;'; 
                                                                     } elseif ($progress['status'] == 'rejected') {
                                                                         echo 'background-color: red; color: white;'; 
                                                                     } else {

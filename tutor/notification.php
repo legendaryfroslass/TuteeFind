@@ -193,7 +193,7 @@ $unreadMessageCount = $unreadMessagesData['unread_tutee_count'];
                     <p class="mb-0"><?php echo htmlspecialchars($notif['message']); ?></p>
                 </div>
                 <div class="col-auto text-end d-flex align-items-center justify-content-end">
-                    <div class="notification-time"><?php echo date('M d Y, h:i A', strtotime($notif['date_sent'])); ?></div>
+                    <div><?php echo date('M d Y, h:i A', strtotime($notif['date_sent'])); ?></div>
                 </div>
             </div>
         </div>
