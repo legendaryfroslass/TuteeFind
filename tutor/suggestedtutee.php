@@ -419,12 +419,12 @@ if (isset($_POST['send_message'])) {
             </div>
         </div>
         <div class="container-lg px-3">
-            <form id="filter-form" action="" class="career-form headings d-flex justify-content-start mb-2" method="get">
-                            <div class="row me-1 my-1">
-                                <div class="col-12 ">
-                                    <div class="select-container">
-                                    <select class="custom-select" id="barangay" name="barangay" onchange="submitForm()">
-                                        <option value="" disabled selected hidden>All Barangay</option>
+            <form id="filter-form" action="" class="career-form headings d-flex justify-content-between mb-2 align-items-center" method="get">
+                <div class="row me-1 my-1 ">
+                    <div class="col-12">
+                        <div class="select-container">
+                            <select class="custom-select" id="barangay" name="barangay" onchange="submitForm()">
+                                <option value="" disabled selected hidden>All Barangay</option>
                                         <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Arkong Bato') echo 'selected'; ?> value="Arkong Bato">Arkong Bato</option>
                                         <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Bagbaguin') echo 'selected'; ?> value="Bagbaguin">Bagbaguin</option>
                                         <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Balangkas') echo 'selected'; ?> value="Balangkas">Balangkas</option>
@@ -462,6 +462,7 @@ if (isset($_POST['send_message'])) {
                                     </div>
                                 </div>
                             </div>
+                            <!-- Status Filter (in the middle) -->
                             <div class="row my-1">
                                 <div class="col-12">
                                     <div class="select-container">
@@ -475,16 +476,18 @@ if (isset($_POST['send_message'])) {
                                     </div>
                                 </div>
                             </div>
-                            <div class="row my-1">
+                            
+                            <!-- Search Filter (on the right) -->
+                            <div class="row my-1 ms-auto">
                                 <div class="col-12">
                                     <div class="input-container d-flex">
-                                        <input type="text" class="form-control" id="search" name="search" placeholder="Search Anything" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                                        <input type="text" class="form-control" style="background-color: white; color: black;" id="search" name="search" placeholder="Search Anything" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                                         <button type="submit" class="bx bx-search icon btn btn-primary ms-2"></button>
                                     </div>
                                 </div>
                             </div>
                         </form>
-        </div>
+                    </div>
 
         <!--Results-->
         <div class="container-lg px-3">
@@ -614,13 +617,42 @@ if (isset($_POST['send_message'])) {
             </li>
         <?php endif; ?>
 
-        <?php for ($page = 1; $page <= $total_pages; $page++): ?>
+        <!-- Display first page -->
+        <li class="page-item <?php echo $current_page == 1 ? 'active' : ''; ?>">
+            <a class="page-link" href="?page=1&barangay=<?php echo isset($_GET['barangay']) ? $_GET['barangay'] : ''; ?>&status=<?php echo isset($_GET['status']) ? $_GET['status'] : ''; ?>&search=<?php echo isset($_GET['search']) ? urlencode($_GET['search']) : ''; ?>">1</a>
+        </li>
+
+        <!-- Show ellipsis if there are pages skipped before current page -->
+        <?php if ($current_page > 4): ?>
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+        <?php endif; ?>
+
+        <!-- Show pages around the current page -->
+        <?php for ($page = max(2, $current_page - 2); $page <= min($total_pages - 1, $current_page + 2); $page++): ?>
             <li class="page-item <?php echo $page == $current_page ? 'active' : ''; ?>">
                 <a class="page-link" href="?page=<?php echo $page; ?>&barangay=<?php echo isset($_GET['barangay']) ? $_GET['barangay'] : ''; ?>&status=<?php echo isset($_GET['status']) ? $_GET['status'] : ''; ?>&search=<?php echo isset($_GET['search']) ? urlencode($_GET['search']) : ''; ?>">
                     <?php echo $page; ?>
                 </a>
             </li>
         <?php endfor; ?>
+
+        <!-- Show ellipsis if there are pages skipped after current page -->
+        <?php if ($current_page < $total_pages - 3): ?>
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+        <?php endif; ?>
+
+        <!-- Display last page -->
+        <?php if ($total_pages > 1): ?>
+            <li class="page-item <?php echo $current_page == $total_pages ? 'active' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $total_pages; ?>&barangay=<?php echo isset($_GET['barangay']) ? $_GET['barangay'] : ''; ?>&status=<?php echo isset($_GET['status']) ? $_GET['status'] : ''; ?>&search=<?php echo isset($_GET['search']) ? urlencode($_GET['search']) : ''; ?>">
+                    <?php echo $total_pages; ?>
+                </a>
+            </li>
+        <?php endif; ?>
 
         <?php if ($current_page < $total_pages): ?>
             <li class="page-item">
@@ -692,7 +724,7 @@ if (isset($_POST['send_message'])) {
     </div>
 </div>
 <!-- Profile Modal -->
-<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+<div class="modal fade modal-lg" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel " aria-hidden="true" >
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <!-- Modal Header -->
