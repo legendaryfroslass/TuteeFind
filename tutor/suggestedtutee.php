@@ -44,19 +44,27 @@ $filterQuery = "SELECT t.*, d.district,
     WHERE (r.status != 'accepted' OR r.status IS NULL)";
 
 // Apply filters if needed
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!empty($_POST['barangay'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    if (!empty($_GET['barangay'])) {
         $filterQuery .= " AND d.barangay = :filter_barangay";
-        $filterParams[':filter_barangay'] = $_POST['barangay'];
+        $filterParams[':filter_barangay'] = $_GET['barangay'];
     }
-    if (isset($_POST['status'])) {
-        if ($_POST['status'] === '') {
+    if (isset($_GET['status'])) {
+        if ($_GET['status'] === '') {
             $filterQuery .= " AND (r.status IS NULL OR r.status = '')"; // No pending request
         } else {
             $filterQuery .= " AND r.status = :filter_status";
-            $filterParams[':filter_status'] = $_POST['status'];
+            $filterParams[':filter_status'] = $_GET['status'];
         }
     }
+
+    // Apply search filter on multiple fields (firstname, lastname, barangay)
+    if (!empty($_GET['search'])) {
+        $searchTerm = "%" . $_GET['search'] . "%";
+        $filterQuery .= " AND (t.firstname LIKE :search_term OR t.lastname LIKE :search_term OR d.barangay LIKE :search_term)";
+        $filterParams[':search_term'] = $searchTerm;
+    }
+
 }
 
 // Add sorting
@@ -74,6 +82,16 @@ foreach ($filterParams as $key => &$value) {
 
 $tuteeStmt->execute();
 $tutees = $tuteeStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// This is for the pagination of tutee requests
+$items_per_page = 5;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$total_items = count($tutees);
+$total_pages = ceil($total_items / $items_per_page);
+$offset = ($current_page - 1) * $items_per_page;
+
+// Apply filters again for the query after pagination offset
+$current_items = array_slice($tutees, $offset, $items_per_page);
 
 
 if (isset($_POST['cancel_request'])) {
@@ -243,14 +261,7 @@ if (isset($_POST['send_request'])) {
     }
 }
 
-// This is for the pagination of tutee requests
-$items_per_page = 5;
-$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$total_items = count($tutees);
-$total_pages = ceil($total_items / $items_per_page);
-$offset = ($current_page - 1) * $items_per_page;
 
-$current_items = array_slice($tutees, $offset, $items_per_page);
 // Fetch unread notifications count for the current tutor
 $unreadNotifQuery = $user_login->runQuery("SELECT COUNT(*) AS unread_count FROM notifications WHERE receiver_id = :tutor_id AND sent_for = 'tutor' AND status = 'unread'");
 $unreadNotifQuery->bindParam(":tutor_id", $tutor_id);
@@ -408,45 +419,45 @@ if (isset($_POST['send_message'])) {
             </div>
         </div>
         <div class="container-lg px-3">
-            <form id="filter-form" action="" class="career-form headings d-flex justify-content-start mb-2" method="post">
+            <form id="filter-form" action="" class="career-form headings d-flex justify-content-start mb-2" method="get">
                             <div class="row me-1 my-1">
                                 <div class="col-12 ">
                                     <div class="select-container">
                                     <select class="custom-select" id="barangay" name="barangay" onchange="submitForm()">
                                         <option value="" disabled selected hidden>All Barangay</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Arkong Bato') echo 'selected'; ?> value="Arkong Bato">Arkong Bato</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Bagbaguin') echo 'selected'; ?> value="Bagbaguin">Bagbaguin</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Balangkas') echo 'selected'; ?> value="Balangkas">Balangkas</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Bignay') echo 'selected'; ?> value="Bignay">Bignay</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Bisig') echo 'selected'; ?> value="Bisig">Bisig</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Canumay East') echo 'selected'; ?> value="Canumay East">Canumay East</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Canumay West') echo 'selected'; ?> value="Canumay West">Canumay West</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Coloong') echo 'selected'; ?> value="Coloong">Coloong</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Dalandanan') echo 'selected'; ?> value="Dalandanan">Dalandanan</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Gen. T. de Leon') echo 'selected'; ?> value="Gen. T. de Leon">Gen. T. de Leon</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Isla') echo 'selected'; ?> value="Isla">Isla</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Karuhatan') echo 'selected'; ?> value="Karuhatan">Karuhatan</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Lawang Bato') echo 'selected'; ?> value="Lawang Bato">Lawang Bato</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Lingunan') echo 'selected'; ?> value="Lingunan">Lingunan</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Mabolo') echo 'selected'; ?> value="Mabolo">Mabolo</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Malanday') echo 'selected'; ?> value="Malanday">Malanday</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Malinta') echo 'selected'; ?> value="Malinta">Malinta</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Mapulang Lupa') echo 'selected'; ?> value="Mapulang Lupa">Mapulang Lupa</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Marulas') echo 'selected'; ?> value="Marulas">Marulas</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Maysan') echo 'selected'; ?> value="Maysan">Maysan</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Palasan') echo 'selected'; ?> value="Palasan">Palasan</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Parada') echo 'selected'; ?> value="Parada">Parada</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Pariancillo Villa') echo 'selected'; ?> value="Pariancillo Villa">Pariancillo Villa</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Paso de Blas') echo 'selected'; ?> value="Paso de Blas">Paso de Blas</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Pasolo') echo 'selected'; ?> value="Pasolo">Pasolo</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Poblacion') echo 'selected'; ?> value="Poblacion">Poblacion</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Polo') echo 'selected'; ?> value="Polo">Polo</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Punturin') echo 'selected'; ?> value="Punturin">Punturin</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Rincon') echo 'selected'; ?> value="Rincon">Rincon</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Tagalag') echo 'selected'; ?> value="Tagalag">Tagalag</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Ugong') echo 'selected'; ?> value="Ugong">Ugong</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Viente Reales') echo 'selected'; ?> value="Viente Reales">Viente Reales</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'WawangPulo') echo 'selected'; ?> value="WawangPulo">Wawang Pulo</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Arkong Bato') echo 'selected'; ?> value="Arkong Bato">Arkong Bato</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Bagbaguin') echo 'selected'; ?> value="Bagbaguin">Bagbaguin</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Balangkas') echo 'selected'; ?> value="Balangkas">Balangkas</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Bignay') echo 'selected'; ?> value="Bignay">Bignay</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Bisig') echo 'selected'; ?> value="Bisig">Bisig</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Canumay East') echo 'selected'; ?> value="Canumay East">Canumay East</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Canumay West') echo 'selected'; ?> value="Canumay West">Canumay West</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Coloong') echo 'selected'; ?> value="Coloong">Coloong</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Dalandanan') echo 'selected'; ?> value="Dalandanan">Dalandanan</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Gen. T. de Leon') echo 'selected'; ?> value="Gen. T. de Leon">Gen. T. de Leon</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Isla') echo 'selected'; ?> value="Isla">Isla</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Karuhatan') echo 'selected'; ?> value="Karuhatan">Karuhatan</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Lawang Bato') echo 'selected'; ?> value="Lawang Bato">Lawang Bato</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Lingunan') echo 'selected'; ?> value="Lingunan">Lingunan</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Mabolo') echo 'selected'; ?> value="Mabolo">Mabolo</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Malanday') echo 'selected'; ?> value="Malanday">Malanday</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Malinta') echo 'selected'; ?> value="Malinta">Malinta</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Mapulang Lupa') echo 'selected'; ?> value="Mapulang Lupa">Mapulang Lupa</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Marulas') echo 'selected'; ?> value="Marulas">Marulas</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Maysan') echo 'selected'; ?> value="Maysan">Maysan</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Palasan') echo 'selected'; ?> value="Palasan">Palasan</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Parada') echo 'selected'; ?> value="Parada">Parada</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Pariancillo Villa') echo 'selected'; ?> value="Pariancillo Villa">Pariancillo Villa</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Paso de Blas') echo 'selected'; ?> value="Paso de Blas">Paso de Blas</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Pasolo') echo 'selected'; ?> value="Pasolo">Pasolo</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Poblacion') echo 'selected'; ?> value="Poblacion">Poblacion</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Polo') echo 'selected'; ?> value="Polo">Polo</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Punturin') echo 'selected'; ?> value="Punturin">Punturin</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Rincon') echo 'selected'; ?> value="Rincon">Rincon</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Tagalag') echo 'selected'; ?> value="Tagalag">Tagalag</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Ugong') echo 'selected'; ?> value="Ugong">Ugong</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'Viente Reales') echo 'selected'; ?> value="Viente Reales">Viente Reales</option>
+                                        <option <?php if(isset($_GET['barangay']) && $_GET['barangay'] == 'WawangPulo') echo 'selected'; ?> value="WawangPulo">Wawang Pulo</option>
                                     </select>
                                     </div>
                                 </div>
@@ -456,11 +467,19 @@ if (isset($_POST['send_message'])) {
                                     <div class="select-container">
                                         <select class="custom-select" id="status" name="status" onchange="submitForm()">
                                             <option value="" disabled selected hidden>Status</option>
-                                            <option <?php if(isset($_POST['status']) && $_POST['status'] == '') echo 'selected'; ?> value="">No Pending Request</option>
-                                            <option <?php if(isset($_POST['status']) && $_POST['status'] == 'pending') echo 'selected'; ?> value="pending">Pending</option>
-                                            <option <?php if(isset($_POST['status']) && $_POST['status'] == 'rejected') echo 'selected'; ?> value="rejected">Rejected</option>
-                                            <option <?php if(isset($_POST['status']) && $_POST['status'] == 'removed') echo 'selected'; ?> value="removed">Removed</option>
+                                            <option <?php if(isset($_GET['status']) && $_GET['status'] == '') echo 'selected'; ?> value="">No Pending Request</option>
+                                            <option <?php if(isset($_GET['status']) && $_GET['status'] == 'pending') echo 'selected'; ?> value="pending">Pending</option>
+                                            <option <?php if(isset($_GET['status']) && $_GET['status'] == 'rejected') echo 'selected'; ?> value="rejected">Rejected</option>
+                                            <option <?php if(isset($_GET['status']) && $_GET['status'] == 'removed') echo 'selected'; ?> value="removed">Removed</option>
                                         </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-12">
+                                    <div class="input-container d-flex">
+                                        <input type="text" class="form-control" id="search" name="search" placeholder="Search Anything" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                                        <button type="submit" class="bx bx-search icon btn btn-primary ms-2"></button>
                                     </div>
                                 </div>
                             </div>
@@ -584,31 +603,34 @@ if (isset($_POST['send_message'])) {
                                     </table>
                                 </div>
 
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination justify-content-center">
-                                        <?php if ($current_page > 1): ?>
-                                            <li class="page-item">
-                                                <a class="page-link" href="?page=<?php echo $current_page - 1; ?>&barangay=<?php echo isset($_POST['barangay']) ? $_POST['barangay'] : ''; ?>&status=<?php echo isset($_POST['status']) ? $_POST['status'] : ''; ?>" aria-label="Previous">
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
+<!-- Pagination links -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <?php if ($current_page > 1): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?php echo $current_page - 1; ?>&barangay=<?php echo isset($_GET['barangay']) ? $_GET['barangay'] : ''; ?>&status=<?php echo isset($_GET['status']) ? $_GET['status'] : ''; ?>&search=<?php echo isset($_GET['search']) ? urlencode($_GET['search']) : ''; ?>" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        <?php endif; ?>
 
-                                        <?php for ($page = 1; $page <= $total_pages; $page++): ?>
-                                            <li class="page-item <?php echo $page == $current_page ? 'active' : ''; ?>">
-                                                <a class="page-link" href="?page=<?php echo $page; ?>&barangay=<?php echo isset($_POST['barangay']) ? $_POST['barangay'] : ''; ?>&status=<?php echo isset($_POST['status']) ? $_POST['status'] : ''; ?>"><?php echo $page; ?></a>
-                                            </li>
-                                        <?php endfor; ?>
+        <?php for ($page = 1; $page <= $total_pages; $page++): ?>
+            <li class="page-item <?php echo $page == $current_page ? 'active' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $page; ?>&barangay=<?php echo isset($_GET['barangay']) ? $_GET['barangay'] : ''; ?>&status=<?php echo isset($_GET['status']) ? $_GET['status'] : ''; ?>&search=<?php echo isset($_GET['search']) ? urlencode($_GET['search']) : ''; ?>">
+                    <?php echo $page; ?>
+                </a>
+            </li>
+        <?php endfor; ?>
 
-                                        <?php if ($current_page < $total_pages): ?>
-                                            <li class="page-item">
-                                                <a class="page-link" href="?page=<?php echo $current_page + 1; ?>&barangay=<?php echo isset($_POST['barangay']) ? $_POST['barangay'] : ''; ?>&status=<?php echo isset($_POST['status']) ? $_POST['status'] : ''; ?>" aria-label="Next">
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
-                                    </ul>
-                                </nav>
+        <?php if ($current_page < $total_pages): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?php echo $current_page + 1; ?>&barangay=<?php echo isset($_GET['barangay']) ? $_GET['barangay'] : ''; ?>&status=<?php echo isset($_GET['status']) ? $_GET['status'] : ''; ?>&search=<?php echo isset($_GET['search']) ? urlencode($_GET['search']) : ''; ?>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        <?php endif; ?>
+    </ul>
+</nav>
                             </div>
                         </div>
                     </div>
