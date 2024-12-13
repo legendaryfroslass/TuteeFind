@@ -22,6 +22,16 @@ if (isset($_POST['btn-login'])) {
         $error_message = "An unknown error occurred. Please try again.";
     }
 }
+
+// Check if login failed via URL parameter
+if (isset($_GET['error']) || isset($_GET['notAvail'])) {
+    echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var invalidLoginModal = new bootstrap.Modal(document.getElementById("invalidLogin"));
+                invalidLoginModal.show();
+            });
+            </script>';
+}
 ?>
 
 <!DOCTYPE html>
@@ -86,6 +96,27 @@ if (isset($_POST['btn-login'])) {
             </div>
         </div>
     </div>
+
+  <!-- Invalid login credentials -->
+  <div class="modal fade" id="invalidLogin" tabindex="-1" aria-labelledby="invalidLogin" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content m-3">
+                    <div class="modal-body" style="text-align: center;">
+                        <div class="icon-wrapper m-3">
+                            <div class="m-3">
+                                <i class="bi bi-exclamation-triangle" id="warningAlertIcon"></i>
+                            </div>
+                        </div>
+                        <h5>Oops! Something Went Wrong</h5>
+                        <p class="m-3">Incorrect Email or Password</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Dismiss</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
     <script >
