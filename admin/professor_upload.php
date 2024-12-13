@@ -17,10 +17,30 @@ if (isset($_POST['upload'])) {
         // Validate file type and extension
         if (in_array($fileType, $allowedTypes) && in_array($fileExtension, $allowedExtensions)) {
             try {
-                // Load PhpSpreadsheet
-                require __DIR__ . '/../vendor/autoload.php';
+                require __DIR__ . '../../vendor/autoload.php';
                 $spreadsheet = IOFactory::load($file);
                 $sheet = $spreadsheet->getActiveSheet();
+
+                // Expected headers
+                $expectedHeaders = ['last name', 'first name', 'middle name', 'age', 'faculty id', 'email address', 'password', 'username'];
+
+                // Extract headers from the Excel file
+                $fileHeaders = [];
+                foreach ($sheet->getRowIterator(1, 1) as $headerRow) {
+                    $cells = $headerRow->getCellIterator();
+                    $cells->setIterateOnlyExistingCells(false);
+                    foreach ($cells as $cell) {
+                        $fileHeaders[] = strtolower(trim($cell->getValue()));
+                    }
+                }
+
+                // Remove empty headers and compare
+                $fileHeaders = array_filter($fileHeaders);
+                if ($fileHeaders !== $expectedHeaders) {
+                    $_SESSION['error'] = 'Invalid file format. Please use the required template.';
+                    header('location: professor');
+                    exit;
+                }
 
                 // SQL statements for checking and inserting/updating
                 $check_sql = "SELECT * FROM professor WHERE faculty_id = ?";
@@ -87,6 +107,6 @@ if (isset($_POST['upload'])) {
         $_SESSION['error'] = 'Error uploading file. Please try again.';
     }
 
-    header('location: professor.php');
+    header('location: professor');
 }
 ?>
