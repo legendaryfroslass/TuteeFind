@@ -172,7 +172,7 @@
                     <div class="box-header with-border">
                         <h4 class="box-title"><strong>Tutor</strong></h4>
                     </div>
-                    <div class="box-body">
+                    <div class="box-body" style="max-height: 350px; overflow-y: auto;">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -199,7 +199,7 @@
                     <div class="box-header with-border">
                         <h4 class="box-title"><strong>Tutee</strong></h4>
                     </div>
-                    <div class="box-body">
+                    <div class="box-body" style="max-height: 350px; overflow-y: auto;">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
