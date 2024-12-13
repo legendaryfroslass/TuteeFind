@@ -604,7 +604,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                     <li class="nav-link" data-bs-placement="right" title="Messages">
                         <a href="../tutor/message">
                             <div style="position: relative;">
-                                <i class='bx bxs-inbox icon'></i>
+                                <i class='bx bx-envelope icon'></i>
                                 <span id="message-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
                                     <?php echo $unreadMessageCount; ?>
                                 </span> <!-- Notification counter -->
@@ -632,7 +632,7 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
                     <li class="nav-link" data-bs-placement="right" title="Current Tutee">
                         <a href="../tutor/currenttutor">
                             <i class='bx bx-user icon'></i>
-                            <span class="text nav-text">Tutors</span>
+                            <span class="text nav-text">Current Tutee</span>
                         </a>
                     </li>
                     <li class="nav-link" data-bs-placement="right" title="Settings">

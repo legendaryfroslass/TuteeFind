@@ -335,7 +335,7 @@ if (isset($_POST['send_message'])) {
                     <li class="nav-link">
                         <a href="../tutor/message" data-bs-placement="right" title="Messages">
                             <div style="position: relative;">
-                                <i class='bx bxs-inbox icon'></i>
+                                <i class='bx bx-envelope icon'></i>
                                 <span id="message-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
                                     <?php echo $unreadMessageCount; ?>
                                 </span> <!-- Notification counter -->
@@ -363,7 +363,7 @@ if (isset($_POST['send_message'])) {
                     <li class="nav-link" data-bs-placement="right" title="Current Tutee">
                         <a href="../tutor/currenttutor">
                             <i class='bx bx-user icon'></i>
-                            <span class="text nav-text">Tutors</span>
+                            <span class="text nav-text">Current Tutee</span>
                         </a>
                     </li>
                     <li class="nav-link">
