@@ -19,9 +19,34 @@ if (isset($_POST['upload'])) {
         if (in_array($fileType, $allowedTypes) && in_array($fileExtension, $allowedExtensions)) {
             try {
                 // Load Excel file using PhpSpreadsheet
-                require __DIR__ . '/../vendor/autoload.php';
+                require __DIR__ . '../../vendor/autoload.php';
                 $spreadsheet = IOFactory::load($file);
                 $sheet = $spreadsheet->getActiveSheet();
+
+                // Expected headers
+                $expectedHeaders = [
+                    'Firstname', 'Lastname', 'Age', 'Sex', 'Number', 'Barangay',
+                    'Student ID', 'Course', 'Year & Section', 'Professor Faculty ID',
+                    'fblink', 'Email Address', 'Password', 'Bio'
+                ];
+
+                // Extract headers from the file
+                $fileHeaders = [];
+                foreach ($sheet->getRowIterator(1, 1) as $headerRow) {
+                    $cells = $headerRow->getCellIterator();
+                    $cells->setIterateOnlyExistingCells(false); // Include all cells in the row
+                    foreach ($cells as $cell) {
+                        $fileHeaders[] = trim($cell->getValue());
+                    }
+                }
+
+                // Remove empty headers and compare
+                $fileHeaders = array_filter($fileHeaders);
+                if ($fileHeaders !== $expectedHeaders) {
+                    $_SESSION['error'] = 'Invalid file format. Please use the required template.';
+                    header('location: tutor');
+                    exit;
+                }
 
                 // Prepare the SQL statement for inserting or updating records
                 $sql = "INSERT INTO tutor (firstname, lastname, age, sex, number, barangay, student_id, course, year_section, professor, fblink, emailaddress, password, bio) 
@@ -43,10 +68,11 @@ if (isset($_POST['upload'])) {
                         bio = VALUES(bio)";
                 $stmt = $conn->prepare($sql);
 
-                // Loop through rows (assuming the first row contains column headers)
+                // Loop through rows (starting from the second row for data)
                 foreach ($sheet->getRowIterator(2) as $row) {
                     $data = $row->getCellIterator();
-                    $values = array();
+                    $data->setIterateOnlyExistingCells(false);
+                    $values = [];
                     foreach ($data as $cell) {
                         $values[] = $cell->getValue();
                     }
@@ -72,23 +98,24 @@ if (isset($_POST['upload'])) {
 
                     if (!$stmt->execute()) {
                         $_SESSION['error'] = 'Error inserting data: ' . $stmt->error;
-                        header('location: tutor.php');
+                        header('location: tutor');
                         exit();
                     }
                 }
+
                 $_SESSION['success'] = 'Data imported successfully';
-                header('location: tutor.php');
+                header('location: tutor');
             } catch (Exception $e) {
                 $_SESSION['error'] = 'Error reading Excel file: ' . $e->getMessage();
-                header('location: tutor.php');
+                header('location: tutor');
             }
         } else {
             $_SESSION['error'] = 'Invalid file type. Please upload an Excel file (.xls or .xlsx).';
-            header('location: tutor.php');
+            header('location: tutor');
         }
     } else {
         $_SESSION['error'] = 'Error uploading file. Please try again.';
-        header('location: tutor.php');
+        header('location: tutor');
     }
 }
 ?>
