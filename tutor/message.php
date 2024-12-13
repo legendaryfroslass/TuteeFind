@@ -237,7 +237,7 @@ if (isset($_POST['send_message'])) {
         <div class="card-header">
             <h5>Inbox</h5>
         </div>
-        <div class="card-body p-0">
+        <div class="card-body p-0" style="max-height: 510px; overflow-y: auto;">
             <ul class="list-group">
                 <?php foreach ($messages as $message): ?>
                     <li class="list-group-item d-flex align-items-center" onclick="showMessages('<?php echo $message['tutee_id']; ?>')">

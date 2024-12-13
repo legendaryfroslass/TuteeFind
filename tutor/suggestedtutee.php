@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Add sorting
-$filterQuery .= " ORDER BY match_count DESC, d.district ASC";
+$filterQuery .= " ORDER BY d.district ASC";
 
 // Prepare and execute the query
 $tuteeStmt = $user_login->runQuery($filterQuery);
@@ -419,11 +419,11 @@ if (isset($_POST['send_message'])) {
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Balangkas') echo 'selected'; ?> value="Balangkas">Balangkas</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Bignay') echo 'selected'; ?> value="Bignay">Bignay</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Bisig') echo 'selected'; ?> value="Bisig">Bisig</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'CanumayEast') echo 'selected'; ?> value="CanumayEast">Canumay East</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'CanumayWest') echo 'selected'; ?> value="CanumayWest">Canumay West</option>
+                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Canumay East') echo 'selected'; ?> value="Canumay East">Canumay East</option>
+                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Canumay West') echo 'selected'; ?> value="Canumay West">Canumay West</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Coloong') echo 'selected'; ?> value="Coloong">Coloong</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Dalandanan') echo 'selected'; ?> value="Dalandanan">Dalandanan</option>
-                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'GenT') echo 'selected'; ?> value="GenT">General T. De Leon</option>
+                                        <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Gen. T. de Leon') echo 'selected'; ?> value="Gen. T. de Leon">Gen. T. de Leon</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Isla') echo 'selected'; ?> value="Isla">Isla</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Karuhatan') echo 'selected'; ?> value="Karuhatan">Karuhatan</option>
                                         <option <?php if(isset($_POST['barangay']) && $_POST['barangay'] == 'Lawang Bato') echo 'selected'; ?> value="Lawang Bato">Lawang Bato</option>
@@ -588,7 +588,7 @@ if (isset($_POST['send_message'])) {
                                     <ul class="pagination justify-content-center">
                                         <?php if ($current_page > 1): ?>
                                             <li class="page-item">
-                                                <a class="page-link" href="?page=<?php echo $current_page - 1; ?>" aria-label="Previous">
+                                                <a class="page-link" href="?page=<?php echo $current_page - 1; ?>&barangay=<?php echo isset($_POST['barangay']) ? $_POST['barangay'] : ''; ?>&status=<?php echo isset($_POST['status']) ? $_POST['status'] : ''; ?>" aria-label="Previous">
                                                     <span aria-hidden="true">&laquo;</span>
                                                 </a>
                                             </li>
@@ -596,13 +596,13 @@ if (isset($_POST['send_message'])) {
 
                                         <?php for ($page = 1; $page <= $total_pages; $page++): ?>
                                             <li class="page-item <?php echo $page == $current_page ? 'active' : ''; ?>">
-                                                <a class="page-link" href="?page=<?php echo $page; ?>"><?php echo $page; ?></a>
+                                                <a class="page-link" href="?page=<?php echo $page; ?>&barangay=<?php echo isset($_POST['barangay']) ? $_POST['barangay'] : ''; ?>&status=<?php echo isset($_POST['status']) ? $_POST['status'] : ''; ?>"><?php echo $page; ?></a>
                                             </li>
                                         <?php endfor; ?>
 
                                         <?php if ($current_page < $total_pages): ?>
                                             <li class="page-item">
-                                                <a class="page-link" href="?page=<?php echo $current_page + 1; ?>" aria-label="Next">
+                                                <a class="page-link" href="?page=<?php echo $current_page + 1; ?>&barangay=<?php echo isset($_POST['barangay']) ? $_POST['barangay'] : ''; ?>&status=<?php echo isset($_POST['status']) ? $_POST['status'] : ''; ?>" aria-label="Next">
                                                     <span aria-hidden="true">&raquo;</span>
                                                 </a>
                                             </li>
