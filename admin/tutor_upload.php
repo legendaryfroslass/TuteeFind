@@ -77,6 +77,10 @@ if (isset($_POST['upload'])) {
                         $values[] = $cell->getValue();
                     }
 
+                    // Skip empty rows
+                    if (array_filter($values) === []) {
+                        continue; // Move to the next iteration if the row is empty
+                    }
                     // Extract data from each row
                     $firstname = $values[0];
                     $lastname = $values[1];
