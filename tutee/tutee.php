@@ -110,7 +110,11 @@ function acceptTutorRequest($request_id, $tutee_id) {
 
     // Check if the tutee has already accepted a tutor
     if (hasAcceptedTutor($tutee_id)) {
-        echo "<script>alert('You have already accepted a tutor. You can\\'t accept more tutors.');</script>";
+        echo "<script>
+                $(document).ready(function() {
+                    $('#tuteeLimitModal').modal('show');
+                });
+              </script>";
         return false;
     }
 
@@ -121,7 +125,11 @@ function acceptTutorRequest($request_id, $tutee_id) {
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$result) {
-            echo "<script>alert('Invalid request. Tutor not found.');</script>";
+            echo "<script>
+                    $(document).ready(function() {
+                        $('#invalidRequestModal').modal('show');
+                    });
+                  </script>";
             return false;
         }
         $tutor_id = $result['tutor_id'];
@@ -132,7 +140,11 @@ function acceptTutorRequest($request_id, $tutee_id) {
         $stmt->execute();
         $count = $stmt->fetch(PDO::FETCH_ASSOC)['tutee_count'];
         if ($count >= 2) {
-            echo "<script>alert('This tutor already has 2 tutees. They cannot accept more.');</script>";
+            echo "<script>
+                    $(document).ready(function() {
+                        $('#tutorLimitModal').modal('show');
+                    });
+                  </script>";
             return false;
         }
 
@@ -140,6 +152,13 @@ function acceptTutorRequest($request_id, $tutee_id) {
         $stmt = $user_login->runQuery("UPDATE requests SET status = 'accepted' WHERE request_id = :request_id");
         $stmt->bindParam(":request_id", $request_id);
         $stmt->execute();
+
+        // Remove all pending requests for this tutor if they now have 2 tutees
+        if ($count + 1 >= 2) {
+            $stmt = $user_login->runQuery("DELETE FROM requests WHERE tutor_id = :tutor_id AND status = 'pending'");
+            $stmt->bindParam(":tutor_id", $tutor_id);
+            $stmt->execute();
+        }
 
         // Fetch tutor details
         $stmt = $user_login->runQuery("SELECT tutor.id, tutor.emailaddress, tutor.firstname AS tutor_firstname, tutor.lastname AS tutor_lastname FROM requests JOIN tutor ON requests.tutor_id = tutor.id WHERE request_id = :request_id");
@@ -174,7 +193,11 @@ function acceptTutorRequest($request_id, $tutee_id) {
 
         return true;
     } catch (PDOException $ex) {
-        echo "<script>alert('Error accepting tutor request: ".$ex->getMessage()."');</script>";
+        echo "<script>
+                $(document).ready(function() {
+                    $('#errorModal').modal('show');
+                });
+              </script>";
         return false;
     }
 }
@@ -821,6 +844,67 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
         </div>
+
+        <!-- Tutee Limit Modal -->
+<div class="modal fade" id="tuteeLimitModal" tabindex="-1" aria-labelledby="tuteeLimitLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tuteeLimitLabel">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                You have already accepted a tutor. You can't accept more tutors.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tutor Limit Modal -->
+<div class="modal fade" id="tutorLimitModal" tabindex="-1" aria-labelledby="tutorLimitLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tutorLimitLabel">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                This tutor already has 2 tutees. They cannot accept more.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invalid Request Modal -->
+<div class="modal fade" id="invalidRequestModal" tabindex="-1" aria-labelledby="invalidRequestLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="invalidRequestLabel">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Invalid request. Tutor not found.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorLabel">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                An error occurred while processing your request. Please try again later.
+            </div>
+        </div>
+    </div>
+</div>
+
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
