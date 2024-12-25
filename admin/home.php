@@ -11,14 +11,30 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>
-        Dashboard
-      </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Dashboard</li>
-      </ol>
-    </section>
+    <section style="position: relative;">
+  <h1 style="font-size: 2em; display: inline;"><strong>Dashboard</strong></h1>
+  <h1 style="font-size: 2em; float: right; margin: 0;">
+    <strong>As of today:</strong> 
+    <span id="currentDate" style="color: red;"></span>
+  </h1>
+</section>
+
+<script>
+  // Get the current date
+  const today = new Date();
+
+  // Format the date as MM/DD/YYYY
+  const formattedDate = today.toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+  });
+
+  // Display the date in the span
+  document.getElementById('currentDate').textContent = formattedDate;
+</script>
+
+
 
     <!-- Main content -->
     <section class="content">
@@ -61,7 +77,7 @@
                 echo "<h3>".$row['count']."</h3>";
               ?>
 
-              <p>No. of Matches</p>
+              <p>No. of Pairs</p>
             </div>
             <div class="icon">
               <i class="fa fa-code-fork"></i>
@@ -149,87 +165,114 @@
 </div>
 
 
-        <?php
-            // Select distinct barangays for tutors and order them by total tutors in descending order
-            $sqlTutorBarangays = "SELECT barangay, COUNT(*) AS total_tutors 
-                                  FROM tutor 
-                                  GROUP BY barangay 
-                                  ORDER BY total_tutors DESC";
-            $queryTutorBarangays = $conn->query($sqlTutorBarangays);
+<?php
+// Select distinct barangays for tutors and order them by total tutors in descending order
+$sqlTutorBarangays = "SELECT barangay, COUNT(*) AS total_tutors 
+                      FROM tutor 
+                      GROUP BY barangay 
+                      ORDER BY total_tutors DESC";
+$queryTutorBarangays = $conn->query($sqlTutorBarangays);
 
-            // Select distinct barangays for tutees and order them by total tutees in descending order
-            $sqlTuteeBarangays = "SELECT barangay, COUNT(*) AS total_tutees 
-                                  FROM tutee 
-                                  GROUP BY barangay 
-                                  ORDER BY total_tutees DESC";
-            $queryTuteeBarangays = $conn->query($sqlTuteeBarangays);
-        ?>
+// Select distinct barangays for tutees and order them by total tutees in descending order
+$sqlTuteeBarangays = "SELECT barangay, COUNT(*) AS total_tutees 
+                      FROM tutee 
+                      GROUP BY barangay 
+                      ORDER BY total_tutees DESC";
+$queryTuteeBarangays = $conn->query($sqlTuteeBarangays);
+?>
 
-        <!-- Display total barangays for tutors -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="box box-solid">
-                    <div class="box-header with-border">
-                        <h4 class="box-title"><strong>Tutor</strong></h4>
-                    </div>
-                    <div class="box-body" style="max-height: 350px; overflow-y: auto;">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Barangay</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                    while($row = $queryTutorBarangays->fetch_assoc()) {
-                                        echo "<tr>";
-                                        echo "<td>".$row['barangay']."</td>";
-                                        echo "<td>".$row['total_tutors']."</td>";
-                                        echo "</tr>";
-                                    }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Barangay Data Charts</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h4 class="box-title"><strong>Tutor Barangays</strong></h4>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="box box-solid">
-                    <div class="box-header with-border">
-                        <h4 class="box-title"><strong>Tutee</strong></h4>
-                    </div>
-                    <div class="box-body" style="max-height: 350px; overflow-y: auto;">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Barangay</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                    while($row = $queryTuteeBarangays->fetch_assoc()) {
-                                        echo "<tr>";
-                                        echo "<td>".$row['barangay']."</td>";
-                                        echo "<td>".$row['total_tutees']."</td>";
-                                        echo "</tr>";
-                                    }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="box-body">
+                    <canvas id="tutorChart" style="max-height: 350px;"></canvas>
                 </div>
             </div>
         </div>
-
-      </section>
-      <!-- right col -->
+        <div class="col-md-6">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h4 class="box-title"><strong>Tutee Barangays</strong></h4>
+                </div>
+                <div class="box-body">
+                    <canvas id="tuteeChart" style="max-height: 350px;"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<!-- ./wrapper -->
 
+<script>
+    // Tutor Chart
+    const tutorData = <?php echo json_encode($queryTutorBarangays->fetch_all(MYSQLI_ASSOC)); ?>;
+    const tutorLabels = tutorData.map(item => item.barangay);
+    const tutorValues = tutorData.map(item => item.total_tutors);
+
+    const tutorChartContext = document.getElementById('tutorChart').getContext('2d');
+    new Chart(tutorChartContext, {
+        type: 'bar',
+        data: {
+            labels: tutorLabels,
+            datasets: [{
+                label: 'Total Tutors',
+                data: tutorValues,
+                backgroundColor: 'rgba(243, 156, 17, 0.6)',  // Soft Yellow
+                borderColor: 'rgba(243, 156, 17, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Tutee Chart
+    const tuteeData = <?php echo json_encode($queryTuteeBarangays->fetch_all(MYSQLI_ASSOC)); ?>;
+    const tuteeLabels = tuteeData.map(item => item.barangay);
+    const tuteeValues = tuteeData.map(item => item.total_tutees);
+
+    const tuteeChartContext = document.getElementById('tuteeChart').getContext('2d');
+    new Chart(tuteeChartContext, {
+        type: 'bar',
+        data: {
+            labels: tuteeLabels,
+            datasets: [{
+                label: 'Total Tutees',
+                data: tuteeValues,
+                backgroundColor: 'rgba(221, 76, 57, 0.6)',  // Soft Red
+                borderColor: 'rgba(221, 76, 57, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 <?php include 'includes/scripts.php'; ?>
-
 </body>
 </html>
+
+

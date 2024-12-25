@@ -147,10 +147,10 @@ $total_pages = ceil($total_rows / $limit);
 
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>Matches</h1>
+      <h1>Pairs</h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Matches</li>
+        <li class="active">Pairs</li>
       </ol>
     </section>
 

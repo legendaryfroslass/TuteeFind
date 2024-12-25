@@ -47,7 +47,20 @@ $pdf->SetSubject('List of Tutors');
 
 // Add a page
 $pdf->AddPage();
+// Add university name, department, address, and logos at the top
+$pdf->SetFont('helvetica', 'B', 12);
+$pdf->Cell(0, 15, 'Pamantasan ng Lungsod ng Valenzuela', 0, 1, 'C'); // Center align the text
 
+$pdf->SetFont('helvetica', '', 10);
+$pdf->MultiCell(0, 5, 'Department of the National Service Training Program' . "\n" .
+'Student Center Building, Tongco Street, Barangay Maysan' . "\n" .
+'Valenzuela City, Metro Manila', 0, 'C', 0, 1, '', '', true);
+
+// Logo 1: ltslogo.png - placed on the left
+$pdf->Image('LoginBackground/plvlogo.png', 35, 20, 20, '', '', '', '', true, 300, '', false, false, 0, false, false, false);
+
+// Logo 2: plvlogo.png - placed on the right
+$pdf->Image('LoginBackground/ltslogo.png', 155, 20, 20, '', '', '', '', true, 300, '', false, false, 0, false, false, false);
 // Set font for title
 $pdf->SetFont('helvetica', 'B', 16);
 $pdf->Cell(0, 10, 'Tutor List', 0, 1, 'C');
@@ -84,7 +97,7 @@ $html = '
             <th>#</th>
             <th>First Name</th>
             <th>Last Name</th>
-            <th>Student ID</th>
+            <th>Tutor ID</th>
             <th>Course</th>
             <th>Year & Section</th>
         </tr>

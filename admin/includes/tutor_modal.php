@@ -206,6 +206,188 @@
     </div>
 </div>
 
+<!-- Add New Tutor Modal -->
+<div class="modal fade" id="addnewtutor">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title"><b>Add New Tutor</b></h4>
+      </div>
+      <div class="modal-body">
+        <!-- Tutor Information Form -->
+        <form id="addTutorForm" class="form-horizontal" method="POST" action="tutor_add.php">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">First Name</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter First Name" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Last Name</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter Last Name" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Age</label>
+            <div class="col-sm-9">
+              <input type="number" class="form-control" id="age" name="age" placeholder="Enter Age" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Sex</label>
+            <div class="col-sm-9">
+              <select class="form-control" id="sex" name="sex" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+  <label class="col-sm-3 control-label">Cellphone Number</label>
+  <div class="col-sm-9">
+    <input 
+      type="text" 
+      class="form-control" 
+      id="number" 
+      name="number" 
+      placeholder="09......" 
+      required 
+      maxlength="11" 
+      pattern="09[0-9]{9}" 
+      title="Please enter a valid 11-digit cellphone number starting with 09">
+  </div>
+</div>
+
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Barangay</label>
+            <div class="col-sm-9">
+            <select class="form-control" id="barangay" name="barangay">
+                <option disabled>Barangay</option>
+                <option class="option" value="Arkong Bato">Arkong Bato</option>
+                <option class="option" value="Bagbaguin">Bagbaguin</option>
+                <option class="option" value="Bignay">Bignay</option>
+                <option class="option" value="Bisig">Bisig</option>
+                <option class="option" value="Canumayn">Canumay</option>
+                <option class="option" value="Coloong">Coloong</option>
+                <option class="option" value="Dalandanan">Dalandanan</option>
+                <option class="option" value="Isla">Isla</option>
+                <option class="option" value="Karuhatan">Karuhatan</option>
+                <option class="option" value="Lawang Bato">Lawang Bato</option>
+                <option class="option" value="Lingunan">Lingunan</option>
+                <option class="option" value="Mabolo">Mabolo</option>
+                <option class="option" value="Malanday">Malanday</option>
+                <option class="option" value="Malinta">Malinta</option>
+                <option class="option" value="Mapulang Lupa">Mapulang Lupa</option>
+                <option class="option" value="Maysan">Maysan</option>
+                <option class="option" value="Palasan">Palasan</option>
+                <option class="option" value="Pariancillo Villa">Pariancillo Villa</option>
+                <option class="option" value="Pasolo">Pasolo</option>
+                <option class="option" value="Paso de Blas">Paso de Blas</option>
+                <option class="option" value="Poblacion">Poblacion</option>
+                <option class="option" value="Polo">Polo</option>
+                <option class="option" value="Punturin">Punturin</option>
+                <option class="option" value="Rincon">Rincon</option>
+                <option class="option" value="Tagalag">Tagalag</option>
+                <option class="option" value="Viente Reales">Viente Reales</option>
+              </select>
+            </div>
+          </div>
+
+  <div class="form-group">
+  <label class="col-sm-3 control-label">Tutor ID</label>
+  <div class="col-sm-9">
+    <input type="text" class="form-control" id="student_id" name="student_id" placeholder="32-3454 (xx-xxxx)" required>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const studentIDInput = document.getElementById('student_id');
+    studentIDInput.addEventListener('input', function(e) {
+      let value = studentIDInput.value.replace(/\D/g, '').substring(0, 6);
+      studentIDInput.value = value.replace(/(\d{2})(\d{4})/, '$1-$2');
+    });
+  });
+</script>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Course</label>
+            <div class="col-sm-9">
+            <select class="form-control" id="course" name="course" required>
+                  <option disabled>Select Course</option>
+                  <option value="BECE">Bachelor of Early Childhood Education</option>
+                  <option value="BSEE">Bachelor of Secondary Education Major in English</option>
+                  <option value="BSEF">Bachelor of Secondary Education Major in Filipino</option>
+                  <option value="BSEM">Bachelor of Secondary Education Major in Mathematics</option>
+                  <option value="BSES">Bachelor of Secondary Education Major in Science</option>
+                  <option value="BSESS">Bachelor of Secondary Education Major in Social Studies</option>
+                  <option value="BSCE">BS Civil Engineering</option>
+                  <option value="BSEE">BS Electrical Engineering</option>
+                  <option value="BSIT">BS Information Technology</option>
+                  <option value="BACTA">BA Communication Major in Theater Arts</option>
+                  <option value="BSP">BS Psychology</option>
+                  <option value="BSWS">BS Social Work</option>
+                  <option value="BSA">BS Accountancy</option>
+                  <option value="BSBAFM">BS Business Administration Major in Financial Management</option>
+                  <option value="BSBAHRDM">BS Business Administration Major in Human Resource Development Management</option>
+                  <option value="BSBAMM">BS Business Administration Major in Marketing Management</option>
+                  <option value="BSPA">BS Public Administration</option>
+                </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Year & Section</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="year_section" name="year_section" placeholder="Enter Year & Section" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Professor ID</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="professor" name="professor" placeholder="Enter Professor ID" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Facebook Link</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="fblink" name="fblink" placeholder="Enter Facebook Link" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Email Address</label>
+            <div class="col-sm-9">
+              <input type="email" class="form-control" id="emailaddress" name="emailaddress" placeholder="Enter Email Address">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Password</label>
+            <div class="col-sm-9">
+              <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" required>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-save"></i> Save</button>
+        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
 
 <!-- View Tutor Modal -->
 <div class="modal fade" id="view">

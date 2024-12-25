@@ -192,7 +192,7 @@ $total_pages = ceil($total_rows / $limit);
               <th><input type="checkbox" id="selectAll"></th> <!-- Checkbox for selecting all -->
               <th onclick="sortTable(1)">Lastname <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(2)">Firstname <i class="fa fa-sort" aria-hidden="true"></i></th>
-              <th onclick="sortTable(3)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(3)">Tutor ID <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(4)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(5)">Archive Time <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th>Actions</th>

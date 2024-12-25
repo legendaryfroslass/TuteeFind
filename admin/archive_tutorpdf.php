@@ -18,7 +18,20 @@ $pdf->SetFooterMargin(10);
 
 // Add a page
 $pdf->AddPage();
+// Add university name, department, address, and logos at the top
+$pdf->SetFont('helvetica', 'B', 12);
+$pdf->Cell(0, 15, 'Pamantasan ng Lungsod ng Valenzuela', 0, 1, 'C'); // Center align the text
 
+$pdf->SetFont('helvetica', '', 10);
+$pdf->MultiCell(0, 5, 'Department of the National Service Training Program' . "\n" .
+'Student Center Building, Tongco Street, Barangay Maysan' . "\n" .
+'Valenzuela City, Metro Manila', 0, 'C', 0, 1, '', '', true);
+
+// Logo 1: ltslogo.png - placed on the left
+$pdf->Image('LoginBackground/plvlogo.png', 80, 20, 20, '', '', '', '', true, 300, '', false, false, 0, false, false, false);
+
+// Logo 2: plvlogo.png - placed on the right
+$pdf->Image('LoginBackground/ltslogo.png', 198, 20, 20, '', '', '', '', true, 300, '', false, false, 0, false, false, false);
 // Set font for title
 $pdf->SetFont('helvetica', 'B', 16);
 $pdf->Cell(0, 10, 'Archived Tutor\'s List', 0, 1, 'C');
@@ -71,7 +84,7 @@ $html = '
             <th class="serial">#</th> <!-- Serial Number Column -->
             <th class="data">Lastname</th>
             <th class="data">Firstname</th>
-            <th class="data">Student ID</th>
+            <th class="data">Tutor ID</th>
             <th class="data">Course</th>
             <th class="data">Year & Section</th>
             <th class="data">Archive Time</th>

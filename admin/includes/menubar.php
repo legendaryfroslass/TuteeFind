@@ -23,7 +23,7 @@
         </a>
         <ul class="treeview-menu">
             <li><a href="home"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
-            <li><a href="matches"><i class="fa fa-code-fork"></i> <span>Matches</span></a></li>
+            <li><a href="matches"><i class="fa fa-code-fork"></i> <span>Pairs</span></a></li>
         </ul>
     </li>
 
