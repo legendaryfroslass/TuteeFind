@@ -15,6 +15,95 @@
 </head>
 <body>
 
+<!-- Add New Professor Modal -->
+<div class="modal fade" id="addnewprof">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title"><b>Add New Professor</b></h4>
+      </div>
+      <div class="modal-body">
+        <!-- Professor Information Form -->
+        <form id="addTutorForm" class="form-horizontal" method="POST" action="professor_add.php">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">First Name</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter First Name" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Last Name</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter Last Name" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Middle Name</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="middlename" name="middlename" placeholder="Enter Middle Name" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Age</label>
+            <div class="col-sm-9">
+              <input type="number" class="form-control" id="age" name="age" placeholder="Enter Age" required>
+            </div>
+          </div>
+
+        
+          <div class="form-group">
+  <label class="col-sm-3 control-label">Faculty ID</label>
+  <div class="col-sm-9">
+    <input type="text" class="form-control" id="faculty_id" name="faculty_id" placeholder="32-3454 (xx-xxxx)" required>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const facultyIDInput = document.getElementById('faculty_id');
+    facultyIDInput.addEventListener('input', function(e) {
+      let value = facultyIDInput.value.replace(/\D/g, '').substring(0, 6);
+      facultyIDInput.value = value.replace(/(\d{2})(\d{4})/, '$1-$2');
+    });
+  });
+</script>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Email Address</label>
+            <div class="col-sm-9">
+              <input type="email" class="form-control" id="emailaddress" name="emailaddress" placeholder="Enter Email Address">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Username</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="prof_username" name="prof_username" placeholder="Enter Username">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Password</label>
+            <div class="col-sm-9">
+              <input type="password" class="form-control" id="prof_password" name="prof_password" placeholder="Enter Password" required>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-save"></i> Save</button>
+        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
 <!-- Delete -->
 <div class="modal fade" id="delete">
     <div class="modal-dialog">

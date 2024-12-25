@@ -144,10 +144,10 @@ $total_pages = ceil($total_rows / $limit);
   <div class="content-wrapper">
     <section class="content-header">
       
-      <h1>Matches</h1> <!-- Updated to match tutor.php title -->
+      <h1>Pairs</h1> <!-- Updated to match tutor.php title -->
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Matches</li> <!-- Updated breadcrumb to match tutor.php -->
+        <li class="active">Pairs</li> <!-- Updated breadcrumb to match tutor.php -->
       </ol>
     </section>
 

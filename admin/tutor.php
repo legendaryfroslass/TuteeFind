@@ -157,6 +157,7 @@ $total_pages = ceil($total_rows / $limit);
           <div class="box">
             <div class="box-header with-border">
               <a href="#add" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i> Upload File</a>
+              <a href="#addnewtutor" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i> Add New</a>
               <button type="button" class="btn btn-warning btn-sm archiveAll btn-flat" onclick="archiveAllSelected()"><i class="fa fa-archive"></i> Archive All</button>
               <a href="../admin/excel-templates-tutor/tutor.xlsx" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-download"></i> Download Template</a>
               <a href="tutor_pdf.php?search=<?php echo urlencode($search); ?>" class="btn btn-primary btn-sm btn-flat" target="_blank">
@@ -195,7 +196,7 @@ $total_pages = ceil($total_rows / $limit);
               <th><input type="checkbox" id="selectAll"></th> <!-- Checkbox for selecting all -->
               <th onclick="sortTable(1)">Last Name <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(2)">First Name <i class="fa fa-sort" aria-hidden="true"></i></th>
-              <th onclick="sortTable(3)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(3)">Tutor ID <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(4)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th>Actions</th>
             </tr>
@@ -299,6 +300,7 @@ $(function(){
     getViewRow(id);
   });
 });
+
 
 function getViewRow(id){
   $.ajax({

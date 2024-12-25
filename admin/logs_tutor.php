@@ -187,7 +187,7 @@ $total_pages = ceil($total_rows / $limit);
             <tr role="row">
               <th onclick="sortTable(0)">Last Name <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(1)">First Name <i class="fa fa-sort" aria-hidden="true"></i></th>
-              <th onclick="sortTable(2)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(2)">Tutor ID <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(3)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(4)">Status <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th>Action</th>

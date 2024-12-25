@@ -146,6 +146,7 @@ $total_pages = ceil($total_rows / $limit);
           <div class="box">
             <div class="box-header with-border">
               <a href="#addnew" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i> Upload File</a>
+              <a href="#addnewprof" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i> Add New</a>
               <button type="button" class="btn btn-warning btn-sm archiveAll btn-flat" onclick="archiveAllSelected()"><i class="fa fa-archive"></i> Archive All</button>
               <a href="../admin/excel-templates-professor/professor.xlsx" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-download"></i> Download Template</a>
               <a href="professor_pdf.php?search=<?php echo urlencode($search); ?>" class="btn btn-primary btn-sm btn-flat" target="_blank">
