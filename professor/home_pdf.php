@@ -79,7 +79,7 @@ $stats = [
 
 // Add the statistics to the PDF
 $pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(0, 10, 'Number of Matches: ' . $stats['matches'], 0, 1);
+$pdf->Cell(0, 10, 'Number of Pairs: ' . $stats['matches'], 0, 1);
 $pdf->Cell(0, 10, 'Number of Tutors: ' . $stats['tutors'], 0, 1);
 $pdf->Cell(0, 10, 'Number of Tutees: ' . $stats['tutees'], 0, 1);
 
