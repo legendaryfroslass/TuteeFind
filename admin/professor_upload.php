@@ -43,7 +43,7 @@ if (isset($_POST['upload'])) {
                 }
 
                 // SQL statements for checking and inserting/updating
-                $check_sql = "SELECT * FROM professor WHERE faculty_id = ?";
+                $check_sql = "SELECT faculty_id FROM professor WHERE faculty_id = ?";
                 $check_stmt = $conn->prepare($check_sql);
                 $sql = "INSERT INTO professor (firstname, lastname, middlename, age, faculty_id, emailaddress, prof_photo, prof_username, prof_password)
                         VALUES (?, ?, ?, ?, ?, ?, COALESCE(?, 'profile.jpg'), ?, ?)
@@ -57,6 +57,8 @@ if (isset($_POST['upload'])) {
                         prof_username = VALUES(prof_username),
                         prof_password = VALUES(prof_password)";
                 $stmt = $conn->prepare($sql);
+
+                $updatedFacultyIds = [];
 
                 foreach ($sheet->getRowIterator(2) as $row) {
                     $data = $row->getCellIterator();
@@ -88,6 +90,8 @@ if (isset($_POST['upload'])) {
                     if ($result->num_rows > 0) {
                         if (!$stmt->execute()) {
                             $_SESSION['error'] = 'Error updating data: ' . $stmt->error;
+                        } else {
+                            $updatedFacultyIds[] = $faculty_id; // Record the updated ID
                         }
                     } else {
                         if (!$stmt->execute()) {
@@ -96,7 +100,12 @@ if (isset($_POST['upload'])) {
                     }
                 }
 
-                $_SESSION['success'] = 'Data processed successfully';
+                // Display the successfully updated faculty IDs
+                if (!empty($updatedFacultyIds)) {
+                    $_SESSION['success'] = 'Faculty IDs: ' . implode(', ', $updatedFacultyIds) . ' updated successfully.';
+                } else {
+                    $_SESSION['success'] = 'Data processed successfully';
+                }
             } catch (Exception $e) {
                 $_SESSION['error'] = 'Error reading Excel file: ' . $e->getMessage();
             }

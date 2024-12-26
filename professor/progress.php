@@ -366,6 +366,13 @@ while ($row = $result->fetch_assoc()) {
                  data-tutee-id='".htmlspecialchars($row['tutee_id'] ?? '')."' >
              <i class='fa fa-eye'></i> View
          </button>
+  <a 
+    class='btn btn-primary btn-sm btn-flat'  
+    href='weeklyprogress_pdf.php?tutor_id=".htmlspecialchars($row['tutor_id'] ?? '')."&tutee_id=".htmlspecialchars($row['tutee_id'] ?? '')."' 
+    target='_blank'>
+    <i class='fa fa-file-pdf-o'></i> Export PDF
+</a>
+
      </td>
   </tr>
   ";
