@@ -301,6 +301,12 @@ if (isset($_SESSION['professor_id'])) {
                         <button class='btn btn-primary btn-sm btn-flat view' data-id='" . htmlspecialchars($row['id'], ENT_QUOTES) . "'>
                             <i class='fa fa-eye'></i> View
                         </button>
+                          <a 
+                      class='btn btn-primary btn-sm btn-flat'  
+                      href='tutorLogspdf.php?tutor_id=".htmlspecialchars($row['id'], ENT_QUOTES)."' 
+                      target='_blank'>
+                      <i class='fa fa-file-pdf-o'></i> Export PDF
+                  </a>
                     </td>
                 </tr>";
         }

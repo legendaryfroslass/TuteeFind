@@ -103,23 +103,33 @@ $professor_id = $_SESSION['professor_id'];
             <div class="inner">
 
             <?php
-// Query to count rows with status 'pending' in both tables
-$sql = "
-    SELECT COUNT(*) as pending_count 
-    FROM (
-        SELECT status FROM events WHERE status = 'pending'
-        UNION ALL
-        SELECT status FROM tutee_progress WHERE status = 'pending'
-    ) as combined_status";
+$sql_events = "SELECT COUNT(*) as count_events
+               FROM events e
+               INNER JOIN tutor t ON e.tutor_id = t.id
+               INNER JOIN professor p ON t.professor = p.faculty_id
+               WHERE p.id = ? AND e.status = 'pending'";
 
-$query = $conn->query($sql);
+$stmt_events = $conn->prepare($sql_events);
+$stmt_events->bind_param("i", $professor_id);
+$stmt_events->execute();
+$result_events = $stmt_events->get_result();
+$row_events = $result_events->fetch_assoc();
+$count_events = $row_events['count_events'];
 
-// Fetch the count result
-if ($row = $query->fetch_assoc()) {
-    echo "<h3>" . $row['pending_count'] . "</h3>";
-} else {
-    echo "<h3>0</h3>";
-}
+$sql_progress = "SELECT COUNT(*) as count_progress
+                 FROM tutee_progress tp
+                 INNER JOIN tutor t ON tp.tutor_id = t.id
+                 INNER JOIN professor p ON t.professor = p.faculty_id
+                 WHERE p.id = ? AND tp.status = 'pending'";
+
+$stmt_progress = $conn->prepare($sql_progress);
+$stmt_progress->bind_param("i", $professor_id);
+$stmt_progress->execute();
+$result_progress = $stmt_progress->get_result();
+$row_progress = $result_progress->fetch_assoc();
+$count_progress = $row_progress['count_progress'];
+
+echo "<h3>" . ($count_progress + $count_events) . "</h3>";
 ?>
 <p>No. of Requests</p>
 </div>
