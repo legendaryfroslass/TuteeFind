@@ -439,7 +439,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                         <a href="../tutee/message">
                             <div style="position: relative;">
-                                <i class='bx bxs-inbox icon'></i>
+                                <i class='bx bx-envelope icon'></i>
                                 <span id="message-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
                                     <?php echo $unreadMessageCount; ?>
                                 </span> <!-- Notification counter -->

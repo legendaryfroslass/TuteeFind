@@ -549,15 +549,16 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $tutee_rendered_hours[$row['tutee_id']] = $row['tutee_rendered_hours'];
 }
 
-// Total rendered hours including tutees and events
-$total_rendered_hours = array_sum($tutee_rendered_hours) + $events_rendered_hours;
-
-// Calculate progress percentage
-$progress_percentage = min(($total_rendered_hours / $target_hours) * 100, 100);
+$total_rendered_hours = min(array_sum($tutee_rendered_hours) + $events_rendered_hours, $target_hours);
+$progress_percentage = ($total_rendered_hours / $target_hours) * 100;
+$stroke_dashoffset = 502.654 * (1 - $progress_percentage / 100);
 
 // Determine if hours came from events or tutee progress
 $has_events_data = $events_rendered_hours > 0;
 $has_tutee_data = count($tutee_rendered_hours) > 0;
+
+$offset = 0;
+$total_entries = count($tutee_rendered_hours) + ($has_events_data ? 1 : 0);
 
 // spinner
     include('spinner.php');
@@ -677,10 +678,24 @@ $has_tutee_data = count($tutee_rendered_hours) > 0;
   <div class="progress-ring">
     <svg width="200" height="200" viewBox="0 0 200 200">
       <circle class="progress-ring-background" cx="100" cy="100" r="80" stroke="#2c2c2c" stroke-width="15" fill="transparent"/>
-      <circle class="progress-ring-fill" cx="100" cy="100" r="80" stroke="url(#progress-gradient)" stroke-width="15" fill="transparent" stroke-dasharray="502.654" stroke-dashoffset="502.654" transform="rotate(-90 100 100)"/>
+      <circle class="progress-ring-fill" cx="100" cy="100" r="80" 
+        stroke="url(#progress-gradient)" 
+        stroke-width="15" fill="transparent" 
+        stroke-dasharray="502.654" 
+        stroke-dashoffset="<?php echo $stroke_dashoffset; ?>" 
+        transform="rotate(-90 100 100)"/>   
     </svg>
     <div class="progress-text">
-      <span id="progress-value"><?php echo $total_rendered_hours; ?>/<?php echo $target_hours; ?></span>
+      <span id="progress-value">
+        <?php 
+        if ($total_rendered_hours <= 90) {
+            echo $total_rendered_hours; ?>/<?php echo $target_hours; 
+        }
+        elseif ($total_rendered_hours >= 90) {
+            echo "90" ?>/<?php echo $target_hours; 
+        }
+        ?>
+        </span>
     </div>
   </div>
 </div>
