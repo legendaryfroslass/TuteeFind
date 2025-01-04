@@ -24,14 +24,14 @@
                         </li>
                         <li class="nav-link">
                             <a href="../tutee/message">
-                                <i class='bx bxs-inbox icon' ></i>
+                                <i class='bx bx-envelope icon'></i>
                                 <span class="text nav-text">Messages</span>
                             </a>
                         </li>
                         <li class="nav-link">
                             <a href="../tutee/notif" class="d-flex align-items-center">
                                 <div style="position: relative;">
-                                    <i class='bx bx-bell icon'></i>
+                                    <i class='bx bx-envelope icon'></i>
                                     <span id="notif-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
                                         <?php echo $unreadNotifCount; ?>
                                     </span> <!-- Notification counter -->

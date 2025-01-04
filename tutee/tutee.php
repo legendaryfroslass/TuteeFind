@@ -188,7 +188,7 @@ function acceptTutorRequest($request_id, $tutee_id) {
 
 
 // Function to reject tutor request
-function rejectTutorRequest($request_id, $tutee_id) {
+function rejectTutorRequest($request_id, $tutee_id, $rejection_reason) {
     global $user_login;
     try {
         // Fetch tutor details
@@ -209,12 +209,12 @@ function rejectTutorRequest($request_id, $tutee_id) {
 
         // Send email notification
         $subject = "Tutor Request Rejected";
-        $body = "Dear $tutorName,<br><br>Your tutor request has been rejected by $tuteeName.";
+        $body = "Dear $tutorName,<br><br>Your tutor request has been rejected by $tuteeName. Reason: $rejection_reason.";
         sendEmail($tutorEmail, $subject, $body);
 
         // Insert a notification into the notifications table
         $title = "Request Rejected";
-        $message = "Your tutor request has been rejected by $tuteeName.";
+        $message = "Your tutor request has been rejected by $tuteeName. Reason: $rejection_reason.";
         $stmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, date_sent, sent_for) 
                     VALUES (:tutee_id, :tutor_id, :title, :message, 'unread', NOW(), 'tutor')");
         $stmt->bindParam(":tutee_id", $tutee_id);
@@ -234,17 +234,26 @@ function rejectTutorRequest($request_id, $tutee_id) {
         return false;
     }
 }
-// Handle form submission
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['accept_request'])) {
         $request_id = $_POST['request_id'];
-        acceptTutorRequest($request_id, $userData['id']);
+        if (acceptTutorRequest($request_id, $userData['id'])) {
+            header("Location: tutee?success");
+        } else {
+            header("Location: tutee?error");
+        }
     } elseif (isset($_POST['reject_request'])) {
         $request_id = $_POST['request_id'];
-        rejectTutorRequest($request_id, $userData['id']);
+        $rejection_reason = $_POST['rejection_reason'];
+        if (rejectTutorRequest($request_id, $userData['id'], $rejection_reason)) {
+            header("Location: tutee?success");
+        } else {
+            header("Location: tutee?error");
+        }
     }
-    header("Location: tutee?error");
 }
+
 
 // // Check if login failed via URL parameter
 // if (isset($_GET['error']) || isset($_GET['notAvail'])) {
@@ -354,7 +363,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <li class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Messages">
                             <a href="../tutee/message">
                                 <div style="position: relative;">
-                                    <i class='bx bxs-inbox icon'></i>
+                                    <i class='bx bx-envelope icon'></i>
                                     <span id="message-count" class="badge bg-danger" style="position: absolute; top: -12px; right: -0px; font-size: 0.75rem;">
                                         <?php echo $unreadMessageCount; ?>
                                     </span> <!-- Notification counter -->
@@ -542,13 +551,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                                     </button>
                                                                     <?php if ($request['status'] != 'accepted'): ?>
                                                                         <button type="button" class="btn btn-outline-success bx bx-check" 
-                                                                        data-bs-toggle="modal" data-bs-target="#acceptRequestModal" 
-                                                                        data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('accept', this)">
+                                                                            data-bs-toggle="modal" data-bs-target="#acceptRequestModal" 
+                                                                            data-request-id="<?php echo $request['request_id']; ?>"
+                                                                            onclick="setRequestId('accept', this)">
                                                                         </button>
 
                                                                         <button type="button" class="btn btn-outline-danger bx bx-x" 
-                                                                        data-bs-toggle="modal" data-bs-target="#removeTuteeModal" 
-                                                                        data-request-id="<?php echo $request['request_id']; ?>" onclick="setRequestId('reject', this)">
+                                                                            data-bs-toggle="modal" data-bs-target="#removeTuteeModal" 
+                                                                            data-request-id="<?php echo $request['request_id']; ?>" 
+                                                                            onclick="setRequestId('reject', this)">
                                                                         </button>
                                                                     <?php else: ?>
                                                                         <button class="btn btn-success" disabled>Already Accepted</button>
@@ -732,14 +743,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <!-- Centered header content -->
                         <img src="../assets/remove.png" alt="Remove" class="delete-icon" style="width: 65px; height: 65px;">
                     </div>
-                    <div class="modal-body" id="modalBody">
-                        <p>Are you sure you want to remove this tutor?</p>
-                    </div>
-                    <div class="modal-footer">
                     <form id="removeTuteeForm" method="POST">
-                        <input type="hidden" name="request_id" id="rejectRequestId"> <!-- Added hidden input for tutor_id -->
-                        <button type="submit" id="confirmTutorRemove" name="reject_request" class="btn btn-outline-danger">Remove</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <div class="modal-body text-center" id="modalBody">
+                            <p>Are you sure you want to reject this tutor?</p>
+                            <textarea name="rejection_reason" id="rejection_reason" class="form-control" placeholder="Enter reason for rejection" required></textarea>
+                            <div id="reasonError" style="color: red; display: none;">Reason is required.</div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" name="request_id" id="rejectRequestId">
+                            <button type="submit" id="confirmTutorRemove" name="reject_request" class="btn btn-outline-danger">Remove</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
                     </form>
                     </div>
                 </div>
@@ -941,6 +955,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 document.getElementById('rejectRequestId').value = requestId;
                 }
             }
+
+            document.getElementById("removeTuteeForm").addEventListener("submit", function (e) {
+                var reason = document.getElementById("rejection_reason").value.trim();
+                if (!reason) {
+                    e.preventDefault();
+                    document.getElementById("reasonError").style.display = "block";
+                } else {
+                    document.getElementById("reasonError").style.display = "none";
+                }
+            });
         </script>
     </body>
 </html>
