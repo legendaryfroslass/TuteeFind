@@ -321,7 +321,7 @@ $pdf->Image('LoginBackground/ltslogo.png', 155, 20, 20, '', '', '', '', true, 30
     }
 }
 
-function removeTutor($tutor_id, $tutee_id, $removal_reason) {
+function removeTutor($firstname, $lastname, $tutor_id, $tutee_id, $removal_reason) {
     global $user_login;
     try {
         // Fetch the tutee's email
@@ -348,7 +348,7 @@ function removeTutor($tutor_id, $tutee_id, $removal_reason) {
             $mail->isHTML(true);
             $mail->Subject = 'You are been Removed as Tutor.';
             $mail->Body    = "
-                <h3>Your Tutee has removed you from being his/her Tutor.</h3>
+                <h3>Your Tutee $firstname $lastname, has removed you from being his/her Tutor.</h3>
                 <p>Reason: $removal_reason.</p>
             ";
 
@@ -361,7 +361,7 @@ function removeTutor($tutor_id, $tutee_id, $removal_reason) {
 
         // Insert a notification for the tutor about the removal
         $notificationStmt = $user_login->runQuery("INSERT INTO notifications (sender_id, receiver_id, title, message, status, sent_for) 
-                                                  VALUES (:sender_id, :receiver_id, 'Your Tutee has removed you from being his/her Tutor.', 'Reason: ' :message, 'unread', 'tutor')");
+                                                  VALUES (:sender_id, :receiver_id, 'Your Tutee $firstname $lastname, has removed you from being his/her Tutor.', 'Reason: ' :message, 'unread', 'tutor')");
         $notificationStmt->bindParam(":sender_id", $tutee_id); // Ensure tutor_id is passed
         $notificationStmt->bindParam(":receiver_id", $tutor_id);
         $notificationStmt->bindParam(":message", $removal_reason);
@@ -380,7 +380,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tutee_id = $_POST['tutee_id'];
         $removal_reason = $_POST['removal_reason']; // Get the reason if provided
 
-        if (removeTutor($tutor_id, $tutee_id, $removal_reason)) {
+        if (removeTutor($firstname, $lastname, $tutor_id, $tutee_id, $removal_reason)) {
             // Refresh the page to reflect the changes
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();

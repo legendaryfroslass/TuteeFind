@@ -1,6 +1,6 @@
 <?php
 require_once '../vendor/autoload.php'; // Include the vendor autoload
-include '../includes/conn.php'; // Include the database connection file
+include 'includes/conn.php'; // Include the database connection file
 
 if (isset($_GET['tutee_id'])) {
     $tuteeId = intval($_GET['tutee_id']); // Get tutee ID

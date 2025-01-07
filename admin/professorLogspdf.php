@@ -1,6 +1,6 @@
 <?php
 require_once '../vendor/autoload.php'; // Include the vendor autoload
-include '../includes/conn.php'; // Include the database connection file
+include 'includes/conn.php'; // Include the database connection file
 
 // Check if professor_id is provided
 if (isset($_GET['professor_id'])) {
