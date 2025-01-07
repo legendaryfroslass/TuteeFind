@@ -1,6 +1,6 @@
 <?php
 require_once '../vendor/autoload.php'; // Corrected path to the vendor folder
-include '../includes/conn.php'; // Adjusted path to the database connection file
+include 'includes/conn.php'; // Adjusted path to the database connection file
 
 if (isset($_GET['tutor_id']) && isset($_GET['tutee_id'])) {
     $tutorId = $_GET['tutor_id'];
