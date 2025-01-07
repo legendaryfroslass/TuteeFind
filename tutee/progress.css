@@ -7,13 +7,6 @@
   font-style: normal;
 }
 
-* {
-  font-family: "Dolpino", sans-serif;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 :root {
   --body-color: #fafafa;
   --side-bar: #E9A269;
