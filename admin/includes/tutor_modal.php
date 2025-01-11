@@ -440,7 +440,7 @@
             </div>
           </div>
           <div class="form-group">
-          <label class="col-sm-3 control-label">Student ID</label>
+          <label class="col-sm-3 control-label">Tutor ID</label>
           <div class="col-sm-9">
               <p class="form-control-static view-text" id="view_student_id"><?php echo isset($row['student_id']) ? $row['student_id'] : ''; ?></p>
           </div>
@@ -586,7 +586,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="edit_student_id" class="col-sm-3 control-label">Student ID</label>
+            <label for="edit_student_id" class="col-sm-3 control-label">Tutor ID</label>
             <div class="col-sm-9">
               <input type="text" class="form-control" id="edit_student_id" name="student_id">
             </div>

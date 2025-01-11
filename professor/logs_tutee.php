@@ -201,7 +201,7 @@ $total_pages = ceil($total_rows / $limit);
   <div class="row">
     <div class="col-sm-12">
       <!-- Add a wrapper div with custom styles for scrolling -->
-      <div style="max-height: 250px; overflow-y: auto;" class="scrollable-table">
+      <div style="max-height: 360px; overflow-y: auto;" class="scrollable-table">
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
           <thead>
             <tr role="row">
@@ -356,7 +356,6 @@ foreach ($results as $row) {
 </div>
 </section>
 </div>
-<?php include 'includes/footer.php'; ?>
 <?php include 'includes/tutee_modal.php'; ?>
 
 </div>

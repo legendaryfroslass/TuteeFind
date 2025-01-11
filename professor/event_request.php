@@ -219,13 +219,13 @@ Event Request
   <div class="row">
     <div class="col-sm-12">
       <!-- Add a wrapper div with custom styles for scrolling -->
-      <div style="max-height: 270px; overflow-y: auto;" class="scrollable-table">
+      <div style="max-height: 360px; overflow-y: auto;" class="scrollable-table">
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
           <thead>
             <tr role="row">
               <th><input type="checkbox" id="selectAll"></th> <!-- Checkbox for selecting all -->
               <th onclick="sortTable(1)">Tutor <i class="fa fa-sort" aria-hidden="true"></i></th>
-              <th onclick="sortTable(2)">Student ID <i class="fa fa-sort" aria-hidden="true"></i></th>
+              <th onclick="sortTable(2)">Tutor ID <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(3)">Course: Year & Section <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(4)">Rendered Hour/s <i class="fa fa-sort" aria-hidden="true"></i></th>
               <th onclick="sortTable(5)">Status <i class="fa fa-sort" aria-hidden="true"></i></th>
@@ -376,7 +376,6 @@ if ($stmt = $conn->prepare($sql)) {
     </div>
   </section>
 </div>
-<?php include 'includes/footer.php'; ?>
 <?php include 'includes/tutor_modal.php'; ?>
 </div>
 <?php include 'includes/scripts.php'; ?>
