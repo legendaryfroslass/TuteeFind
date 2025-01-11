@@ -93,7 +93,7 @@ $html = '
         width: 12%; /* Adjust this width to fit within the page */
     }
     .age, .grade {
-        width: 8%; /* Set the same width for Age and Grade columns */
+        width: 10%; /* Set the same width for Age and Grade columns */
     }
     .contact {
         width: 13%; /* Increase width for Contact No. column */

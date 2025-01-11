@@ -215,7 +215,7 @@ $stmt_total->close();
   <div class="row">
     <div class="col-sm-12">
       <!-- Add a wrapper div with custom styles for scrolling -->
-      <div style="max-height: 250px; overflow-y: auto;" class="scrollable-table">
+      <div style="max-height: 360px; overflow-y: auto;" class="scrollable-table">
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
         <thead>
     <tr role="row">
@@ -356,7 +356,6 @@ if (isset($_SESSION['professor_id'])) {
 </div>
 </section>
 </div>
-<?php include 'includes/footer.php'; ?>
 <?php include 'includes/tutor_modal.php'; ?>
 
 </div>

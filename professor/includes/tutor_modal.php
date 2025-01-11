@@ -175,7 +175,7 @@
             </div>
           </div>
           <div class="form-group">
-          <label class="col-sm-3 control-label">Student ID</label>
+          <label class="col-sm-3 control-label">Tutor ID</label>
           <div class="col-sm-9">
               <p class="form-control-static view-text" id="view_student_id"><?php echo isset($row['student_id']) ? $row['student_id'] : ''; ?></p>
           </div>
