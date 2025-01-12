@@ -190,7 +190,7 @@ $total_pages = ceil($total_rows / $limit);
   <div class="row">
     <div class="col-sm-12">
       <!-- Add a wrapper div with custom styles for scrolling -->
-      <div style="max-height: 360px; overflow-y: auto;" class="scrollable-table">
+      <div style="max-height: 390px; overflow-y: auto;" class="scrollable-table">
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
           <thead>
             <tr role="row">
@@ -206,15 +206,15 @@ $total_pages = ceil($total_rows / $limit);
 $search = isset($_GET['search']) ? strtolower($_GET['search']) : '';
 
 // Query to retrieve all professors
-$sql = "
-    SELECT 
-        id, 
-        lastname, 
-        firstname, 
-        middlename, 
-        faculty_id, 
-        last_login 
-    FROM professor";
+// $sql = "
+//     SELECT 
+//         id, 
+//         lastname, 
+//         firstname, 
+//         middlename, 
+//         faculty_id, 
+//         last_login 
+//     FROM professor";
 $query = $conn->query($sql);
 
 // Temporary array to store filtered results

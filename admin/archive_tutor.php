@@ -85,12 +85,13 @@ $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10; // Default to 10
 $offset = ($page - 1) * $limit;
 
 // Modify your SQL query to include LIMIT and OFFSET for pagination
-$sql = "SELECT id, lastname, firstname, student_id, course, year_section FROM archive_tutor 
+$sql = "SELECT id, lastname, firstname, student_id, course, year_section, archive_at FROM archive_tutor 
          WHERE LOWER(lastname) LIKE LOWER('%$search%') 
         OR LOWER(firstname) LIKE LOWER('%$search%') 
         OR LOWER(student_id) LIKE LOWER('%$search%') 
         OR LOWER(course) LIKE LOWER('%$search%') 
-        OR LOWER(year_section) LIKE LOWER('%$search%') 
+        OR LOWER(year_section) LIKE LOWER('%$search%')
+        OR LOWER(archive_at) LIKE LOWER('%$search%')  
         OR LOWER(CONCAT(course, ' ', year_section)) LIKE LOWER('%$search%')
         LIMIT $limit OFFSET $offset";
 $query = $conn->query($sql);
@@ -102,6 +103,7 @@ $total_sql = "SELECT COUNT(*) as total FROM archive_tutor
                 OR LOWER(student_id) LIKE LOWER('%$search%') 
                 OR LOWER(course) LIKE LOWER('%$search%') 
                 OR LOWER(year_section) LIKE LOWER('%$search%') 
+                OR LOWER(archive_at) LIKE LOWER('%$search%') 
                 OR LOWER(CONCAT(course, ' ', year_section)) LIKE LOWER('%$search%')";
 
 $total_result = $conn->query($total_sql);
@@ -200,7 +202,7 @@ $total_pages = ceil($total_rows / $limit);
           </thead>
           <tbody>
   <?php
-  $sql = "SELECT id, lastname, firstname, student_id, course, year_section, archive_at FROM archive_tutor";
+  // $sql = "SELECT id, lastname, firstname, student_id, course, year_section, archive_at FROM archive_tutor";
   $query = $conn->query($sql);  
     while ($row = $query->fetch_assoc()) { 
       $formatted_date_time = date('d/m/Y h:i:s A', strtotime($row['archive_at']));

@@ -86,7 +86,7 @@ $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10; // Default to 10
 $offset = ($page - 1) * $limit;
 
 // Modify your SQL query to include LIMIT and OFFSET for pagination
-$sql = "SELECT id, firstname, lastname, barangay, number, age, tutee_bday, school, grade FROM archive_tutee
+$sql = "SELECT id, firstname, lastname, barangay, number, age, tutee_bday, school, grade, archive_at FROM archive_tutee
         WHERE firstname LIKE '%$search%' 
         OR lastname LIKE '%$search%' 
         OR barangay LIKE '%$search%' 
@@ -200,15 +200,14 @@ $total_pages = ceil($total_rows / $limit);
       <th onclick="sortTable(3)">Barangay <i class="fa fa-sort" aria-hidden="true"></i></th>
       <th onclick="sortTable(4)">Contact No. <i class="fa fa-sort" aria-hidden="true"></i></th>
       <th onclick="sortTable(5)">Age <i class="fa fa-sort" aria-hidden="true"></i></th>
-      <th onclick="sortTable(6)">Birthday <i class="fa fa-sort" aria-hidden="true"></i></th>
-      <th onclick="sortTable(7)">School <i class="fa fa-sort" aria-hidden="true"></i></th>
-      <th onclick="sortTable(8)">Grade <i class="fa fa-sort" aria-hidden="true"></i></th>
+      <th onclick="sortTable(6)">Archive Time <i class="fa fa-sort" aria-hidden="true"></i></th>
       <th>Actions</th>
     </tr>
   </thead>
   <tbody>
 <?php
     while ($row = $query->fetch_assoc()) {
+      $formatted_date_time = date('d/m/Y h:i:s A', strtotime($row['archive_at']));
       echo "
         <tr role='row' class='odd'>
           <td><input type='checkbox' class='selectRow' value='" . $row['id'] . "'></td>
@@ -217,9 +216,7 @@ $total_pages = ceil($total_rows / $limit);
           <td>" . htmlspecialchars($row['barangay']) . "</td>
           <td>" . htmlspecialchars($row['number']) . "</td>
           <td>" . htmlspecialchars($row['age']) . "</td>
-          <td>" . htmlspecialchars($row['tutee_bday']) . "</td>
-          <td>" . htmlspecialchars($row['school']) . "</td>
-          <td>" . htmlspecialchars($row['grade']) . "</td>
+          <td>".$formatted_date_time."</td>
           <td>
               <button class='btn btn-danger btn-sm delete btn-flat' data-id='".$row['id']."'><i class='fa fa-trash'></i> Delete</button>
               <button class='btn btn-warning btn-sm restoreTutee btn-flat' data-id='".$row['id']."'><i class='fa fa-refresh'></i> Restore</button>
