@@ -4,7 +4,7 @@ include 'includes/header.php';
 ?>
 <style>
   .scrollable-table {
-    max-height: 230px;
+    max-height: 390px;
     overflow-y: auto;
     border-collapse: collapse;
     display: block;

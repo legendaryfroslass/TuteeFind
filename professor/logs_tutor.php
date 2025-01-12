@@ -7,7 +7,7 @@ date_default_timezone_set('Asia/Manila');
 
 <style>
   .scrollable-table {
-    max-height: 230px;
+    max-height: 390px;
     overflow-y: auto;
     border-collapse: collapse;
     display: block;
@@ -215,7 +215,7 @@ $stmt_total->close();
   <div class="row">
     <div class="col-sm-12">
       <!-- Add a wrapper div with custom styles for scrolling -->
-      <div style="max-height: 360px; overflow-y: auto;" class="scrollable-table">
+      <div style="max-height: 390px; overflow-y: auto;" class="scrollable-table">
         <table id="example1" class="table table-bordered dataTable no-footer" role="grid" aria-describedby="example1_info">
         <thead>
     <tr role="row">
