@@ -346,7 +346,7 @@ function removeTutor($firstname, $lastname, $tutor_id, $tutee_id, $removal_reaso
 
             // Content
             $mail->isHTML(true);
-            $mail->Subject = 'You are been Removed as Tutor.';
+            $mail->Subject = 'You have been removed as Tutor.';
             $mail->Body    = "
                 <h3>Your Tutee $firstname $lastname, has removed you from being his/her Tutor.</h3>
                 <p>Reason: $removal_reason.</p>
