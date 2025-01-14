@@ -1,25 +1,32 @@
 <?php
-include 'includes/session.php'; // Ensure session is included to access $professor_id
+ob_start(); // Start output buffering
 
-if(isset($_SESSION['professor_id'])) {
+include 'includes/session.php';
+
+if (isset($_SESSION['professor_id'])) {
     $professor_id = $_SESSION['professor_id'];
     
-    // Retrieve professor details from the database
+    // Check if the professor exists in the database
     $sql = "SELECT * FROM professor WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $professor_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if($result->num_rows == 1) {
-        $user = $result->fetch_assoc(); // Assign professor details to $user
+    if ($result->num_rows == 1) {
+        $user = $result->fetch_assoc();
+    } else {
+        // Professor not found, destroy session and redirect
+        session_unset();
+        session_destroy();
+        header('Location: ../professor/landingpage.php');
+        exit();
     }
 } else {
-    // Handle case when professor is not logged in
-    header('location: index.php');
+    // If no session exists, redirect to the login page
+    header('Location: ../professor/landingpage.php');
     exit();
 }
-
 ?>
 <header class="main-header">
 <!-- Logo -->
@@ -49,7 +56,6 @@ if(isset($_SESSION['professor_id'])) {
             <li class="user-header">
             <img src="<?php echo (!empty($user['prof_photo'])) ? '../images/'.$user['prof_photo'] : '../assets/TuteeFindLogoName.jpg'; ?>" class="img-circle" alt="User Image">
             
-
             <p>
                 <?php echo $user['firstname'].' '.$user['lastname']; ?>
                 
