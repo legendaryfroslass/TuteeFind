@@ -1,3 +1,7 @@
+<?php
+// Ensure no whitespace or output before this tag
+ob_start();
+?>
 <!DOCTYPE html>
 <html>
 <head>
