@@ -385,10 +385,15 @@ while ($row = $result->fetch_assoc()) {
     </div>
     <div class="row">
       <div class="col-sm-5">
-        <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
-          Showing   
- <?php echo ($offset + 1) . ' to ' . min($offset + $limit, $total_rows) . ' of ' . $total_rows . ' entries'; ?>
-        </div>
+      <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+        <?php
+        if ($total_rows > 0) {
+            echo 'Showing ' . ($offset + 1) . ' to ' . min($offset + $limit, $total_rows) . ' of ' . $total_rows . ' entries';
+        } else {
+            echo 'Showing 0 to 0 of 0 entries';
+        }
+        ?>
+      </div>
       </div>
       <div class="col-sm-7">
         <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
